@@ -8,6 +8,7 @@ import { buildWorld } from './world.js';
 import { Panel } from './ui/panel.js';
 import { RoomList } from './ui/roomlist.js';
 import { createMechanisms } from './mech/index.js';
+import { Minimap } from './ui/minimap.js';
 
 THREE.ColorManagement.enabled = false;
 
@@ -38,6 +39,8 @@ export class App {
     this.mechs = createMechanisms(this);
     this.panel = new Panel(this);
     this.roomList = new RoomList(this, document.getElementById('roomlist'));
+    this.minimap = new Minimap(this, document.getElementById('minimap'));
+    document.getElementById('about').addEventListener('click', () => this.panel.showAbout());
     this._bindUI();
 
     window.addEventListener('resize', () => this.pipeline.resize());
@@ -200,6 +203,10 @@ export class App {
     this.panel.hide();
   }
 
+  roomName(id) {
+    return ROOM_BY_ID[id]?.name ?? id;
+  }
+
   toast(msg, ms = 5000) {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -293,6 +300,7 @@ export class App {
     this.panel.update && this.panel.update(this.time);
 
     this.pipeline.render(this.time);
+    this.minimap.draw();
     this._updateHover(t0);
     this._adapt(performance.now() - t0, dt);
 

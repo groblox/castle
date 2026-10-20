@@ -145,8 +145,24 @@ body {
   display: block;
   margin: 10px auto 4px;
   width: 220px;
-  height: 180px;
+  height: 165px;
   cursor: pointer;
+}
+#about {
+  display: block;
+  width: calc(100% - 12px);
+  margin: 6px auto 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  background: rgba(255, 252, 240, 0.6);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  color: var(--ink);
+  cursor: pointer;
+}
+#about:hover {
+  background: rgba(185, 139, 62, 0.18);
 }
 .hint {
   margin: 6px 6px 0;
@@ -242,6 +258,24 @@ body {
 }
 #panel ol.sources li {
   margin-bottom: 4px;
+}
+#panel a {
+  color: var(--wash-red);
+  cursor: pointer;
+}
+#panel .more {
+  margin-top: 14px;
+  font-size: 13px;
+  font-style: italic;
+}
+#panel ol.sources.full > li {
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+#panel ul.claims {
+  margin: 3px 0 0;
+  padding-left: 16px;
+  color: var(--ink-soft);
 }
 #panel .mech-controls {
   display: flex;

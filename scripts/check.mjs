@@ -25,7 +25,7 @@ mkdirSync(out, { recursive: true });
 if (!has('--no-build')) execSync('npx vite build', { stdio: 'inherit' });
 
 const port = 4173 + Math.floor(Math.random() * 500);
-const server = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'] });
+const server = spawn('npx', ['vite', 'preview', '--port', String(port), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'], detached: true });
 await new Promise((res, rej) => {
   const to = setTimeout(() => rej(new Error('preview server did not start')), 20000);
   server.stdout.on('data', (d) => {
@@ -119,5 +119,5 @@ if (errors.length) {
   code = 1;
 } else console.log('no console errors');
 await browser.close();
-server.kill();
+process.kill(-server.pid);
 process.exit(code);
