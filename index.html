@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aberwen Castle, c. 1290: a cutaway</title>
+    <meta name="description" content="Interactive ink-and-watercolour cross-section of a fictional Edwardian concentric castle in North Wales, c. 1290, with working kitchens and stores." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M1 15V5h2v2h2V5h2v2h2V5h2v2h2V5h2v10z%27 fill=%27%235a4a3a%27/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./src/ui/style.css" />
+  </head>
+  <body>
+    <canvas id="view" tabindex="0" aria-label="Castle cutaway view"></canvas>
+
+    <header id="titlebar">
+      <h1>Aberwen Castle <span>c. 1290</span></h1>
+      <p>A cutaway of a fictional concentric castle in North Wales, after Edward I&rsquo;s castles at Harlech, Conwy and Beaumaris</p>
+    </header>
+
+    <nav id="rooms" class="paper" aria-label="Rooms">
+      <h2>Rooms</h2>
+      <div id="roomlist"></div>
+      <canvas id="minimap" width="220" height="180" aria-label="Plan of the castle" hidden></canvas>
+      <p class="hint">Drag to orbit &middot; right-drag or WASD to pan &middot; scroll to zoom &middot; click a room to fly in &middot; Esc to return</p>
+    </nav>
+
+    <button id="back" class="paper" hidden>&larr; Back to the whole castle</button>
+
+    <aside id="panel" class="paper" hidden aria-live="polite">
+      <button id="panel-close" aria-label="Close notes">&times;</button>
+      <div id="panel-body"></div>
+    </aside>
+
+    <div id="tooltip" class="paper" hidden></div>
+    <div id="toast" class="paper" hidden></div>
+    <div id="loading">Drawing the castle&hellip;</div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

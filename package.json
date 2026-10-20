@@ -1,0 +1,20 @@
+{
+  "name": "aberwen-castle-cutaway",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Interactive ink-and-watercolour cutaway of a fictional Edwardian concentric castle, c. 1290",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "node scripts/check.mjs"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1",
+    "vite": "7.1.9"
+  }
+}
