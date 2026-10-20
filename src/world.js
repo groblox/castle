@@ -5,6 +5,7 @@ import { furnish } from './castle/furnish.js';
 import { makeMaterial } from './render/material.js';
 import { Effects } from './render/fx.js';
 import { setupEffects } from './castle/ambient.js';
+import { buildCast } from './people/cast.js';
 
 /** Build all static geometry into a single mesh (one draw call). */
 export function buildWorld(scene) {
@@ -18,12 +19,15 @@ export function buildWorld(scene) {
   scene.add(mesh);
   const fx = new Effects(scene);
   setupEffects(fx);
+  const cast = buildCast(scene);
   return {
     mesh,
     fx,
+    cast,
     triangles: b.triangleCount,
-    update(t) {
+    update(t, dt) {
       fx.update(t);
+      cast.update(t, dt);
     },
   };
 }

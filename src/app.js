@@ -198,6 +198,16 @@ export class App {
     this.panel.hide();
   }
 
+  /** Advance the simulation without rendering (used by tests). */
+  simulate(seconds, step = 1 / 30) {
+    for (let s = 0; s < seconds; s += step) {
+      this.time += step;
+      shared.uTime.value = this.time;
+      this.world.update(this.time, step);
+      for (const m of Object.values(this.mechs)) m.update && m.update(this.time, step);
+    }
+  }
+
   /** Finish any camera flight and fade at once (used by tests). */
   settle() {
     if (this.controls.flight) {

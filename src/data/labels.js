@@ -16,3 +16,15 @@ export function lab(key, room = null, mech = null) {
   index.set(k, id);
   return id;
 }
+
+/** Label for a servant or animal: clicking opens notes on that role. */
+export function labPerson(key, room = null) {
+  const k = `person|${key}`;
+  if (index.has(k)) return index.get(k);
+  const g = GLOSSARY[key];
+  if (!g) throw new Error(`Unknown glossary key: ${key}`);
+  const id = LABELS.length;
+  LABELS.push({ key, term: g.term, gloss: g.gloss, room, person: key });
+  index.set(k, id);
+  return id;
+}
