@@ -61,8 +61,16 @@ export class Pipeline {
     this.post.uniforms.uNear.value = this.camera.near;
     this.post.uniforms.uFar.value = this.camera.far;
     r.setRenderTarget(this.target);
-    r.setClearColor(0x000000, 0);
-    r.clear(true, true, true);
+    // clear each attachment separately: colour to the paper, normals to
+    // "facing the viewer, not faded", labels to "nothing"
+    const gl = r.getContext();
+    r.state.buffers.color.setMask(true);
+    r.state.buffers.depth.setMask(true);
+    const pc = this.post.uniforms.uPaperCol.value;
+    gl.clearBufferfv(gl.COLOR, 0, [pc.r, pc.g, pc.b, 1]);
+    gl.clearBufferfv(gl.COLOR, 1, [0.5, 0.5, 1, 0]);
+    gl.clearBufferfv(gl.COLOR, 2, [0, 0, 0, 0]);
+    r.clearDepth();
     r.render(this.scene, this.camera);
     r.setRenderTarget(null);
     r.render(this.postScene, this.postCam);

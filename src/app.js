@@ -132,7 +132,7 @@ export class App {
     const fit = room.view.fit ?? 1;
     const az = room.view.az * DEG;
     const el = room.view.el * DEG;
-    let d = Math.max(size.x / 2 / Math.tan(hfov / 2), size.y / 2 / Math.tan(vfov / 2)) * fit * 1.45 + size.z * 0.8;
+    let d = Math.max(size.x / 2 / Math.tan(hfov / 2), size.y / 2 / Math.tan(vfov / 2)) * fit * 1.25 + size.z * 0.55;
     if (room.view.dist) d = room.view.dist;
     // shift the target so the room sits in the area left of the notes panel
     const halfW = Math.tan(vfov / 2) * this.camera.aspect * d;
@@ -148,18 +148,39 @@ export class App {
     const v = this.roomView(room);
     const box = new THREE.Box3(v.min.clone().addScalar(-4), v.max.clone().addScalar(4));
     box.expandByPoint(v.target);
+    const camBox = room.camBox ? new THREE.Box3(new THREE.Vector3(...room.camBox[0]), new THREE.Vector3(...room.camBox[1])) : null;
     this.controls.setLimits({
       az: [v.az - 35 * DEG, v.az + 35 * DEG],
       el: [Math.max(1 * DEG, v.el - 16 * DEG), v.el + 30 * DEG],
       dist: [Math.max(2.5, v.dist * 0.3), v.dist * 1.8],
       box,
+      camBox,
     });
+    if (camBox) {
+      // pull the framed view inside the camera box before flying there
+      const c = new THREE.Vector3(
+        v.target.x + v.dist * Math.cos(v.el) * Math.sin(v.az),
+        v.target.y + v.dist * Math.sin(v.el),
+        v.target.z + v.dist * Math.cos(v.el) * Math.cos(v.az),
+      );
+      const cc = camBox.clampPoint(c, new THREE.Vector3());
+      if (cc.distanceTo(c) > 1e-3) {
+        // move closer along the view ray rather than sideways where possible
+        const dir = c.clone().sub(v.target).normalize();
+        const t = Math.max(2.5, Math.min(v.dist, rayBoxExit(v.target, dir, camBox)));
+        v.dist = t;
+        const c2 = v.target.clone().addScaledVector(dir, t);
+        v.target.add(camBox.clampPoint(c2, new THREE.Vector3()).sub(c2));
+      }
+    }
     if (opts.instant) this.controls.jumpTo(v);
     else this.controls.flyTo(v, 1.5);
     const m = room.view.margin ?? 1.6;
     shared.uFocusMin.value.copy(v.min).addScalar(-m);
     shared.uFocusMax.value.copy(v.max).addScalar(m);
     this.focusAmtGoal = 0.82;
+    this.fadeGoal.fill(0);
+    for (const g of room.hide || []) this.fadeGoal[g] = 1;
     this.backBtn.hidden = false;
     this.roomList.setActive(id);
     if (!opts.keepPanel) this.panel.showRoom(room);
@@ -171,6 +192,7 @@ export class App {
     if (opts.instant) this.controls.jumpTo({ ...OVERVIEW, target: OVERVIEW.target.clone() });
     else this.controls.flyTo({ ...OVERVIEW, target: OVERVIEW.target.clone() }, 1.5);
     this.focusAmtGoal = 0;
+    this.fadeGoal.fill(0);
     this.backBtn.hidden = true;
     this.roomList.setActive(null);
     this.panel.hide();
@@ -275,6 +297,18 @@ export class App {
       p.resize();
     }
   }
+}
+
+// distance along a ray from p (inside or outside) to where it leaves box b
+function rayBoxExit(p, d, b) {
+  let tMax = Infinity;
+  for (const ax of ['x', 'y', 'z']) {
+    if (Math.abs(d[ax]) < 1e-9) continue;
+    const t1 = (b.min[ax] - p[ax]) / d[ax];
+    const t2 = (b.max[ax] - p[ax]) / d[ax];
+    tMax = Math.min(tMax, Math.max(t1, t2));
+  }
+  return tMax;
 }
 
 export { ROOMS };

@@ -15,7 +15,8 @@ const opt = (name, def) => {
 };
 const has = (name) => args.includes(name);
 const out = resolve(opt('--out', '.shots'));
-const shots = opt('--shots', 'overview').split(',').filter(Boolean);
+const shotsArg = opt('--shots', 'overview');
+const shots = shotsArg.split(shotsArg.includes('@@') ? '@@' : ',').filter(Boolean);
 const extra = opt('--eval', '');
 const width = Number(opt('--w', 1440));
 const height = Number(opt('--h', 900));

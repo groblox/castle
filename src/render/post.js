@@ -164,7 +164,9 @@ export function makePostMaterial(target, paper, camera) {
         vec3 bg = uPaperCol;
         float skyBand = smoothstep(0.35, 0.95, vUv.y + (papLo.g - 0.5) * 0.25);
         bg = mix(bg, vec3(0.80, 0.85, 0.88), skyBand * 0.28);
-        col = mix(bg, col, hasC);
+        // where there is no geometry the colour target holds paper plus any
+        // smoke or steam drawn over it: carry that across onto the sky wash
+        col = mix(bg * (col / uPaperCol), col, hasC);
 
         // ink over the wash
         col = mix(col, uInk, clamp(ink, 0.0, 1.0) * 0.92);

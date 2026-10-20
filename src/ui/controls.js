@@ -167,6 +167,17 @@ export class CutawayControls {
       const cz = g.target.z + g.dist * Math.cos(g.el) * Math.cos(g.az);
       if (cz < L.minCamZ) g.target.z += L.minCamZ - cz;
     }
+    if (L.camBox) {
+      // keep the camera itself inside a box (e.g. inside the hall when looking
+      // into the services), moving the target with it
+      const c = new THREE.Vector3(
+        g.target.x + g.dist * Math.cos(g.el) * Math.sin(g.az),
+        g.target.y + g.dist * Math.sin(g.el),
+        g.target.z + g.dist * Math.cos(g.el) * Math.cos(g.az),
+      );
+      const cc = L.camBox.clampPoint(c, new THREE.Vector3());
+      g.target.add(cc.sub(c));
+    }
     if (L.minCamY !== undefined) {
       const cy = g.target.y + g.dist * Math.sin(g.el);
       if (cy < L.minCamY) g.target.y += L.minCamY - cy;

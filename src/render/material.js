@@ -40,6 +40,7 @@ out vec3 vNormal;
 out vec3 vCol;
 flat out vec3 vInfo;
 out float vFade;
+out float vHide;
 
 void main() {
   mat4 m = modelMatrix;
@@ -58,8 +59,14 @@ void main() {
   vInfo = vec3(info.x, lb, grp);
   vec3 outside = max(uFocusMin - wp.xyz, wp.xyz - uFocusMax);
   float od = length(max(outside, 0.0));
-  vFade = max(uFade[int(grp + 0.5)], uFocusAmt * smoothstep(0.0, 1.2, od));
-  gl_Position = projectionMatrix * viewMatrix * wp;
+  float gf = uFade[int(grp + 0.5)];
+  vHide = gf;
+  vFade = max(gf, uFocusAmt * smoothstep(0.0, 1.2, od));
+  vec4 mv = viewMatrix * wp;
+  // cut faces win depth ties with the interior faces of touching solids
+  float kd = info.x;
+  if (kd == 2.0 || kd == 13.0 || kd == 14.0 || kd == 17.0) mv.xyz *= 1.0 - 0.02 / max(length(mv.xyz), 0.1);
+  gl_Position = projectionMatrix * mv;
 }
 `;
 
@@ -84,6 +91,7 @@ in vec3 vNormal;
 in vec3 vCol;
 flat in vec3 vInfo;
 in float vFade;
+in float vHide;
 
 // ---- noise -----------------------------------------------------------------
 float hash12(vec2 p) {
@@ -159,6 +167,7 @@ vec2 rubble(vec2 x) {
 }
 
 void main() {
+  if (vHide > 0.97) discard;
   float kind = vInfo.x;
   int k = int(kind + 0.5);
   vec3 N = normalize(vNormal);

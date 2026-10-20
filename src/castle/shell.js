@@ -44,20 +44,29 @@ function terrain(b) {
       );
     });
 
-    // base rock under the castle, in x-strips so nothing overlaps on the cut
-    const strip = (x0, x1, top, z0 = zBack, z1 = 0, o = earth) => b.box(x0, BASE_Y, z0, x1, top, z1, o);
-    strip(-40, IC_OUT.x0, OUTER_Y, zBack, 0, turf); // outer ward west (+ outer curtain footing)
+    // base rock under the castle, in x-strips so nothing overlaps on the cut.
+    // Ground surfaces are thin labelled skins over the rock so that the
+    // section shows one continuous rock face.
+    const SK = 0.08;
+    const strip = (x0, x1, top, z0 = zBack, z1 = 0) => b.box(x0, BASE_Y, z0, x1, top, z1);
+    const skin = (x0, x1, top, key, room, color = P.turf, z0 = zBack, z1 = 0) =>
+      b.with({ label: lab(key, room), kind: K.GROUND, color, capKind: K.CUT_EARTH }, () => b.box(x0, top - SK, z0, x1, top, z1));
+    strip(-40, IC_OUT.x0, OUTER_Y - SK);
+    skin(-40, IC_OUT.x0, OUTER_Y, 'outerWard', 'outerWard');
     // west range: lowered for the undercroft (z from the cross wall to the cut)
     strip(IC_OUT.x0, HALL.x1 + HALL.wallT, -4, HALL.zCross0, 0);
-    strip(IC_OUT.x0, HALL.x1 + HALL.wallT, OUTER_Y, zBack, HALL.zCross0, turf);
+    strip(IC_OUT.x0, HALL.x1 + HALL.wallT, OUTER_Y, zBack, HALL.zCross0);
     strip(HALL.x1 + HALL.wallT, WELL.x - 2, OUTER_Y);
     // well column
     strip(WELL.x - 2, WELL.x + 2, WELL.bottom);
     b.box(WELL.x - 2, WELL.bottom, zBack, WELL.x + 2, OUTER_Y, -2);
-    strip(WELL.x + 2, OC_IN.x1, OUTER_Y, zBack, 0, turf);
-    strip(OC_IN.x1, DITCH.x0, OUTER_Y, zBack, 0, turf);
-    strip(DITCH.x0, DITCH.x1, DITCH.y, zBack, 0, turf);
-    b.with({ label: lab('ditch'), kind: K.GROUND, color: P.turf }, () => b.box(DITCH.x0, DITCH.y, -38, DITCH.x1, DITCH.y + 0.08, -0.6));
+    strip(WELL.x + 2, IC_OUT.x1, OUTER_Y);
+    strip(IC_OUT.x1, OC_IN.x1, OUTER_Y - SK);
+    skin(IC_OUT.x1, OC_IN.x1, OUTER_Y, 'outerWard', 'outerWard');
+    strip(OC_IN.x1, DITCH.x0, OUTER_Y - SK);
+    skin(OC_IN.x1, DITCH.x0, OUTER_Y, 'turf', null);
+    strip(DITCH.x0, DITCH.x1, DITCH.y - SK);
+    skin(DITCH.x0, DITCH.x1, DITCH.y, 'ditch', null);
     // east field, slightly lower, ending in a cut face
     b.loft(
       [v3(DITCH.x1, BASE_Y, zBack), v3(72, BASE_Y, zBack), v3(72, BASE_Y, 0), v3(DITCH.x1, BASE_Y, 0)],
@@ -77,15 +86,19 @@ function terrain(b) {
     );
   });
 
-  // inner platform (rock, ward level 0)
-  b.with({ ...ROCK, group: G.ward, label: lab('innerWard', 'ward') }, () => {
-    const top = { topKind: K.GROUND, topColor: P.earth };
+  // inner platform (rock, ward level 0) with a skin of trodden earth
+  b.with({ ...ROCK, group: G.ward, label: lab('rock') }, () => {
+    const SK = 0.08;
+    const pl = (x0, z0, x1, z1) => {
+      b.box(x0, OUTER_Y, z0, x1, WARD_Y - SK, z1);
+      b.with({ label: lab('innerWard', 'ward'), kind: K.GROUND, color: P.earth, capKind: K.CUT_EARTH }, () => b.box(x0, WARD_Y - SK, z0, x1, WARD_Y, z1));
+    };
     // west part behind the undercroft (under the services)
-    b.box(IW.x0, OUTER_Y, IW.z0, HALL.x1 + HALL.wallT, WARD_Y, HALL.zCross0, top);
+    pl(IW.x0, IW.z0, HALL.x1 + HALL.wallT, HALL.zCross0);
     // main ward, split around the well collar
-    b.box(HALL.x1 + HALL.wallT, OUTER_Y, IW.z0, WELL.x - 2, WARD_Y, 0, top);
-    b.box(WELL.x - 2, OUTER_Y, IW.z0, WELL.x + 2, WARD_Y, -2, top);
-    b.box(WELL.x + 2, OUTER_Y, IW.z0, IW.x1, WARD_Y, 0, top);
+    pl(HALL.x1 + HALL.wallT, IW.z0, WELL.x - 2, 0);
+    pl(WELL.x - 2, IW.z0, WELL.x + 2, -2);
+    pl(WELL.x + 2, IW.z0, IW.x1, 0);
     // under the gate passage, outside the curtain line
     b.box(IW.x1, OUTER_Y, -GH.passHalf, 28, WARD_Y, 0, { topKind: K.PAVING, topColor: P.paving });
   });
@@ -199,7 +212,7 @@ function innerCurtain(b) {
           });
         } else if (g === G.bakehouse) {
           b.box(x0, OUTER_Y, nz0, x1, IC_H, nz1, walkTop);
-          b.with({ label: lab('chimney', 'bakehouse') }, () => b.box(7.2, IC_H, nz1 - 2.0, 8.6, IC_H + 3.4, nz1 - 0.6));
+          b.with({ label: lab('chimney', 'bakehouse') }, () => b.box(8.6, IC_H, nz1 - 2.0, 9.9, IC_H + 3.4, nz1 - 0.6));
         } else if (g === G.brewhouse) {
           b.box(x0, OUTER_Y, nz0, x1, IC_H, nz1, walkTop);
           b.with({ label: lab('chimney', 'brewhouse') }, () => b.box(14.6, IC_H, nz1 - 2.0, 15.9, IC_H + 3.4, nz1 - 0.6));
@@ -215,6 +228,7 @@ function innerCurtain(b) {
     b.with({ group: G.hall }, () => {
       b.box(IC_OUT.x0, -4, SERV.z1, IW.x0, IC_H, 0, walkTop);
       hallFireplace(b);
+      b.with({ label: lab('chimney', 'hall') }, () => b.box(IC_OUT.x0 + 1.4, IC_H, -5.4, IW.x0 - 0.2, IC_H + 3.6, -3.8));
     });
     b.with({ label: lab('parapet') }, () => cren(b, 'z', IW.z0, 0, IC_OUT.x0, IC_OUT.x0 + 0.9, IC_H));
 
@@ -366,7 +380,7 @@ function gatehouse(b) {
     b.with({ label: lab('parapet') }, () => cren(b, 'x', x1, x1 + 2.4, -ph, -ph + 0.01 + 0.8, roofY));
 
     // stair turret at the north-west corner, rising above the roof
-    b.with({ label: lab('turret', 'gatehouse') }, () => {
+    b.with({ label: lab('turret', 'gatehouse'), group: G.ghTurret }, () => {
       b.cylinder(x0 - 0.4, -6.0, 1.8, WARD_Y, roofY + 3.4, 18, lead);
       crenRing(b, x0 - 0.4, -6.0, 1.2, 1.8, roofY + 3.4, { seg: 18, mh: 1.1 });
     });
@@ -447,7 +461,7 @@ function westRange(b) {
     });
 
     // screens: timber partition with a gallery over the passage
-    b.with({ kind: K.TIMBER, color: P.oak, label: lab('screens', 'hall') }, () => {
+    b.with({ kind: K.TIMBER, color: P.oak, label: lab('screens', 'hall'), group: G.screens }, () => {
       const zs = -7.4;
       const doors = [[-22.6, -21.2], [-16.8, -15.4]];
       let cur = H.x0;
@@ -464,7 +478,7 @@ function westRange(b) {
     });
 
     // roof: principal-rafter trusses with collars, slates (cut on the line)
-    b.with({ kind: K.ROOF, color: P.roof, capKind: K.CUT_TIMBER, label: lab('hallRoof', 'hall') }, () => {
+    b.with({ kind: K.ROOF, color: P.roof, capKind: K.CUT_TIMBER, label: lab('hallRoof', 'hall'), group: G.hallRoof }, () => {
       const xm = (H.x0 + ex1) / 2;
       const ov = 0.6;
       const eaveW = H.x0 - 0.2;
@@ -574,7 +588,7 @@ function northRange(b) {
     kitchen: [[-5.8, -4.4], [2.8, 4.0]],
     bakehouse: [[9.4, 10.6]],
     brewhouse: [[12.8, 14.0]],
-    granary: [[20.6, 22.8]],
+    granary: [[19.8, 21.6]],
   };
   const stub = [planeY(NR.stubY)];
   const ids = Object.keys(R);
@@ -602,7 +616,7 @@ function northRange(b) {
       const ridge = Math.max(r.ridge, nx.ridge);
       const zm = (NR.z0 + NR.zf) / 2;
       b.with({ kind: K.STONE, color: P.stone, group: g, label: lab('partition', id) }, () => {
-        const prof = [[NR.z0, OUTER_Y + 0.5], [NR.zf, OUTER_Y + 0.5], [NR.zf, eave], [zm, ridge], [NR.z0, eave]];
+        const prof = [[NR.z0, OUTER_Y + 0.5], [NR.z1, OUTER_Y + 0.5], [NR.z1, eave], [zm, ridge], [NR.z0, eave]];
         const side = (x) => prof.map(([z, y]) => v3(x, y, z));
         const A = side(px0);
         const B = side(px1);
