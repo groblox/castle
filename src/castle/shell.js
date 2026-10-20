@@ -56,7 +56,8 @@ function terrain(b) {
     b.box(WELL.x - 2, WELL.bottom, zBack, WELL.x + 2, OUTER_Y, -2);
     strip(WELL.x + 2, OC_IN.x1, OUTER_Y, zBack, 0, turf);
     strip(OC_IN.x1, DITCH.x0, OUTER_Y, zBack, 0, turf);
-    b.with({ label: lab('ditch') }, () => strip(DITCH.x0, DITCH.x1, DITCH.y, zBack, 0, turf));
+    strip(DITCH.x0, DITCH.x1, DITCH.y, zBack, 0, turf);
+    b.with({ label: lab('ditch'), kind: K.GROUND, color: P.turf }, () => b.box(DITCH.x0, DITCH.y, -38, DITCH.x1, DITCH.y + 0.08, -0.6));
     // east field, slightly lower, ending in a cut face
     b.loft(
       [v3(DITCH.x1, BASE_Y, zBack), v3(72, BASE_Y, zBack), v3(72, BASE_Y, 0), v3(DITCH.x1, BASE_Y, 0)],
@@ -93,11 +94,11 @@ function terrain(b) {
 function wellShaft(b) {
   const { x, z, r, lining } = WELL;
   const ro = r + lining;
-  b.with({ ...ROCK, group: G.well, label: lab('wellShaft', 'well') }, () => {
+  b.with({ ...ROCK, group: G.well, label: lab('rock') }, () => {
     squareWithHole(b, x, z, 2, r, WELL.bottom, -6, 20);
   });
   b.with({ kind: K.STONE, color: P.ashlar, group: G.well, label: lab('wellShaft', 'well') }, () => {
-    b.with({ ...ROCK }, () => squareWithHole(b, x, z, 2, ro, -6, OUTER_Y, 20));
+    b.with({ ...ROCK, label: lab('rock') }, () => squareWithHole(b, x, z, 2, ro, -6, OUTER_Y, 20));
     b.with({ ...ROCK, label: lab('innerWard', 'ward'), group: G.ward }, () => squareWithHole(b, x, z, 2, ro, OUTER_Y, WARD_Y, 20));
     b.ring(x, z, r, ro, -6, 0.9, 20, 0, Math.PI * 2, { topKind: K.STONE });
   });

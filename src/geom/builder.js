@@ -118,6 +118,7 @@ export class GeoBuilder {
     this.nrm = [];
     this.col = [];
     this.info = []; // kind, label, group
+    this.planeFaces = []; // faces lying in the main cut plane, emitted at build()
     this.state = {
       color: colorArr(P.stone),
       kind: K.STONE,
@@ -255,7 +256,91 @@ export class GeoBuilder {
       fs = next;
       if (fs.length < 3) return;
     }
-    for (const f of fs) this.emitPoly(f.verts, f.kind, f.color);
+    for (const f of fs) {
+      if (f.verts.every((v) => Math.abs(v.p.z) <= EPS)) {
+        // on the main cut plane: defer so T-junctions can be welded
+        this.planeFaces.push({ verts: f.verts, kind: f.kind, color: f.color, label: this.state.label, group: this.state.group });
+      } else this.emitPoly(f.verts, f.kind, f.color);
+    }
+  }
+
+  /**
+   * Insert onto every edge of the cut-plane faces any vertex of another face
+   * that lies on that edge, so neighbouring faces share edges exactly and no
+   * hairline cracks open between them when rasterised.
+   */
+  _weldPlaneFaces() {
+    const CELL = 2;
+    const grid = new Map();
+    const key = (i, j) => i * 100003 + j;
+    const pts = [];
+    for (const f of this.planeFaces) {
+      for (const v of f.verts) {
+        const i = Math.floor(v.p.x / CELL);
+        const j = Math.floor(v.p.y / CELL);
+        const k = key(i, j);
+        let arr = grid.get(k);
+        if (!arr) grid.set(k, (arr = []));
+        if (!arr.some((q) => Math.abs(q.x - v.p.x) < 1e-5 && Math.abs(q.y - v.p.y) < 1e-5)) {
+          arr.push(v.p);
+          pts.push(v.p);
+        }
+      }
+    }
+    for (const f of this.planeFaces) {
+      const out = [];
+      const n = f.verts.length;
+      for (let e = 0; e < n; e++) {
+        const a = f.verts[e].p;
+        const b = f.verts[(e + 1) % n].p;
+        out.push(f.verts[e]);
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len2 = dx * dx + dy * dy;
+        if (len2 < 1e-10) continue;
+        const i0 = Math.floor(Math.min(a.x, b.x) / CELL), i1 = Math.floor(Math.max(a.x, b.x) / CELL);
+        const j0 = Math.floor(Math.min(a.y, b.y) / CELL), j1 = Math.floor(Math.max(a.y, b.y) / CELL);
+        const ins = [];
+        for (let i = i0; i <= i1; i++) {
+          for (let j = j0; j <= j1; j++) {
+            const arr = grid.get(key(i, j));
+            if (!arr) continue;
+            for (const p of arr) {
+              const t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2;
+              if (t <= 1e-6 || t >= 1 - 1e-6) continue;
+              const cx = a.x + dx * t - p.x;
+              const cy = a.y + dy * t - p.y;
+              if (cx * cx + cy * cy < 1e-9) ins.push({ t, p });
+            }
+          }
+        }
+        ins.sort((u, w) => u.t - w.t);
+        for (const it of ins) out.push({ p: it.p.clone(), n: null });
+      }
+      this.state.label = f.label;
+      this.state.group = f.group;
+      this.emitFan(out, f.kind, f.color);
+    }
+    this.planeFaces = [];
+  }
+
+  /** Triangulate a convex polygon that may carry collinear edge vertices. */
+  emitFan(verts, kind, color) {
+    // choose a start vertex that is a true corner to avoid degenerate fans
+    const n = verts.length;
+    let best = 0;
+    let bestA = -1;
+    for (let i = 0; i < n; i++) {
+      const a = verts[(i + n - 1) % n].p, b = verts[i].p, c = verts[(i + 1) % n].p;
+      const ux = a.x - b.x, uy = a.y - b.y, vx = c.x - b.x, vy = c.y - b.y;
+      const cr = Math.abs(ux * vy - uy * vx) / (Math.hypot(ux, uy) * Math.hypot(vx, vy) + 1e-12);
+      if (cr > bestA) {
+        bestA = cr;
+        best = i;
+      }
+    }
+    const ordered = verts.slice(best).concat(verts.slice(0, best));
+    this.emitPoly(ordered, kind, color);
   }
 
   // -- primitives -----------------------------------------------------------
@@ -458,6 +543,9 @@ export class GeoBuilder {
   }
 
   build() {
+    const saved = { label: this.state.label, group: this.state.group };
+    this._weldPlaneFaces();
+    Object.assign(this.state, saved);
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('normal', new THREE.Float32BufferAttribute(this.nrm, 3));

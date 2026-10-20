@@ -142,6 +142,22 @@ vec2 masonry(vec2 uv, float courseH, float stoneL) {
   return vec2(l, hash12(vec2(row, cell)));
 }
 
+// Irregular rubble: returns (edge distance F2-F1, cell id)
+vec2 rubble(vec2 x) {
+  vec2 n = floor(x);
+  vec2 f = fract(x);
+  float F1 = 8.0, F2 = 8.0, id = 0.0;
+  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+    vec2 g = vec2(float(i), float(j));
+    vec2 o = vec2(hash12(n + g), hash12(n + g + 17.3)) * 0.78 + 0.11;
+    vec2 r = g + o - f;
+    float d = dot(r, r);
+    if (d < F1) { F2 = F1; F1 = d; id = hash12(n + g + 3.1); }
+    else if (d < F2) { F2 = d; }
+  }
+  return vec2(sqrt(F2) - sqrt(F1), id);
+}
+
 void main() {
   float kind = vInfo.x;
   int k = int(kind + 0.5);
@@ -157,65 +173,79 @@ void main() {
   float blot = fbm(vWorld * 0.35);
   float blot2 = fbm(vWorld * 1.7 + 11.0);
 
-  if (k == 1) { // stone
+  if (k == 1) { // stone: coursed rubble with dressed quoins
     vec2 m = masonry(uv, 0.42, 0.9);
-    ink = m.x * 0.32;
+    ink = m.x * 0.26;
     base *= 0.93 + 0.12 * m.y;
-  } else if (k == 2) { // cut stone: rubble core, coursed
-    vec2 m = masonry(uv, 0.5, 0.75);
-    ink = m.x * 0.55;
-    base *= 0.92 + 0.14 * m.y;
+    // putlog holes in diagonal runs on tall walls
+    vec2 pg = vec2(uv.x / 3.1 + floor(uv.y / 1.3) * 0.37, uv.y / 1.3);
+    vec2 pf = fract(pg);
+    float hole = step(abs(pf.x - 0.5), 0.035) * step(abs(pf.y - 0.5), 0.07) * step(2.5, vWorld.y) * step(0.6, hash12(floor(pg)));
+    ink = max(ink, hole * 0.75 * lod(uv.y, 3.0));
+  } else if (k == 2) { // cut stone: rubble core in section, with light hatching
+    vec2 q = vec2(uv.x / 0.5, uv.y / 0.34);
+    vec2 rb = rubble(q);
+    float fw = max(fwidth(q.x), 1e-4);
+    float joint = (1.0 - smoothstep(0.6 * fw, 1.6 * fw + 0.04, rb.x)) * lod(q.x, 1.2);
+    float hatch = gridLine((uv.x - uv.y) * 3.0, 0.4) * lod((uv.x - uv.y) * 3.0, 1.0);
+    ink = max(joint * 0.5, hatch * 0.16);
+    base *= 0.88 + 0.2 * rb.y;
   } else if (k == 3 || k == 13) { // timber / end grain
     float g = gridLine((uv.x + uv.y) * 6.0 + blot2 * 3.0, 0.3) * lod((uv.x + uv.y) * 6.0, 1.0);
     ink = g * 0.12;
-    if (k == 13) { ink = 0.15 + gridLine(length(fract(uv * 4.0) - 0.5) * 6.0, 0.4) * 0.2; }
+    if (k == 13) {
+      float ring = gridLine(length(fract(uv * 2.5) - 0.5) * 7.0, 0.4) * lod(uv.x * 2.5, 2.0);
+      ink = max(0.12, ring * 0.35);
+    }
   } else if (k == 4) { // roof slates
     vec2 su = vec2(uv.x / 0.35, uv.y / 0.22);
     float row = floor(su.y);
     float l = max(gridLine(su.y, 0.6), gridLine(su.x + hash12(vec2(row, 3.0)) * 0.5 + row * 0.5, 0.5));
-    ink = l * 0.35 * lod(su.y, 1.0);
+    ink = l * 0.3 * lod(su.y, 1.0);
     base *= 0.92 + 0.12 * hash12(vec2(row, floor(su.x + row * 0.5)));
-  } else if (k == 14) { // rock in section: strata and hatching
-    float strata = vWorld.y * 0.9 + sin(vWorld.x * 0.15) * 0.8 + blot * 1.5;
-    ink = gridLine(strata, 0.5) * 0.45;
-    float hatch = gridLine((vWorld.x + vWorld.y) * 2.2, 0.35) * lod((vWorld.x + vWorld.y) * 2.2, 1.0);
-    ink = max(ink, hatch * 0.18);
+  } else if (k == 14) { // rock in section: bedding planes and sparse hatching
+    float strata = vWorld.y * 0.34 + sin(vWorld.x * 0.11 + 1.3) * 0.6 + blot * 1.0;
+    ink = gridLine(strata, 0.4) * 0.28 * lod(strata, 1.0);
+    float hatch = gridLine((vWorld.x + vWorld.y) * 1.4, 0.3) * lod((vWorld.x + vWorld.y) * 1.4, 1.0);
+    ink = max(ink, hatch * 0.1);
     base *= 0.9 + 0.2 * blot;
   } else if (k == 17) { // earth in section
-    ink = step(0.93, hash12(floor(vWorld.xy * 9.0))) * 0.4;
+    ink = step(0.93, hash12(floor(vWorld.xy * 9.0))) * 0.4 * lod(vWorld.x * 9.0, 1.0);
   } else if (k == 5) { // rock surface
     base *= 0.85 + 0.3 * blot;
-  } else if (k == 6) { // ground
+  } else if (k == 6) { // ground: stippled turf or trodden earth
     float stip = step(0.86, hash12(floor(vWorld.xz * 6.0)));
-    ink = stip * 0.22 * lod(vWorld.x * 6.0, 1.0);
-    base *= 0.88 + 0.22 * blot;
+    ink = stip * 0.2 * lod(vWorld.x * 6.0, 1.0);
+    base *= 0.86 + 0.24 * blot;
   } else if (k == 9) { // floorboards
     float l = gridLine(uv.y / 0.26, 0.5);
     float row = floor(uv.y / 0.26);
     float e = gridLine(uv.x / 2.4 + hash12(vec2(row, 1.0)), 0.5);
-    ink = max(l, e) * 0.3 * lod(uv.y / 0.26, 1.0);
+    ink = max(l, e) * 0.28 * lod(uv.y / 0.26, 1.0);
     base *= 0.94 + 0.1 * hash12(vec2(row, 2.0));
   } else if (k == 12) { // flagstones
     vec2 m = masonry(uv, 0.7, 1.0);
-    ink = m.x * 0.3;
+    ink = m.x * 0.26;
     base *= 0.92 + 0.14 * m.y;
   } else if (k == 7) { // water
     base *= 0.9 + 0.15 * sin(vWorld.x * 3.0 + uTime * 1.5) * sin(vWorld.z * 2.0 - uTime);
   } else if (k == 18) { // straw
     ink = gridLine(uv.x * 9.0 + blot2 * 4.0, 0.3) * 0.25 * lod(uv.x * 9.0, 1.0);
+  } else if (k == 19) { // fur: short strokes
+    ink = gridLine(uv.x * 14.0 + blot2 * 6.0, 0.25) * 0.18 * lod(uv.x * 14.0, 1.0);
   }
 
   // ---- watercolour light --------------------------------------------------
   vec3 col;
   if (unlit || cut) {
-    float t = cut ? 0.98 : 1.0;
-    col = base * t;
+    col = base;
   } else {
-    float ndl = dot(N, uSunDir);
-    float lit = smoothstep(-0.15, 0.25, ndl) * 0.55 + smoothstep(0.35, 0.75, ndl) * 0.2;
+    // two washes: a light one everywhere, a cool shadow wash with ragged edges
+    float ndl = dot(N, uSunDir) + (blot - 0.5) * 0.25;
+    float lit = smoothstep(-0.05, 0.2, ndl) * 0.62 + smoothstep(0.45, 0.7, ndl) * 0.18;
     float sky = 0.5 + 0.5 * N.y;
-    vec3 shadowTint = vec3(0.70, 0.71, 0.82);
-    vec3 shade = mix(shadowTint, vec3(1.04, 1.0, 0.94), lit) + 0.04 * sky;
+    vec3 shadowTint = vec3(0.66, 0.68, 0.80);
+    vec3 shade = mix(shadowTint, vec3(1.05, 1.01, 0.95), lit) + 0.05 * sky;
     col = base * shade;
   }
 
@@ -240,6 +270,10 @@ void main() {
   col = mix(col, inkCol, clamp(ink, 0.0, 1.0) * 0.85);
 
   if (unlit) col = vCol * (0.9 + 0.2 * blot2) + uEmissive * 0.1;
+
+  // aerial perspective: distant things go paler
+  float camD = length(vWorld - uCamPos);
+  col = mix(col, uPaper, smoothstep(90.0, 320.0, camD) * 0.35);
 
   // fade back towards the paper when another room is in focus
   float f = vFade;
