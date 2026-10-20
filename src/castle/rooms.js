@@ -99,7 +99,7 @@ export const ROOMS = [
     group: G.buttery,
     service: true,
     box: [[SERV.x0, HALL.floorY, SERV.z0], [SERV.part0, 4.6, SERV.z1]],
-    view: { az: 4, el: 7, fit: 1.0 },
+    view: { az: 4, el: 12, fit: 1.0 },
     hide: [G.screens],
     camBox: IN_HALL,
   },

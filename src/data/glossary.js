@@ -55,6 +55,12 @@ export const GLOSSARY = {
   wellShaft: { term: 'Well shaft (in section)', gloss: 'Cut in half to show its depth; castle wells could run to 20-30 m and more.' },
   wellHouse: { term: 'Well-house', gloss: 'Timber shelter over the well head, carrying the windlass.' },
   windlass: { term: 'Windlass', gloss: 'A horizontal drum turned by a crank to wind the well rope.' },
+  bucket: { term: 'Well bucket', gloss: 'Iron-bound wooden bucket on the well rope.' },
+  crank: { term: 'Crank', gloss: 'Iron crank handle. Drag it up or down to turn it.' },
+  roast: { term: 'The roast', gloss: 'A haunch and two capons on the spit, browning on the side facing the fire.' },
+  ventPeg: { term: 'Vent peg (spile)', gloss: 'A peg in the top of the cask. Loosen it to let air in.' },
+  caskHoist: { term: 'Cask in the slings', gloss: 'A cask hooked by the chimes (rims) for lifting.' },
+  loaves: { term: 'Loaves', gloss: 'Bread set on the hot oven floor to bake.' },
 
   fireplace: { term: 'Kitchen fireplace', gloss: 'Great fireplace in the thickness of the curtain wall, with a flue above.' },
   spit: { term: 'Roasting spit', gloss: 'An iron spit on cob-irons before the fire, turned by hand.' },

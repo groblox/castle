@@ -100,14 +100,14 @@ export function buildCast(scene) {
   ]);
 
   // ---- buttery and pantry: serving the hall --------------------------------
-  const toHallB = [[-22.4, -11.4], [-22.4, -9.6], [-21.9, -7.4], [-21.6, -5.6], [-21.7, -3.2]];
+  const toHallB = [[-22.9, -13.6], [-22.6, -11.4], [-22.4, -9.6], [-21.9, -7.4], [-21.6, -5.6], [-21.7, -3.2]];
   add('butler', fig({ tunic: 0x3f5a7a, hose: 0x7a3a2a, cap: 0x2e3a4a, purse: true, hair: 0x6a4a30, shoes: 0x2a1e16 }, 'butler', 'buttery'), [
-    { go: [[-23.1, -12.6]] },
+    { go: [[-23.35, -15.45]] },
     { pose: 'tap', face: W, dur: 5, on: hold('handR', 'jug') },
     { go: toHallB },
     { pose: 'reach', face: W, dur: 2 },
     { pose: 'idle', face: W, dur: 1, on: drop('handR') },
-    { go: toHallB.slice(0, -1).reverse().concat([[-23.1, -12.6]]) },
+    { go: toHallB.slice(0, -1).reverse().concat([[-23.35, -15.45]]) },
   ]);
 
   const toHallP = [[-16.0, -11.0], [-16.0, -9.6], [-16.1, -7.4], [-16.4, -5.6], [-16.3, -4.6]];

@@ -7,6 +7,7 @@ import { LABELS } from './data/labels.js';
 import { buildWorld } from './world.js';
 import { Panel } from './ui/panel.js';
 import { RoomList } from './ui/roomlist.js';
+import { createMechanisms } from './mech/index.js';
 
 THREE.ColorManagement.enabled = false;
 
@@ -34,6 +35,7 @@ export class App {
     this.frameTimes = [];
 
     this.world = buildWorld(this.scene, this);
+    this.mechs = createMechanisms(this);
     this.panel = new Panel(this);
     this.roomList = new RoomList(this, document.getElementById('roomlist'));
     this._bindUI();
@@ -196,6 +198,14 @@ export class App {
     this.backBtn.hidden = true;
     this.roomList.setActive(null);
     this.panel.hide();
+  }
+
+  toast(msg, ms = 5000) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => (el.hidden = true), ms);
   }
 
   /** Advance the simulation without rendering (used by tests). */

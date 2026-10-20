@@ -58,6 +58,20 @@ export class Actor {
   turnTo(target, dt) {
     this.heading += angDiff(this.heading, target) * Math.min(1, dt * this.turnRate);
   }
+  /** Walk directly towards (tx, tz); returns true when there. */
+  steer(tx, tz, dt, speed = this.speed) {
+    const dx = tx - this.pos.x;
+    const dz = tz - this.pos.y;
+    const d = Math.hypot(dx, dz);
+    if (d < 0.05) return true;
+    const m = Math.min(d, speed * dt);
+    this.pos.x += (dx / d) * m;
+    this.pos.y += (dz / d) * m;
+    this.turnTo(Math.atan2(dx, dz), dt);
+    this.phase += m * (TAU / this.stride);
+    return false;
+  }
+
   update(t, dt) {
     if (this.override && this.override(this.e, t, dt)) {
       this.place();

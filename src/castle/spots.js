@@ -36,7 +36,7 @@ export const S = {
   granary: { floor: 0.08, door: [20.7, -12.0], cartAt: [15.6, -8.6] },
   buttery: {
     floor: 0.6,
-    tapCask: { x: -24.25, y: 1.18, z: -12.6, r: 0.36, len: 0.8 },
+    tapCask: { x: -24.25, y: 1.18, z: -14.25, r: 0.36, len: 0.8 },
     door: [-22.4, -9.6],
   },
   pantry: { floor: 0.6, door: [-16.0, -9.6] },
