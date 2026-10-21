@@ -1,0 +1,233 @@
+# Handoff: Aberwen Castle cutaway
+
+This is the state of the project and what you need to know to carry it on. Read it alongside `README.md`, which describes the experience; this file is about the code.
+
+## Status
+
+- **Branch:** `claude/compassionate-turing-u8pv6k`. All work is committed and pushed. **No pull request has been opened.**
+- **Build:** `npm run check` passes. It builds, renders every room headless and reports **no console errors**.
+- **Scene size:** about 153k static triangles in one mesh, plus about 590 small meshes for figures, animals, mechanisms, birds and banners, plus particle systems.
+- **Performance is unmeasured.** The only renderer in this environment was SwiftShader (software WebGL). It ran at 0.3–1.4 fps, which says nothing about a real GPU. Check frame rate on real hardware before anything else (see *Known issues*).
+- **Content:**
+  - 14 rooms the camera can fly to, 5 working mechanisms, and 56 animated people and animals (birds not counted).
+  - 36 sources and 39 statements marked as conjecture, all listed in `SOURCES.md`.
+
+### History
+
+| Commit | What it did |
+|---|---|
+| `39dc51e` … `c0f0a54` | Milestones 1–6: shell and cut, ink-and-wash look, service rooms, people, mechanisms, notes and sources |
+| `4ebcbd4` | Rounder figures, a stocked larder, 360° orbit, the watch on the walls |
+| `de6c684` | Weathering shader, landscape, ward and wall dressing, furnished interiors, more people and animals, banners, birds |
+| `4ccadd6` | Darker default light, firelight, candles, lanterns, glow halos, Dusk ↔ Day slider |
+| `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
+| `1431c5a` | README with screenshots in `docs/images/` |
+
+## Running and verifying
+
+```sh
+npm install
+npm run dev                             # Vite dev server
+npm run check                           # build + headless render + screenshots; exits 1 on any console error
+npm run check -- --shots kitchen,hall   # room ids from src/castle/rooms.js
+npm run check -- --no-build --out DIR   # reuse dist/; screenshots go to DIR (default .shots/, gitignored)
+npm run sources                         # regenerate SOURCES.md; run it after editing notes or sources
+```
+
+### `scripts/check.mjs` details
+
+- **Shots:**
+  - `--shots` takes room ids, `overview`, or `js:<code>` (JavaScript run in the page before the screenshot).
+  - If any shot contains commas, separate the shots with `@@` instead of commas.
+  - `js:` shots are saved as `js<index>.png`.
+- **`--eval "<expr>"`** runs once after load and prints its value. For example, `Object.keys(window.__castle.world.cast.actors).length`.
+- **`--probe`** prints the hover label for a grid of screen points.
+- **Debug hooks:** `window.__castle` is the `App` instance. Useful methods:
+  - `overview({instant})` and `focusRoom(id, {instant})`;
+  - `settle()` to finish the current flight and fade;
+  - `simulate(seconds)` to advance the animation without rendering;
+  - `controls.jumpTo({target, dist, az, el})` with angles in radians, and `pipeline.pickSync(x, y)`.
+
+  `window.__labels` is the label table.
+- **Free camera for a screenshot:** call `__castle.overview({instant:true})` first, then `controls.jumpTo`.
+  - The camera sits at `target + dist·(cos el·sin az, sin el, cos el·cos az)`, so **az = 0 looks north from the south** and az = 90° puts the camera on the east.
+  - `jumpTo` does not keep the camera out of walls, so a careless position renders the inside of a tower.
+
+## Architecture
+
+```
+src/
+  main.js, app.js      App: renderer, loop, hover/click picking, room focus and fades, daylight slider
+  world.js             builds all static geometry into ONE mesh, then effects and the cast
+  geom/
+    builder.js         GeoBuilder: convex solids clipped to cut planes, with real section caps
+    shapes.js          wall (with openings), crenellations, stairs, beam, obox, decals
+    props.js           lathe, cask, tub, sack, tables, benches, shelves, lump (unclipped sphere)
+    nature.js          seeded rng, blob (convex hull), boulder, bush, gorse, tuft, fern, tree, mound
+    kinds.js           surface kinds K.*, what each shows when cut (CAP_OF), palette P
+  castle/
+    layout.js          all key dimensions (metres)
+    rooms.js           fade groups G, ROOMS (fly-to targets, camera framing and limits)
+    spots.js           shared anchor points (fires, spit, cauldron, doors...)
+    shell.js           rock, curtains, towers, gatehouse, ranges, roofs
+    furnish.js         service rooms in detail (the original pass)
+    interiors.js       hall, chamber, gatehouse, cellar, plus extras in the service rooms; lantern/cresset helpers
+    wards.js           outer and inner ward dressing, weeds, spouts, shutters, wall-walk items
+    landscape.js       outcrops, gorse, bracken, trees, ditch pools, track, sheepfold
+    terrain.js         groundY(x, z): ground height matching the terrain solids
+    ambient.js         fires, smoke, steam, light slots and glow halos
+  render/
+    material.js        THE surface shader (colour + normal/fade + label MRT), shared uniforms
+    post.js            ink edges, wash, granulation, paper, sky, vignette
+    fx.js              particle systems: smoke, steam, flame, spark, glow (additive)
+    pipeline.js        MRT target, post pass, async/sync picking
+    paper.js           procedural paper texture
+  people/
+    figure.js          articulated human figure, specs, named poses
+    actor.js           routine runner (walk paths, timed poses, facing, floor height)
+    cast.js            household in the service rooms, the watch, cat, rats, cart
+    life.js            ward workers, hens, hounds, sheep, shepherd, pedlar, birds, banners
+    animals.js         Cat, Rat, Horse
+    creatures.js       Hen, Hound, Sheep, Bird
+    banners.js         cloth banners rebuilt on the CPU each frame
+    propsCarried.js    hand-held props attached to figure slots
+    parts.js           helpers for small animated meshes
+  mech/                Mechanism base + windlass, spit, oven, hoist, tap; index.js registers them
+  data/                glossary (hover terms), labels (ids), notes (panel text), sources
+  ui/                  controls (orbit/pan/zoom/fly), panel, room list, minimap, style.css
+```
+
+### Core ideas
+
+- **Real sections.** Every static solid goes through `GeoBuilder.solid()`, which clips it against `state.planes` (the main cut is `z ≤ 0`) and emits cap faces of the solid's cut kind.
+  - Solids must be **convex**; build anything concave from several pieces.
+  - Faces lying in the cut plane are welded at `build()` so no hairline cracks open between them.
+  - `addGeometry` and `lump` are **not clipped**. Use them only for things that do not cross `z = 0`.
+- **One static mesh.** Everything static is in a single BufferGeometry with per-vertex `acol` (colour) and `info` = (surface kind, label id, fade group).
+- **Fade groups** (`G` in `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 24, and ids 0–21 are in use.
+- **Labels** are 16-bit ids written to a picking target. `lab(key, room, mech)` registers a label and **throws if `key` is not in `GLOSSARY`**, so add the glossary entry first. A label with a room flies there on click; one with a mech operates it.
+- **Surface kinds** choose the pattern in `material.js`: masonry, slates, boards, flags, cobbles, wattle, painted false-ashlar, log ends, foliage, straw, fur and so on. `post.js` `isCut()` lists the kinds that get the heavy section outline.
+- **Lighting** comes from shared uniforms in `material.js`:
+  - `uDay` is 0 for dusk and 1 for bright day; the default is 0.25.
+  - `uFirePos`/`uFireCol` hold **24 light slots**.
+  - `uGlowAmt` scales the additive halos.
+
+  `Effects.update()` flickers the lights and switches dusk-only systems (the gate cressets) on as `uDay` falls.
+- **People and animals.** Each is an entity with `root` and `pose(name, t, params)`, run by an `Actor` through a looping list of steps:
+  - `{ go: [[x, z], ...], pose }` walks a path;
+  - `{ pose, dur, face, params, on }` holds a pose, with `on(actor)` run once at the start;
+  - `opts.floor` fixes the walking height, or `opts.floorFn(x, z)` computes it (`groundY` outdoors).
+
+## How to…
+
+**Add a static object.**
+1. Add a glossary key in `src/data/glossary.js`.
+2. In the right file (`furnish`, `interiors`, `wards` or `landscape`), wrap the code in `b.with({ group: G.<room>, label: lab('<key>', '<roomId>') }, () => { ... })`.
+3. Build it from `b.box`, `b.loft`, `b.cylinder`, `lathe`, `beam`, `blob` and the other helpers.
+4. Set the material with `b.with({ kind: K.X, color })`.
+
+**Add a surface kind.**
+1. Add it to `K` in `kinds.js` and to `CAP_OF`. A cap kind equal to the kind itself keeps the solid's own colour when cut.
+2. Add its pattern branch to the kind chain in `material.js`.
+3. If it is a section kind, add it to `isCut()` in `post.js` and to the `cut` test and depth bias in `material.js`.
+
+**Add a person or animal.**
+1. In `cast.js` or `life.js`, call `add(name, fig(spec, '<glossaryKey>', '<roomId>'), steps, opts)`.
+2. Give them a prop with `a.e.hold('handR' | 'front' | 'shoulderSlot' | 'spear' | 'back' | 'hip', carried('<prop>', a.e.mat))`.
+3. Add the glossary key and an entry in `PERSON_NOTES` in `notes.js`.
+4. New poses go in the `switch` in `figure.js`; new props in `propsCarried.js`.
+
+**Add a light.**
+1. Call `fx.light(slot, [x, y, z], strength, color, { dusk })` in `ambient.js`. Slots 0–21 are taken (see the table below).
+2. Add `fx.glow(name, [[x, y, z]], { size, alpha })` for the halo.
+3. Add flames with `fx.flames`.
+
+**Add a room the camera can visit.**
+1. Add an entry to `ROOMS` in `rooms.js`:
+   - a `box` (its extent);
+   - `view` (az, el and fit);
+   - optional `camBox`, which keeps the camera inside, for example inside the hall;
+   - optional `hide`, which fades occluding groups.
+2. Add a fade group if it needs one.
+3. Add a `ROOM_NOTES` entry.
+
+**Add a mechanism.**
+1. Subclass `Mechanism` (`src/mech/base.js`), giving it `controls`, `act`, `status`, `update` and optional `grab` for pointer drags.
+2. Register it in `mech/index.js` and add a `MECH_NOTES` entry.
+
+**Add a source or note.**
+1. Add the entry to `SOURCES` in `sources.js`. Each needs `cite`, `short`, `claims` and optional `url`.
+2. Cite it in note text with `{@id}`, and mark invented or weakly evidenced statements with `[[conj]]`.
+3. Run `npm run sources`. It throws on an unknown source id; the panel shows `?` for one.
+
+### Light slots in use
+
+| Slots | Use |
+|---|---|
+| 0–4 | roasting fire, boiling fire, hall fire, brewhouse furnace, bread oven (switched by the oven mechanism) |
+| 5–7 | smithy forge, guardroom fire, lodging fire |
+| 8–14 | hall candle-beam, two hall tables, chamber candlestick, cellar lantern, guardroom and lodging candles |
+| 15 | brazier on the north wall-walk |
+| 16–17 | cressets at the inner and outer gates (dusk only) |
+| 18–21 | lanterns in the larder, pantry, buttery and store-house |
+| 22–23 | free |
+
+## Gotchas
+
+- **Layout is hard-coded into the shaders.** Several approximations in `material.js` use world-space boxes from `layout.js` and must be updated if the plan changes:
+  - `roofed()`: which rooms get less daylight;
+  - `groundAt()`: where damp sits at the wall feet;
+  - the soot region over the kitchen, bakehouse and brewhouse, and the x-positions of its hearth plumes;
+  - the topsoil band in the rock section, with its terrain heights per x-range;
+  - the test that treats the terrain block's outer faces (x ≈ ±62/72, z ≈ −62) as section faces.
+- **`groundY()` must match the terrain solids.** The northern slope in `shell.js` is built from the triangles in `NORTH_FALL` so the two agree; the other regions are formulas in `terrain.js`.
+- **`obox` rotates about y only.** For tilted boxes use `beam` or `loft`.
+- **Stale builds.** `--no-build` reuses `dist/`; rebuild after any source change.
+- **Picking reads the label target.** Particles write alpha 0 to it, so smoke and glows never block hover.
+- **Scene randomness is seeded.** `nature.js` `rng` and `life.js` `rngOf` make the scene identical on every load. The `Math.random()` in `fx.js` only scatters particles.
+- **Glow particles are additive** (`kind: 'glow'`, custom blending), so they brighten the colour target, never darken it, and add no ink.
+
+## Known issues and limitations
+
+1. **Frame rate on real GPUs is unknown.** The likely costs:
+   - about 590 separate figure, animal and part meshes, each its own draw call;
+   - a full-screen post pass with many texture taps;
+   - per-fragment work in `material.js` (fbm noise, Voronoi rubble and cobbles, a loop over 24 lights);
+   - CPU rebuilding of 4 banner meshes every frame.
+
+   Possible fixes if it is slow:
+   - merge each figure's static parts;
+   - instance the hens, sheep and birds;
+   - lower the light loop by culling lights per room;
+   - lower banner resolution.
+
+   `App._adapt` already drops render resolution to 60% when frames are slow.
+2. **Touch and mobile layout have not been tested.** Controls are mouse and keyboard; the side panels are fixed-width.
+3. **Some sources are weaker than others.** The details are in `SOURCES.md`.
+   - **Falconry:** the Oggins book was confirmed from a catalogue record only.
+   - **Embrasure shutters:** no evidence was found at the Welsh castles, so they are marked conjecture.
+   - **Red false-joints:** supported by a general statement about medieval interiors, not one about Edward's works specifically.
+   - **Sawpits:** dug pits are later than 1290, so the sawyers work on trestles.
+4. **Hover text on fast-moving things.** Picking is asynchronous and throttled, so a quick bird or walker can show a stale tooltip.
+5. **Camera limits are boxes.** Inside a room the camera is kept in an axis-aligned `camBox`. Orbiting to the edge of the allowed angle can still put walls between you and the room in a few views.
+6. **No automated tests beyond `npm run check`.** It only catches console errors; visual regressions need a look at the screenshots.
+
+## Ideas not yet done
+
+- A day cycle driven by `uDay`, with the household's routines changing with it (supper by candlelight, gates shut at dusk).
+- The southern half as an optional ghost, or a second cut through the chapel and the southern ranges.
+- Sound: crackling fires, the spit, hens, wind on the wall-walk.
+- A guided tour mode that flies room to room with the notes.
+- Performance: per-figure mesh merging and hen, sheep and bird instancing, as above.
+
+## Conventions
+
+- **Code style:** plain ES modules with no TypeScript and no framework; two-space indent; comments short and explanatory.
+- **Units and axes:**
+  - Metres; +x east, +y up, −z north.
+  - The cut plane is z = 0; the south half (z > 0) is removed.
+  - The inner ward is at y = 0 and the outer ward at y = −1.5.
+- **Historical honesty:**
+  - Nothing post-1290 goes in: no hops, potatoes, turkeys or dug sawpits.
+  - When in doubt, mark it `[[conj]]` rather than leave it out of the notes.
+- **Commits:** clear messages, the attribution trailer the repo already uses, and no model names in commit text or code.
