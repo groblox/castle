@@ -44,7 +44,7 @@ export const GLOSSARY = {
   mountingBlock: { term: 'Mounting block', gloss: 'Stone steps for getting up on a horse.' },
   weeds: { term: 'Weeds and grass', gloss: 'Grass, docks and nettles at the wall feet, and seedlings in the joints of the stonework.' },
   spout: { term: 'Spout', gloss: 'A projecting stone channel that throws rainwater from the wall-walk clear of the wall face.' },
-  shutter: { term: 'Embrasure shutter', gloss: 'A timber shutter pivoted in the embrasure, to shelter a defender between shots. The pivot sockets survive at Conwy.' },
+  shutter: { term: 'Embrasure shutter', gloss: 'A timber shutter pivoted in the embrasure, to shelter a defender between shots.' },
   arrowLoop: { term: 'Arrow loop', gloss: 'A narrow slit, splayed on the inside, for shooting out with little exposure.' },
   putlog: { term: 'Putlog holes', gloss: 'Sockets left by the scaffolding beams (putlogs) used during building.' },
   chimney: { term: 'Chimney stack', gloss: 'A flue rising from a fireplace in the wall thickness.' },
@@ -131,7 +131,7 @@ export const GLOSSARY = {
 
   lantern: { term: 'Horn lantern', gloss: 'A candle in an iron frame with panes of thin scraped horn, safe to hang among stores.' },
   cresset: { term: 'Cresset', gloss: 'An iron fire-basket on a bracket, lit at nightfall to light the gate.' },
-  paintedWall: { term: 'Painted walls', gloss: 'Limewash lined out in red to imitate fine ashlar, a favourite finish of Henry III\'s and Edward I\'s works.' },
+  paintedWall: { term: 'Painted walls', gloss: 'Limewash lined out in red to imitate fine ashlar, as in Henry III\'s chambers at the Tower.' },
   hanging: { term: 'Dorser (hanging)', gloss: 'A striped cloth hung along the screens gallery, colour and comfort against a stone wall.' },
   candleBeam: { term: 'Candle-beam', gloss: 'Crossed timbers hung from the roof with candles, lit for suppers in the dark months.' },
   cupboard: { term: 'Cupboard of plate', gloss: 'A board of shelves to show off the household\'s silver cups, ewers and dishes at meals.' },
@@ -172,7 +172,7 @@ export const GLOSSARY = {
   jackdaw: { term: 'Jackdaws', gloss: 'Small grey-headed crows that nest in castle walls and tumble round the towers.' },
   gull: { term: 'Gulls', gloss: 'Herring gulls wheeling high over the castle from the shore.' },
   banner: { term: 'Royal banner', gloss: 'The king\'s arms of England: three gold lions on red.' },
-  pennon: { term: 'Banner of St George', gloss: 'A red cross on white, carried by English soldiers in Wales from 1277.' },
+  pennon: { term: 'Banner of St George', gloss: 'A red cross on white. Edward I\'s foot soldiers in Wales wore it on their arm-pieces.' },
   cat: { term: 'Cat', gloss: 'Kept against vermin in the stores.' },
   rat: { term: 'Black rat', gloss: 'Rattus rattus, the rat of medieval Britain, in the stores.' },
 };

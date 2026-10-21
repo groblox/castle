@@ -19,7 +19,7 @@ Supports:
 - Harlech, Conwy and Beaumaris as the models for the plan, proportions and building chronology used here.
 - Castles were garrisoned and supplied by the Crown, with stores brought in by sea and by cart.
 
-Cited in: About; Room: outerWard; Person: carter
+Cited in: About; Room: outerWard; Person: pedlar; Person: carter
 
 ## 2. Wikipedia, "Harlech Castle"
 
@@ -33,7 +33,7 @@ Supports:
 - The inner ward held a chapel, kitchen, service buildings, a granary and a great hall.
 - A water gate and stair to the shore let the castle be resupplied by sea, as it was from Ireland during the siege of 1294–95.
 
-Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward; Person: watchman; Person: crossbowman
+Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward; Room: outerWard; Person: watchman; Person: crossbowman; Person: smith; Person: mason
 
 ## 3. Wikipedia, "Beaumaris Castle"
 
@@ -79,7 +79,7 @@ Supports:
 - The rhythm of the day: dinner, the main meal, in the late morning; a lighter supper later.
 - Servants of the household were overwhelmingly male; the lower kitchen offices were filled by boys and grooms.
 
-Cited in: About; Room: pantry; Room: hall; Person: cook; Person: scullion; Person: brewer
+Cited in: About; Room: pantry; Room: hall; Person: cook; Person: scullion; Person: brewer; Person: laundress
 
 ## 7. Woolgar, Culture of Food
 
@@ -92,7 +92,7 @@ Supports:
 - Meat came into great households on the hoof or as carcasses. Wildfowl, hares and puddings (sausages of blood or offal) were all part of the diet, and butter and fat were salted and potted.
 - The foods shown are all available in England c. 1290. New World foods such as potatoes, maize, tomatoes and turkeys are absent, being post-1492.
 
-Cited in: Room: kitchen; Room: bakehouse; Room: larder
+Cited in: Room: kitchen; Room: bakehouse; Room: larder; Person: henwife; Person: hen
 
 ## 8. Woolgar, Household Accounts
 
@@ -232,7 +232,7 @@ Supports:
 - Mid-13th-century pictures of foot soldiers in quilted coats, mail coifs and broad-brimmed iron kettle hats, armed with spears and swords.
 - Crossbowmen shown with stirruped crossbows. The kit of the castle's watch is modelled on these pictures, and its details are conjecture.
 
-Cited in: Person: watchman; Person: crossbowman
+Cited in: Room: gatehouse; Person: watchman; Person: crossbowman
 
 ## 21. White, Medieval Technology
 
@@ -265,6 +265,137 @@ Supports:
 
 Cited in: Room: larder; Person: rat
 
+## 24. Morris, Welsh Wars of Edward I
+
+John E. Morris, *The Welsh Wars of Edward I* (Oxford: Clarendon Press, 1901), p. 97. <https://archive.org/details/cu31924028052797>
+
+Supports:
+
+- For his Welsh wars Edward ordered cloth for arm-pieces for his foot soldiers, marked with the cross of St George.
+
+Cited in: Room: outerWard
+
+## 25. Wikipedia, "Coat of arms of England"
+
+"Coat of arms of England", *Wikipedia* (accessed October 2026). <https://en.wikipedia.org/wiki/Coat_of_arms_of_England>
+
+Supports:
+
+- From Richard I's second great seal until 1340 the royal arms were gules, three lions passant guardant in pale or.
+
+Cited in: Room: gatehouse; Room: outerWard
+
+## 26. Swallow, "Living the dream"
+
+Rachel E. Swallow, "Living the dream: the legend, lady and landscape of Caernarfon Castle", *Archaeologia Cambrensis* 168 (2019), 153–195. <https://archaeologydataservice.ac.uk/catalogue/adsdata/arch-3493-1/dissemination/168-2019/07-Arch_Camb_168_Swallow_153-195.pdf>
+
+Supports:
+
+- At Conwy a garden for Queen Eleanor (herbarium Regine) lay "under the windows of the great chamber", in the east barbican.
+- At Rhuddlan in 1282–83 some 6,000 turves were brought by river for a courtyard garden, with a fishpond surrounded by seats.
+
+Cited in: Room: outerWard; Person: gardener
+
+## 27. Wikipedia, "Tower of London"
+
+"Tower of London", *Wikipedia* (accessed October 2026), citing G. Parnell, *The Tower of London* (1993). <https://en.wikipedia.org/wiki/Tower_of_London>
+
+Supports:
+
+- Under Henry III the queen's chamber at the Tower was whitewashed and painted with flowers and imitation stonework.
+
+Cited in: Room: hall; Room: chamber
+
+## 28. Foyle, external colouration
+
+Jonathan Foyle, "Some examples of external colouration on English brick buildings, c. 1500–1650", *Bulletin du Centre de recherche du château de Versailles* (2007). <https://journals.openedition.org/crcv/125>
+
+Supports:
+
+- Medieval interior walls were usually lined with a grid of false masonry joints in red.
+
+Cited in: Room: hall; Room: chamber
+
+## 29. Oggins, Kings and Their Hawks
+
+Robin S. Oggins, *The Kings and Their Hawks: Falconry in Medieval England* (New Haven: Yale University Press, 2004), ch. "Falconry in the reign of Edward I".
+
+Supports:
+
+- Edward I's reign was a high point of English royal falconry, with large yearly spending on hawks and hunting.
+
+Cited in: Room: chamber; Person: hound
+
+## 30. Wikipedia, "History of chess"
+
+"History of chess", *Wikipedia* (accessed October 2026), citing Vale (2001). <https://en.wikipedia.org/wiki/History_of_chess>
+
+Supports:
+
+- Chess was a prestigious pastime of the nobility; its popularity in Western courtly society peaked between the 12th and 15th centuries.
+
+Cited in: Room: chamber
+
+## 31. Wikipedia, "Strewing herb"
+
+"Strewing herb", *Wikipedia* (accessed October 2026), citing J. Kerr, *Life in the Medieval Cloister* (2009). <https://en.wikipedia.org/wiki/Strewing_herb>
+
+Supports:
+
+- In medieval England herbs were laid on the floors of halls, kitchens and chambers along with reeds, rushes or straw.
+
+Cited in: Room: hall
+
+## 32. MOT, "Wooden scaffolding"
+
+het MOT (Museum voor de Oudere Technieken, Grimbergen), "Wooden scaffolding". <https://www.mot.be/en/opzoeken/prinsenkasteel-in-de-steigers/steigerbouw-in-hout>
+
+Supports:
+
+- Medieval scaffolds rested their putlogs in holes left in the wall, and used woven hurdles as working platforms.
+
+Cited in: Room: outerWard; Person: mason
+
+## 33. Crane & Walker, early English beekeeping
+
+Eva Crane and Penelope Walker, "Early English beekeeping: the evidence from local records up to the end of the Norman period", *The Local Historian* 29.3 (1999), 130–151. <https://www.evacranetrust.org/uploads/document/400fe90f27902b22bd24552c495914998fc978c5.pdf>
+
+Supports:
+
+- Skeps of coiled straw were brought by Saxon settlers and remained the commonest English hive until the late 19th century; wicker hives were also used.
+
+Cited in: Room: outerWard
+
+## 34. Wikipedia, "Saw pit"
+
+"Saw pit" and "Saw", *Wikipedia* (accessed October 2026). <https://en.wikipedia.org/wiki/Saw_pit>
+
+Supports:
+
+- Long timbers were ripped by a top sawyer standing on the log and a bottom sawyer below it; a picture of c. 1425 shows the log on trestles rather than over a pit.
+
+Cited in: Person: sawyer
+
+## 35. Maskill, Farnham Park Sawpit
+
+Louise Maskill, *The Farnham Park Sawpit* (Tilford: Rural Life Centre, 2011). <http://oxfordshirewoodlandgroup.co.uk/images/Pits/Sawpits/L%20Maskill%20-%20Sawpits%20monograph.pdf>
+
+Supports:
+
+- Dug sawpits appear in the British record only around the mid-15th century, so the sawing here is shown on trestles.
+
+Cited in: Person: sawyer
+
+## 36. Wikipedia, "Merlon"
+
+"Merlon", *Wikipedia* (accessed October 2026). <https://en.wikipedia.org/wiki/Merlon>
+
+Supports:
+
+- From the 13th century merlons could carry pivoted timber shutters (mantlets) closing the embrasures. No surviving evidence at the Edwardian Welsh castles was found, so the shutters here are conjecture.
+
+Cited in: Room: ward
+
 ## Anachronisms deliberately avoided
 
 - No New World foods (potatoes, maize, tomatoes, turkeys, chillies): see Woolgar, *Culture of Food*.
@@ -286,7 +417,13 @@ Cited in: Room: larder; Person: rat
 - **Room: undercroft**: The trapdoor and hoist in the hall floor above are *(conjecture)*: casks were also rolled in on skids by a door at floor level.
 - **Room: well**: The upper shaft is lined with stone where it passes through loose ground, then cut through bare rock. A timber well-house over the head carries the windlass. The details of the well-house are *(conjecture)*.
 - **Room: hall**: At the lower end a timber screen hides the screens passage. Doors from it lead to the buttery and pantry, and the main door opens to the courtyard. The hall is heated by a fireplace with a hood in the curtain wall and lit by tall windows to the courtyard. Its open timber roof is of a *(conjecture)* form.
+- **Room: hall**: The walls are limewashed and lined out in red to look like fine ashlar. Henry III's chambers at the Tower were whitewashed and painted with imitation stonework, and such false joints were usually red. Rushes are strewn on the boards. A striped hanging runs along the screens gallery, a candle-beam hangs from a tie beam, and the cupboard by the screens shows off the plate. Two hounds doze by the fire. These furnishings are *(conjecture)*.
 - **Room: chamber**: A chamber over the services, reached from the hall, is a common arrangement. Who used it here is *(conjecture)*: perhaps the constable or an officer of the garrison.
+- **Room: chamber**: The room is furnished for its occupant: a bed with a hung tester and curtains, a chest, a laver for washing hands, clothes on a pole, rush matting and a garderobe (latrine) door in the corner. A hooded falcon sits on its perch, for hawking was a passion of the king and his lords, and a game of chess is set out. The walls are lined out in red like the hall's. The furnishings are *(conjecture)*.
+- **Room: gatehouse**: The lower chamber is shown as the guardroom, with spears in a rack, shields on the wall, kettle hats on a shelf, crossbows on pegs and a mail hauberk on a stand. Dice lie on the table, and a pallet bed is made up in the corner. The upper chamber is a lodging with a curtained bed, a writing table and painted walls. Both fires are lit. This use of the two floors is *(conjecture)*.
+- **Room: ward**: The ward is a working yard. Cobbled paths join the hall door, the service doors and the gate. Fuel is stacked against the kitchen, empty casks wait outside the brewhouse, and hens scratch about while a woman feeds them. A hound wanders, and weeds grow where feet do not go. These details are *(conjecture)*.
+- **Room: ward**: Timber shutters hang in some embrasures of the inner parapet, propped open. Merlons could carry such pivoted shutters from the thirteenth century, but no evidence for them at the Welsh castles is known, so they are *(conjecture)*.
+- **Room: outerWard**: The outer ward is a working space. On the west are a kitchen garden, straw bee skeps, a hen-house and linen laid out to bleach; Conwy had a garden made for Queen Eleanor. On the north are the kitchens' woodstacks, sawyers at work, a masons' lodge and a scaffold against the curtain, lime and sand for mortar, and the midden. On the east is a smithy beside the gate; Harlech kept a smith, a carpenter and a mason in its garrison. All of this is *(conjecture)* in its detail and placing.
 - **Mechanism: windlass**: The hand crank was known in Europe from the 9th century but spread slowly. A cranked windlass on a well in 1290 is plausible but *(conjecture)*; a spoked wheel or handspikes would be just as likely.
 - **Mechanism: hoist**: Here a hatch in the hall floor opens onto the undercroft. A hand windlass on a frame above raises a cask slung by chime hooks gripping its projecting ends. Windlasses and pulleys were everyday building-site machinery, but this particular arrangement is *(conjecture)*.
 - **Person: spitBoy**: The lowest job in the kitchen: sitting by the fire for hours turning the spit by hand. The term turnbroche and the exact arrangement are *(conjecture)* for 1290; the job itself was done by boys until dogs and jacks took over centuries later.
@@ -295,4 +432,16 @@ Cited in: Room: larder; Person: rat
 - **Person: watchman**: Harlech's garrison was set at 36: the constable, thirty men of whom ten were crossbowmen, a chaplain, a smith, a carpenter and a mason. Some of them were always on watch. Here one man walks the inner wall-walk above the kitchens and another the outer curtain by the gate; the routes and the numbers on watch are *(conjecture)*.
 - **Person: watchman**: He wears a quilted aketon (gambeson) over his tunic, a mail coif and a broad-brimmed iron kettle hat (chapel de fer), and carries a spear. Foot soldiers equipped like this appear in mid-thirteenth-century pictures; his exact kit is *(conjecture)*.
 - **Person: crossbowman**: Ten of Harlech's thirty garrison soldiers were crossbowmen. This one walks the outer curtain on the west side with his crossbow slung on his back and a quiver of bolts at his hip, stopping at the embrasures to look out. The patrol is *(conjecture)*.
+- **Person: smith**: Here he works at a waist-high forge hearth in a lean-to against the inner curtain, with bellows, an anvil on a stump and a quench tub. The smithy and its place in the outer ward are *(conjecture)*.
+- **Person: mason**: A mason was kept on Harlech's strength after the building was done. Weather and war kept him busy. One mason dresses a block on the banker in the lodge; another repoints the curtain from a scaffold of poles, with putlogs set into the putlog holes and hurdles laid on them to stand on. The repair work and the lodge are *(conjecture)*.
+- **Person: sawyer**: Planks were sawn by hand. Two sawyers worked a long saw, a top sawyer standing on the timber and a bottom sawyer below it. Dug sawpits appear in the British record only in the fifteenth century, so here the baulk is raised on trestles, with sawn planks stacked to season beside it. Their work here is *(conjecture)*.
+- **Person: gardener**: Edward I's castles had gardens. At Conwy Queen Eleanor had a garden under the windows of the great chamber, and at Rhuddlan in 1282–83 six thousand turves were brought for a courtyard garden. Here a gardener hoes beds of leeks, coleworts (a kale) and pot-herbs for the kitchen; the plants, the beds and their place in the outer ward are *(conjecture)*.
+- **Person: laundress**: Great households were overwhelmingly male. Washing linen was among the jobs most often done by women, so the laundress here is a woman. She spreads the cloths on the grass to bleach in the sun. The scene is *(conjecture)*.
+- **Person: henwife**: Eggs and poultry were everyday foods. A few hens and a cockerel scratch about the inner ward, and a woman scatters grain for them from her basket. Keeping hens in the castle, and who kept them, are *(conjecture)*.
+- **Person: porter**: The gates were kept by a porter, who opened them at dawn, shut them at night and watched who came and went. Here he sits on a bench inside the outer gate and gets up now and then to look down the road. His post and bench are *(conjecture)*.
+- **Person: pedlar**: Castles drew trade. Each of Edward's new castles had a chartered English town beside it. A pedlar with a sack on his shoulder walks up the road to the bridge and stops to look up at the gate. He is *(conjecture)*.
+- **Person: shepherd**: A boy minds the flock on the slope below the north curtain, leaning on his crook. The hurdle fold nearby is where the sheep are penned. The scene is *(conjecture)*.
+- **Person: sheep**: Small, hardy hill sheep, most white-faced, a few brown. Wool was the great export of thirteenth-century England and Wales. The flock and its pasture under the walls are *(conjecture)*.
+- **Person: hen**: Hens peck and scratch in the inner ward and round their wattle hen-house in the outer ward, giving eggs and, in time, the pot. Their presence here is *(conjecture)*.
+- **Person: hound**: Hunting with hounds and hawking were the great pastimes of the king and his lords. Two hounds doze by the hall fire and a third noses about the ward for scraps. The hounds are *(conjecture)*.
 - **Person: horse**: A working horse in the shafts of a two-wheeled cart, in a padded collar. Horse collars of this kind were in use in England by the 13th century; the harness details are *(conjecture)*.

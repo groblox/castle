@@ -48,8 +48,8 @@ function paintRoyal(ctx, w, h) {
   }
 }
 
-// Argent, a cross gules: the cross of St George, carried by English troops
-// in Wales from 1277.
+// Argent, a cross gules: the cross of St George, worn by Edward I's foot
+// soldiers in Wales.
 function paintStGeorge(ctx, w, h) {
   ctx.fillStyle = '#efe8d6';
   ctx.fillRect(0, 0, w, h);

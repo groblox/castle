@@ -190,6 +190,86 @@ export const SOURCES = {
     short: 'York, black rats',
     claims: ['The rat of medieval England was the black rat (*Rattus rattus*). The brown rat became established only in the 18th century.'],
   },
+  stGeorge: {
+    cite: 'John E. Morris, *The Welsh Wars of Edward I* (Oxford: Clarendon Press, 1901), p. 97.',
+    url: 'https://archive.org/details/cu31924028052797',
+    short: 'Morris, Welsh Wars of Edward I',
+    claims: ['For his Welsh wars Edward ordered cloth for arm-pieces for his foot soldiers, marked with the cross of St George.'],
+  },
+  royalArms: {
+    cite: '"Coat of arms of England", *Wikipedia* (accessed October 2026).',
+    url: 'https://en.wikipedia.org/wiki/Coat_of_arms_of_England',
+    short: 'Wikipedia, "Coat of arms of England"',
+    claims: ['From Richard I\'s second great seal until 1340 the royal arms were gules, three lions passant guardant in pale or.'],
+  },
+  conwyGarden: {
+    cite: 'Rachel E. Swallow, "Living the dream: the legend, lady and landscape of Caernarfon Castle", *Archaeologia Cambrensis* 168 (2019), 153–195.',
+    url: 'https://archaeologydataservice.ac.uk/catalogue/adsdata/arch-3493-1/dissemination/168-2019/07-Arch_Camb_168_Swallow_153-195.pdf',
+    short: 'Swallow, "Living the dream"',
+    claims: [
+      'At Conwy a garden for Queen Eleanor (herbarium Regine) lay "under the windows of the great chamber", in the east barbican.',
+      'At Rhuddlan in 1282–83 some 6,000 turves were brought by river for a courtyard garden, with a fishpond surrounded by seats.',
+    ],
+  },
+  maspattern: {
+    cite: '"Tower of London", *Wikipedia* (accessed October 2026), citing G. Parnell, *The Tower of London* (1993).',
+    url: 'https://en.wikipedia.org/wiki/Tower_of_London',
+    short: 'Wikipedia, "Tower of London"',
+    claims: ['Under Henry III the queen\'s chamber at the Tower was whitewashed and painted with flowers and imitation stonework.'],
+  },
+  foyle: {
+    cite: 'Jonathan Foyle, "Some examples of external colouration on English brick buildings, c. 1500–1650", *Bulletin du Centre de recherche du château de Versailles* (2007).',
+    url: 'https://journals.openedition.org/crcv/125',
+    short: 'Foyle, external colouration',
+    claims: ['Medieval interior walls were usually lined with a grid of false masonry joints in red.'],
+  },
+  hawking: {
+    cite: 'Robin S. Oggins, *The Kings and Their Hawks: Falconry in Medieval England* (New Haven: Yale University Press, 2004), ch. "Falconry in the reign of Edward I".',
+    short: 'Oggins, Kings and Their Hawks',
+    claims: ['Edward I\'s reign was a high point of English royal falconry, with large yearly spending on hawks and hunting.'],
+  },
+  chess: {
+    cite: '"History of chess", *Wikipedia* (accessed October 2026), citing Vale (2001).',
+    url: 'https://en.wikipedia.org/wiki/History_of_chess',
+    short: 'Wikipedia, "History of chess"',
+    claims: ['Chess was a prestigious pastime of the nobility; its popularity in Western courtly society peaked between the 12th and 15th centuries.'],
+  },
+  rushes: {
+    cite: '"Strewing herb", *Wikipedia* (accessed October 2026), citing J. Kerr, *Life in the Medieval Cloister* (2009).',
+    url: 'https://en.wikipedia.org/wiki/Strewing_herb',
+    short: 'Wikipedia, "Strewing herb"',
+    claims: ['In medieval England herbs were laid on the floors of halls, kitchens and chambers along with reeds, rushes or straw.'],
+  },
+  putlogs: {
+    cite: 'het MOT (Museum voor de Oudere Technieken, Grimbergen), "Wooden scaffolding".',
+    url: 'https://www.mot.be/en/opzoeken/prinsenkasteel-in-de-steigers/steigerbouw-in-hout',
+    short: 'MOT, "Wooden scaffolding"',
+    claims: ['Medieval scaffolds rested their putlogs in holes left in the wall, and used woven hurdles as working platforms.'],
+  },
+  skeps: {
+    cite: 'Eva Crane and Penelope Walker, "Early English beekeeping: the evidence from local records up to the end of the Norman period", *The Local Historian* 29.3 (1999), 130–151.',
+    url: 'https://www.evacranetrust.org/uploads/document/400fe90f27902b22bd24552c495914998fc978c5.pdf',
+    short: 'Crane & Walker, early English beekeeping',
+    claims: ['Skeps of coiled straw were brought by Saxon settlers and remained the commonest English hive until the late 19th century; wicker hives were also used.'],
+  },
+  sawpit: {
+    cite: '"Saw pit" and "Saw", *Wikipedia* (accessed October 2026).',
+    url: 'https://en.wikipedia.org/wiki/Saw_pit',
+    short: 'Wikipedia, "Saw pit"',
+    claims: ['Long timbers were ripped by a top sawyer standing on the log and a bottom sawyer below it; a picture of c. 1425 shows the log on trestles rather than over a pit.'],
+  },
+  maskill: {
+    cite: 'Louise Maskill, *The Farnham Park Sawpit* (Tilford: Rural Life Centre, 2011).',
+    url: 'http://oxfordshirewoodlandgroup.co.uk/images/Pits/Sawpits/L%20Maskill%20-%20Sawpits%20monograph.pdf',
+    short: 'Maskill, Farnham Park Sawpit',
+    claims: ['Dug sawpits appear in the British record only around the mid-15th century, so the sawing here is shown on trestles.'],
+  },
+  merlon: {
+    cite: '"Merlon", *Wikipedia* (accessed October 2026).',
+    url: 'https://en.wikipedia.org/wiki/Merlon',
+    short: 'Wikipedia, "Merlon"',
+    claims: ['From the 13th century merlons could carry pivoted timber shutters (mantlets) closing the embrasures. No surviving evidence at the Edwardian Welsh castles was found, so the shutters here are conjecture.'],
+  },
 };
 
 export const SOURCE_IDS = Object.keys(SOURCES);

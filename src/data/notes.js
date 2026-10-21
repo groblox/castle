@@ -104,7 +104,7 @@ export const ROOM_NOTES = {
       'The great hall was where the household ate together at trestle tables, cleared away after meals. The lord and his guests sat on the dais at the upper end, which lies in the removed half of the castle {@woolgarHousehold}.',
       'At the lower end a timber screen hides the screens passage. Doors from it lead to the buttery and pantry, and the main door opens to the courtyard. The hall is heated by a fireplace with a hood in the curtain wall and lit by tall windows to the courtyard. Its open timber roof is of a [[conj]] form.',
       'Tables are being laid for dinner with cloths and trenchers, and the butler and pantler come and go with ale and bread.',
-      'The walls are limewashed and lined out in red to look like fine ashlar, a finish much used in the king\'s works {@maspattern}. Rushes are strewn on the boards {@rushes}. A striped hanging runs along the screens gallery, a candle-beam hangs from a tie beam, and the cupboard by the screens shows off the plate. Two hounds doze by the fire. These furnishings are [[conj]].',
+      'The walls are limewashed and lined out in red to look like fine ashlar. Henry III\'s chambers at the Tower were whitewashed and painted with imitation stonework {@maspattern}, and such false joints were usually red {@foyle}. Rushes are strewn on the boards {@rushes}. A striped hanging runs along the screens gallery, a candle-beam hangs from a tie beam, and the cupboard by the screens shows off the plate. Two hounds doze by the fire. These furnishings are [[conj]].',
     ],
     also: [{ type: 'person', id: 'butler' }, { type: 'person', id: 'pantler' }, { type: 'person', id: 'hound' }],
   },
@@ -113,7 +113,7 @@ export const ROOM_NOTES = {
     body: [
       'A chamber over the services, reached from the hall, is a common arrangement. Who used it here is [[conj]]: perhaps the constable or an officer of the garrison.',
       'In Edward\'s Welsh castles the finest lodgings were often in the great gatehouse {@wikiHarlech}.',
-      'The room is furnished for its occupant: a bed with a hung tester and curtains, a chest, a laver for washing hands, clothes on a pole, rush matting and a garderobe (latrine) door in the corner. A hooded falcon sits on its perch, for hawking was a passion of the king and his lords {@hawking}, and a game of chess is set out {@chess}. The walls are lined out in red like the hall\'s {@maspattern}. The furnishings are [[conj]].',
+      'The room is furnished for its occupant: a bed with a hung tester and curtains, a chest, a laver for washing hands, clothes on a pole, rush matting and a garderobe (latrine) door in the corner. A hooded falcon sits on its perch, for hawking was a passion of the king and his lords {@hawking}, and a game of chess is set out {@chess}. The walls are lined out in red like the hall\'s {@maspattern} {@foyle}. The furnishings are [[conj]].',
     ],
   },
   gatehouse: {
@@ -132,7 +132,7 @@ export const ROOM_NOTES = {
       'The inner ward is the courtyard within the high inner curtain, ringed by the main buildings: hall, services, kitchen, stores and chapel {@wikiHarlech}. The chapel and the southern ranges lie in the removed half.',
       'Edward\'s castles were not grey. Conwy was rendered and limewashed white {@cadwConwy}; the stone colours here are left as stone so that the masonry reads.',
       'The ward is a working yard. Cobbled paths join the hall door, the service doors and the gate. Fuel is stacked against the kitchen, empty casks wait outside the brewhouse, and hens scratch about while a woman feeds them. A hound wanders, and weeds grow where feet do not go. These details are [[conj]].',
-      'Timber shutters hang in some embrasures of the inner parapet, propped open. Pivot sockets for such shutters survive in the merlons at Conwy {@shutters}.',
+      'Timber shutters hang in some embrasures of the inner parapet, propped open. Merlons could carry such pivoted shutters from the thirteenth century {@merlon}, but no evidence for them at the Welsh castles is known, so they are [[conj]].',
     ],
     also: [{ type: 'person', id: 'henwife' }, { type: 'person', id: 'hen' }, { type: 'person', id: 'hound' }],
   },
@@ -141,7 +141,7 @@ export const ROOM_NOTES = {
     body: [
       'In a concentric castle a lower outer curtain wraps the inner one, so that defenders on both walls can shoot at once {@taylorKW}. The narrow space between them is the outer ward.',
       'Beyond the outer gate a timber bridge crosses a rock-cut ditch.',
-      'The outer ward is a working space. On the west are a kitchen garden, bee skeps {@skeps}, a hen-house and linen laid out to bleach; Conwy had a garden made for Queen Eleanor {@conwyGarden}. On the north are the kitchens\' woodstacks, sawyers at work, a masons\' lodge and a scaffold against the curtain {@putlogs}, lime and sand for mortar, and the midden. On the east is a smithy beside the gate; Harlech kept a smith, a carpenter and a mason in its garrison {@wikiHarlech}. All of this is [[conj]] in its detail and placing.',
+      'The outer ward is a working space. On the west are a kitchen garden, straw bee skeps {@skeps}, a hen-house and linen laid out to bleach; Conwy had a garden made for Queen Eleanor {@conwyGarden}. On the north are the kitchens\' woodstacks, sawyers at work, a masons\' lodge and a scaffold against the curtain {@putlogs}, lime and sand for mortar, and the midden. On the east is a smithy beside the gate; Harlech kept a smith, a carpenter and a mason in its garrison {@wikiHarlech}. All of this is [[conj]] in its detail and placing.',
       'Banners fly from the turrets: the king\'s arms {@royalArms}, and the red cross of St George that English foot soldiers wore in Wales {@stGeorge}.',
     ],
     also: [{ type: 'person', id: 'smith' }, { type: 'person', id: 'mason' }, { type: 'person', id: 'sawyer' }, { type: 'person', id: 'gardener' }, { type: 'person', id: 'laundress' }, { type: 'person', id: 'porter' }],
@@ -279,13 +279,13 @@ export const PERSON_NOTES = {
   sawyer: {
     terms: 'Sawyers',
     body: [
-      'Planks were sawn by hand. Two sawyers worked a long saw, one standing on the timber and one below it, in a pit or with the log raised on trestles {@sawpit}. Here they rip a baulk raised on trestles, with sawn planks stacked to season beside them. Their work here is [[conj]].',
+      'Planks were sawn by hand. Two sawyers worked a long saw, a top sawyer standing on the timber and a bottom sawyer below it {@sawpit}. Dug sawpits appear in the British record only in the fifteenth century {@maskill}, so here the baulk is raised on trestles, with sawn planks stacked to season beside it. Their work here is [[conj]].',
     ],
   },
   gardener: {
     terms: 'Gardener',
     body: [
-      'Edward I\'s castles had gardens. At Conwy a garden with a lawn was made for Queen Eleanor in 1283 {@conwyGarden}. Here a gardener hoes beds of leeks, coleworts (a kale) and pot-herbs for the kitchen; the plants, the beds and their place in the outer ward are [[conj]].',
+      'Edward I\'s castles had gardens. At Conwy Queen Eleanor had a garden under the windows of the great chamber, and at Rhuddlan in 1282–83 six thousand turves were brought for a courtyard garden {@conwyGarden}. Here a gardener hoes beds of leeks, coleworts (a kale) and pot-herbs for the kitchen; the plants, the beds and their place in the outer ward are [[conj]].',
     ],
   },
   laundress: {
