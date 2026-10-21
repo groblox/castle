@@ -7,7 +7,7 @@ import { shared } from './material.js';
 // They write colour only (the normal and label targets get alpha 0 and are
 // left untouched), so they carry no ink lines and do not block picking.
 
-const KIND = { smoke: 0, flame: 1, spark: 2, steam: 3 };
+const KIND = { smoke: 0, flame: 1, spark: 2, steam: 3, glow: 4 };
 
 const vertex = /* glsl */ `
 in vec3 aEmit;
@@ -20,6 +20,7 @@ uniform float uSize0;
 uniform float uSize1;
 uniform vec2 uWind;
 uniform float uWobble;
+uniform int uKindV;
 uniform vec3 uFocusMin;
 uniform vec3 uFocusMax;
 uniform float uFocusAmt;
@@ -30,6 +31,7 @@ out float vFadeF;
 void main() {
   float life = uLife * (0.75 + 0.5 * aSeed.y);
   float t = fract(uTime / life + aSeed.x);
+  if (uKindV == 4) t = 0.5;
   vec3 p = aEmit;
   float ang = aSeed.z * 6.2831853;
   vec2 dir = vec2(cos(ang), sin(ang));
@@ -59,6 +61,8 @@ uniform vec3 uColor;
 uniform vec3 uColor2;
 uniform float uAlpha;
 uniform float uOn;
+uniform float uGlowAmt;
+uniform float uTime;
 in vec2 vUv;
 in float vLife;
 in float vSeed;
@@ -91,6 +95,17 @@ void main() {
     a = 1.0 - smoothstep(0.3, 0.6, r);
   } else {
     col *= 1.0 - rim * 0.18;
+  }
+  if (uKind == 4) {
+    // a soft halo of light round a flame or a lit window, flickering a little
+    float g = exp(-r * r * 4.5);
+    float fl = 0.85 + 0.1 * sin(uTime * 9.0 + vSeed * 40.0) + 0.05 * sin(uTime * 23.0 + vSeed * 13.0);
+    float ga = g * fl * uAlpha * uOn * uGlowAmt * (1.0 - vFadeF * 0.7);
+    if (ga < 0.003) discard;
+    oColor = vec4(uColor * ga, 1.0);
+    oNormal = vec4(0.0);
+    oLabel = vec4(0.0);
+    return;
   }
   float alpha = a * lifeA * uAlpha * uOn * (1.0 - vFadeF * 0.7);
   if (alpha < 0.004) discard;
@@ -147,8 +162,16 @@ function system(emitters, count, params) {
       uColor2: { value: new THREE.Color(params.color2 ?? params.color) },
       uAlpha: { value: params.alpha },
       uOn: { value: params.on ?? 1 },
+      uKindV: { value: KIND[params.kind] },
+      uGlowAmt: shared.uGlowAmt,
     },
   });
+  if (params.kind === 'glow') {
+    mat.blending = THREE.CustomBlending;
+    mat.blendEquation = THREE.AddEquation;
+    mat.blendSrc = THREE.OneFactor;
+    mat.blendDst = THREE.OneFactor;
+  }
   const mesh = new THREE.Mesh(quad, mat);
   mesh.frustumCulled = false;
   mesh.renderOrder = params.order ?? 1;
@@ -160,6 +183,7 @@ export class Effects {
     this.scene = scene;
     this.byName = {};
     this.lights = []; // {index, base, pos, on}
+    this.duskOnly = [];
   }
 
   add(name, emitters, count, params) {
@@ -191,11 +215,24 @@ export class Effects {
     });
     return m;
   }
-  /** Register a flickering fire light in the shared material uniform. */
-  light(index, pos, base, color = 0xffa040) {
+  /** Soft additive halos of light, stronger as the day darkens. */
+  glow(name, emitters, opts = {}) {
+    const m = this.add(name, emitters, 1, {
+      kind: 'glow', life: 1, rise: 0, spread: 0, size0: opts.size ?? 2.0, size1: opts.size ?? 2.0,
+      wobble: 0, color: opts.color ?? 0xff9a40, alpha: opts.alpha ?? 0.35, order: 6, on: opts.on ?? 1,
+    });
+    if (opts.dusk) this.duskOnly.push(name);
+    return m;
+  }
+  /** Register a flickering fire light in the shared material uniform. opts.dusk: lit only towards dusk. */
+  light(index, pos, base, color = 0xffa040, opts = {}) {
     shared.uFirePos.value[index].set(pos[0], pos[1], pos[2], base);
     shared.uFireCol.value[index].set(...new THREE.Color(color).toArray());
-    this.lights.push({ index, base, pos, on: 1 });
+    this.lights.push({ index, base, pos, on: 1, dusk: !!opts.dusk });
+  }
+  /** Fire and smoke systems that are only lit towards dusk (torches). */
+  duskFlames(names) {
+    this.duskOnly.push(...names);
   }
   setOn(name, on) {
     const m = this.byName[name];
@@ -208,9 +245,19 @@ export class Effects {
     if (L) L.on = on;
   }
   update(t) {
+    const day = shared.uDay.value;
+    // torches are lit as the light goes
+    const dusk = Math.min(1, Math.max(0, (0.45 - day) / 0.25));
+    shared.uGlowAmt.value = 0.25 + 0.75 * (1 - day);
+    for (const name of this.duskOnly) {
+      for (const n of [name, `${name}:sparks`]) {
+        const m = this.byName[n];
+        if (m) m.material.uniforms.uOn.value = dusk;
+      }
+    }
     for (const L of this.lights) {
       const f = 0.82 + 0.12 * Math.sin(t * 9.1 + L.index * 3.1) + 0.08 * Math.sin(t * 23.7 + L.index) + 0.06 * Math.sin(t * 4.3 + L.index * 7.0);
-      shared.uFirePos.value[L.index].w = L.base * f * L.on;
+      shared.uFirePos.value[L.index].w = L.base * f * L.on * (L.dusk ? dusk : 1);
     }
   }
 }

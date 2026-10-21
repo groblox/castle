@@ -7,7 +7,7 @@ import { GROUP_COUNT } from '../castle/rooms.js';
 //  2: label id (rg), surface kind (b)            -> hover/click picking
 // Geometry attributes: position, normal, acol (rgb), info (kind, label, group).
 
-export const MAX_FIRES = 8;
+export const MAX_FIRES = 24;
 
 export const shared = {
   uFade: { value: new Float32Array(GROUP_COUNT) },
@@ -21,6 +21,9 @@ export const shared = {
   uFocusMin: { value: new THREE.Vector3(-1e4, -1e4, -1e4) },
   uFocusMax: { value: new THREE.Vector3(1e4, 1e4, 1e4) },
   uFocusAmt: { value: 0 },
+  // 1 = bright day, 0 = dusk. The default is a grey late-autumn morning.
+  uDay: { value: 0.25 },
+  uGlowAmt: { value: 0.8 },
 };
 
 const vertex = /* glsl */ `
@@ -85,6 +88,7 @@ uniform vec3 uPaper;
 uniform vec3 uCamPos;
 uniform float uEmissive;
 uniform float uOpacity;
+uniform float uDay;
 
 in vec3 vWorld;
 in vec3 vNormal;
@@ -164,6 +168,21 @@ vec2 rubble(vec2 x) {
     else if (d < F2) { F2 = d; }
   }
   return vec2(sqrt(F2) - sqrt(F1), id);
+}
+
+// Roofed rooms get little daylight: 1 outdoors, smaller inside.
+float roofed(vec3 p) {
+  float m = 0.0;
+  // north range of service rooms
+  if (p.x > -11.85 && p.x < 25.05 && p.z > -21.05 && p.z < -12.45 && p.y < 7.5) m = 1.0;
+  // services, chamber, hall and undercroft
+  if (p.x > -25.05 && p.x < -12.95 && p.z > -21.05 && p.y < 8.6 && p.y > -4.1) m = 1.0;
+  // gatehouse chambers and gate passage
+  if (p.x > 20.15 && p.x < 29.85 && p.z > -7.85 && p.y > 5.5 && p.y < 16.6) m = 1.0;
+  if (p.x > 19.5 && p.x < 35.0 && p.z > -1.65 && p.y < 4.3) m = 0.8;
+  // the undercroft is darker still
+  if (p.x > -25.05 && p.x < -12.95 && p.z > -9.1 && p.y < 0.55 && p.y > -4.1) m = 1.4;
+  return m;
 }
 
 // Rough ground level under a point: the inner ward is at 0, the outer ward
@@ -408,15 +427,20 @@ void main() {
   // ---- watercolour light --------------------------------------------------
   vec3 col;
   if (unlit || cut) {
-    col = base;
+    col = cut ? base * mix(0.74, 1.0, uDay) : base;
   } else {
     // two washes: a light one everywhere, a cool shadow wash with ragged edges
     float ndl = dot(N, uSunDir) + (blot - 0.5) * 0.25;
     float lit = smoothstep(-0.05, 0.2, ndl) * 0.62 + smoothstep(0.45, 0.7, ndl) * 0.18;
     float sky = 0.5 + 0.5 * N.y;
-    vec3 shadowTint = vec3(0.66, 0.68, 0.80);
-    vec3 shade = mix(shadowTint, vec3(1.05, 1.01, 0.95), lit) + 0.05 * sky;
-    col = base * shade;
+    // grey, low light by default; warm low sun towards dusk; full sun by day
+    vec3 shadowTint = mix(vec3(0.38, 0.42, 0.58), vec3(0.66, 0.68, 0.80), uDay);
+    vec3 sunCol = mix(vec3(0.98, 0.8, 0.62), vec3(1.05, 1.01, 0.95), uDay);
+    vec3 shade = mix(shadowTint, sunCol, lit * mix(0.55, 1.0, uDay)) + 0.05 * sky;
+    float daylight = mix(0.32, 1.0, uDay);
+    float inside = roofed(vWorld);
+    daylight *= 1.0 - inside * mix(0.62, 0.22, uDay);
+    col = base * shade * daylight;
   }
 
   // fire glow: warm wash near hearths
@@ -430,7 +454,8 @@ void main() {
     float facing = unlit ? 1.0 : clamp(dot(N, d / max(dist, 1e-3)) * 0.6 + 0.5, 0.0, 1.0);
     glow += uFireCol[i] * fall * facing;
   }
-  col += col * glow * 0.9 + glow * 0.05;
+  // firelight carries the rooms when daylight is low
+  col += base * glow * mix(1.5, 0.8, uDay) + glow * 0.05;
 
   // blotchy pigment density
   col *= 0.94 + 0.1 * blot;

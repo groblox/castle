@@ -129,6 +129,8 @@ export const GLOSSARY = {
   crocks: { term: 'Crocks of butter and grease', gloss: 'Earthenware pots of salted butter and rendered fat, covered with cloth.' },
   larderSalt: { term: 'Salt', gloss: 'Coarse salt by the sack, for powdering meat and packing fish.' },
 
+  lantern: { term: 'Horn lantern', gloss: 'A candle in an iron frame with panes of thin scraped horn, safe to hang among stores.' },
+  cresset: { term: 'Cresset', gloss: 'An iron fire-basket on a bracket, lit at nightfall to light the gate.' },
   paintedWall: { term: 'Painted walls', gloss: 'Limewash lined out in red to imitate fine ashlar, a favourite finish of Henry III\'s and Edward I\'s works.' },
   hanging: { term: 'Dorser (hanging)', gloss: 'A striped cloth hung along the screens gallery, colour and comfort against a stone wall.' },
   candleBeam: { term: 'Candle-beam', gloss: 'Crossed timbers hung from the roof with candles, lit for suppers in the dark months.' },

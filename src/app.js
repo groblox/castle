@@ -41,6 +41,10 @@ export class App {
     this.roomList = new RoomList(this, document.getElementById('roomlist'));
     this.minimap = new Minimap(this, document.getElementById('minimap'));
     document.getElementById('about').addEventListener('click', () => this.panel.showAbout());
+    const day = document.getElementById('daylight');
+    const setDay = () => (shared.uDay.value = Number(day.value));
+    day.addEventListener('input', setDay);
+    setDay();
     this._bindUI();
 
     window.addEventListener('resize', () => this.pipeline.resize());

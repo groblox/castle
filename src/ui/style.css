@@ -164,6 +164,21 @@ body {
 #about:hover {
   background: rgba(185, 139, 62, 0.18);
 }
+.daylight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 6px 2px;
+  font-size: 12px;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.daylight input {
+  flex: 1;
+  min-width: 0;
+  accent-color: #9a6a32;
+}
 .hint {
   margin: 6px 6px 0;
   font-size: 11px;

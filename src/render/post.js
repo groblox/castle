@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { shared } from './material.js';
 
 // Ink-and-watercolour post pass.
 //  * Ink: edges found from inverse depth (2nd derivative: creases and
@@ -28,6 +29,7 @@ export function makePostMaterial(target, paper, camera) {
       uPaperCol: { value: new THREE.Color(0xf3ead6) },
       uInk: { value: new THREE.Color(0x2a2018) },
       uInkAmt: { value: 1 },
+      uDay: shared.uDay,
     },
     vertexShader: /* glsl */ `
       out vec2 vUv;
@@ -49,6 +51,7 @@ export function makePostMaterial(target, paper, camera) {
       uniform vec3 uPaperCol;
       uniform vec3 uInk;
       uniform float uInkAmt;
+      uniform float uDay;
 
       float invDepth(vec2 uv) {
         float d = texture(tDepth, uv).r;
@@ -158,12 +161,15 @@ export function makePostMaterial(target, paper, camera) {
         float lum = dot(col, vec3(0.3, 0.55, 0.15));
         col *= 1.0 - (0.5 - grain) * 0.2 * (1.0 - lum * 0.6);
         // light, transparent washes let the paper through
-        col = mix(uPaperCol, col, 0.9 + 0.1 * mott);
+        col = mix(uPaperCol, col, mix(0.96, 0.9, uDay) + 0.04 * mott);
 
         // background: paper with a faint, uneven sky wash high up
         vec3 bg = uPaperCol;
         float skyBand = smoothstep(0.35, 0.95, vUv.y + (papLo.g - 0.5) * 0.25);
-        bg = mix(bg, vec3(0.80, 0.85, 0.88), skyBand * 0.28);
+        // grey cloud by default, a warm dusk low down as the light goes
+        vec3 skyCol = mix(vec3(0.6, 0.6, 0.66), vec3(0.80, 0.85, 0.88), uDay);
+        bg = mix(bg, skyCol, skyBand * mix(0.5, 0.28, uDay));
+        bg = mix(bg, vec3(0.93, 0.72, 0.52), (1.0 - smoothstep(0.2, 0.6, vUv.y)) * (1.0 - smoothstep(0.0, 0.4, uDay)) * 0.25);
         // where there is no geometry the colour target holds paper plus any
         // smoke or steam drawn over it: carry that across onto the sky wash
         col = mix(bg * (col / uPaperCol), col, hasC);
@@ -177,7 +183,7 @@ export function makePostMaterial(target, paper, camera) {
         col *= 0.985 + 0.03 * grain;
         // gentle vignette
         vec2 vv = vUv - 0.5;
-        col *= 1.0 - dot(vv, vv) * 0.22;
+        col *= 1.0 - dot(vv, vv) * mix(0.55, 0.22, uDay);
 
         oColor = vec4(col, 1.0);
       }

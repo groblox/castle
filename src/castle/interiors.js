@@ -15,6 +15,7 @@ const IN = (group, room, key) => ({ group, label: lab(key, room) });
 const LIMEWASH = 0xefe6cf;
 
 export function interiors(b) {
+  lights(b);
   hall(b);
   chamber(b);
   gatehouse(b);
@@ -81,6 +82,28 @@ function testerBed(b, x0, x1, z0, z1, y, color, ceilY) {
   });
 }
 
+/** Horn lantern hung on a cord from `top` down to a lantern centred at (x, y, z). */
+export function lantern(b, x, y, z, top) {
+  cord(b, v3(x, top, z), v3(x, y + 0.22, z), 0.015);
+  b.with({ kind: K.METAL, color: P.iron }, () => {
+    b.box(x - 0.1, y - 0.2, z - 0.1, x + 0.1, y - 0.17, z + 0.1);
+    b.box(x - 0.1, y + 0.17, z - 0.1, x + 0.1, y + 0.2, z + 0.1);
+    lathe(b, v3(x, y + 0.2, z), 'y', [[0.09, 0], [0.001, 0.08]], 6);
+    for (const [dx, dz] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) b.box(x + dx * 0.09 - 0.01, y - 0.17, z + dz * 0.09 - 0.01, x + dx * 0.09 + 0.01, y + 0.17, z + dz * 0.09 + 0.01);
+  });
+  b.with({ kind: K.EMIT, color: 0xf2cf8c }, () => b.box(x - 0.085, y - 0.17, z - 0.085, x + 0.085, y + 0.17, z + 0.085));
+}
+
+/** Iron cresset (fire basket) on a bracket from a wall; `dir` points out from the wall. */
+export function cresset(b, x, y, z, dir) {
+  const [dx, dz] = dir;
+  b.with({ kind: K.METAL, color: P.iron }, () => {
+    beam(b, v3(x - dx * 0.35, y - 0.3, z - dz * 0.35), v3(x, y - 0.12, z), 0.04, 0.04);
+    lathe(b, v3(x, y - 0.15, z), 'y', [[0.05, 0], [0.16, 0.22]], 8);
+  });
+  b.with({ kind: K.EMIT, color: 0xe2702e }, () => b.cylinder(x, z, 0.13, y + 0.02, y + 0.07, 8));
+}
+
 /** A heater shield hung flat on a wall that faces +z. */
 function shield(b, x, y, z, field, charge) {
   const w = 0.32;
@@ -117,6 +140,18 @@ function spear(b, foot, top) {
   b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, foot, top, 0.035, 0.035));
   const d = top.clone().sub(foot).normalize();
   b.with({ kind: K.METAL, color: 0x8a8a8e }, () => beam(b, top, top.clone().addScaledVector(d, 0.28), 0.06, 0.015));
+}
+
+// Lanterns in the dark stores and cressets at the gate (lit in ambient.js).
+function lights(b) {
+  b.with(IN(G.larder, 'larder', 'lantern'), () => lantern(b, -8.2, 2.3, -16.8, 3.1));
+  b.with(IN(G.pantry, 'pantry', 'lantern'), () => lantern(b, -15.6, 3.0, -16.5, SERV.floor2));
+  b.with(IN(G.buttery, 'buttery', 'lantern'), () => lantern(b, -21.5, 3.0, -16.0, SERV.floor2));
+  b.with(IN(G.granary, 'granary', 'lantern'), () => lantern(b, 21.5, 2.3, -15.3, 3.0));
+  b.with(IN(G.gatehouse, 'gatehouse', 'cresset'), () => {
+    cresset(b, GH.x0 + 1.5, 2.6, -GH.passHalf + 0.25, [0, 1]);
+  });
+  b.with({ group: G.outer, label: lab('cresset', 'outerWard') }, () => cresset(b, 40.35, 1.7, -2.6, [1, 0]));
 }
 
 // ---------------------------------------------------------------------------
