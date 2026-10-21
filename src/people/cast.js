@@ -9,6 +9,7 @@ import { Cat, Rat, Horse } from './animals.js';
 import { Actor } from './actor.js';
 import { carried } from './propsCarried.js';
 import { partGeo, figureMaterial, mesh } from './parts.js';
+import { buildLife } from './life.js';
 
 // The household at work on a morning before dinner. Each servant loops
 // through a short routine drawn from the duties of their office.
@@ -217,6 +218,8 @@ export function buildCast(scene) {
   rat('ratGranary', 'granary', 0.08, scurry([[19.75, -18.9], [22.6, -18.9], [22.9, -17.0], [22.6, -18.9]]));
   rat('ratLoft', 'granary', 3.85, scurry([[19.7, -15.5], [23.9, -15.5], [24.5, -19.0], [23.9, -15.5]]));
 
+  const life = buildLife({ scene, add, fig });
+
   return {
     actors,
     cart,
@@ -226,6 +229,7 @@ export function buildCast(scene) {
         if (a === spitBoy && st.dynamic) st.params = { seat: 0.54, angle: spitBoy.crankAngle(t) };
         a.update(t, dt);
       }
+      life.update(t);
     },
   };
 }

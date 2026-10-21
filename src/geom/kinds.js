@@ -22,6 +22,12 @@ export const K = {
   CUT_EARTH: 17,
   STRAW: 18,
   FUR: 19,
+  LEAF: 20, // foliage and grass blades
+  PAINTED: 21, // limewash lined out in red in imitation of ashlar
+  WATTLE: 22, // woven hazel hurdles
+  SKEP: 23, // coiled straw
+  LOGEND: 24, // the sawn ends of stacked billets
+  COBBLE: 25, // cobbled yard
 };
 
 // What a solid of a given kind shows where it is cut.
@@ -35,6 +41,16 @@ export const CAP_OF = {
   [K.ROOF]: K.CUT_TIMBER,
   [K.ROCK]: K.CUT_ROCK,
   [K.GROUND]: K.CUT_EARTH,
+  // soft things show their own colour where cut
+  [K.LEAF]: K.LEAF,
+  [K.STRAW]: K.STRAW,
+  [K.SKEP]: K.SKEP,
+  [K.CLOTH]: K.CLOTH,
+  [K.FUR]: K.FUR,
+  [K.WATTLE]: K.CUT_TIMBER,
+  [K.PAINTED]: K.CUT,
+  [K.LOGEND]: K.CUT_TIMBER,
+  [K.COBBLE]: K.CUT,
 };
 
 // Watercolour palette (display-space RGB, no colour management).

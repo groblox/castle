@@ -444,6 +444,43 @@ export class Figure {
         j.knR.rotation.x = 0.2;
         break;
       }
+      case 'saw': { // working a two-man saw: p.top stands above, the other below
+        const a = Math.sin(t * 2.2);
+        if (p.top) {
+          j.spine.rotation.x = 0.45 + a * 0.12;
+          j.shL.rotation.x = j.shR.rotation.x = -0.55 + a * 0.35;
+          j.elL.rotation.x = j.elR.rotation.x = -0.5 - a * 0.25;
+          j.hipL.rotation.x = -0.25;
+          j.knL.rotation.x = 0.3;
+        } else {
+          j.neck.rotation.x = -0.35;
+          j.shL.rotation.x = j.shR.rotation.x = -2.3 + a * 0.35;
+          j.elL.rotation.x = j.elR.rotation.x = -0.25 - a * 0.2;
+        }
+        j.shL.rotation.z = 0.12;
+        j.shR.rotation.z = -0.12;
+        break;
+      }
+      case 'scatter': { // throwing grain from a basket on the left arm
+        walkLegs(ph, p.moving === false ? 0 : 0.3);
+        const a = Math.max(0, Math.sin(t * 2.2));
+        j.shL.rotation.x = -0.5;
+        j.elL.rotation.x = -1.3;
+        j.shL.rotation.z = 0.25;
+        j.shR.rotation.x = -0.3 - a * 1.0;
+        j.shR.rotation.z = -0.15 - a * 0.35;
+        j.elR.rotation.x = -0.3;
+        break;
+      }
+      case 'lean': // leaning on a staff
+        j.spine.rotation.x = 0.06;
+        j.shR.rotation.x = -0.45;
+        j.elR.rotation.x = -0.75;
+        j.shL.rotation.x = -0.2;
+        j.elL.rotation.x = -0.6;
+        j.hipL.rotation.x = 0.12;
+        j.neck.rotation.y = Math.sin(t * 0.35) * 0.4;
+        break;
       default:
         j.neck.rotation.y = Math.sin(t * 0.4) * 0.15;
         break;

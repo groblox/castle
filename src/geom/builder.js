@@ -218,8 +218,8 @@ export class GeoBuilder {
     }
 
     const capKind = opts.capKind ?? st.capKind ?? CAP_OF[kind] ?? K.CUT;
-    const capColorHex = opts.capColor ?? st.capColor ?? defaultCapColor(capKind);
-    const capColor = colorArr(capColorHex);
+    const capColorHex = opts.capColor ?? st.capColor ?? (capKind === kind ? null : defaultCapColor(capKind));
+    const capColor = capColorHex === null ? color : colorArr(capColorHex);
 
     for (const pl of planes) {
       let minD = Infinity;

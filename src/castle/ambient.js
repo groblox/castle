@@ -2,7 +2,7 @@ import { S } from './spots.js';
 
 // Fires, smoke and steam. Light slots in the shared material:
 // 0 roasting fire, 1 boiling fire, 2 hall fire, 3 brewhouse furnace, 4 bread oven.
-export const LIGHT = { roast: 0, boil: 1, hall: 2, brew: 3, oven: 4 };
+export const LIGHT = { roast: 0, boil: 1, hall: 2, brew: 3, oven: 4, forge: 5, guard: 6, lodging: 7 };
 
 export function setupEffects(fx) {
   const k = S.kitchen;
@@ -32,6 +32,16 @@ export function setupEffects(fx) {
   const [mx, my, mz] = S.brewhouse.mashTun;
   fx.steam('mash', [[mx, my + 0.95, mz]], { count: 8, rise: 1.2, alpha: 0.25 });
   fx.steam('coolers', [[13.4, 0.8, -14.45], [14.6, 0.8, -14.45]], { count: 5, rise: 0.9, alpha: 0.18, size1: 0.6 });
+
+  // the smithy forge, and fires in the two gatehouse chambers
+  const [gx, gy, gz] = S.forge;
+  fx.flames('forge', [[gx - 0.1, gy, gz - 0.1], [gx + 0.1, gy, gz + 0.12]], { count: 4, size: 0.28, rise: 0.35 });
+  fx.light(LIGHT.forge, [gx + 0.8, gy + 0.6, gz], 1.0);
+  fx.smoke('forgeSmoke', [[gx - 0.6, gy + 2.3, gz]], { count: 10, alpha: 0.25, size0: 0.4 });
+  for (const [name, slot, y] of [['guardFire', LIGHT.guard, S.ghFires[0]], ['lodgingFire', LIGHT.lodging, S.ghFires[1]]]) {
+    fx.flames(name, [[24.7, y + 0.1, -7.5], [25.0, y + 0.1, -7.45], [25.3, y + 0.1, -7.55]], { count: 4, size: 0.34, rise: 0.4 });
+    fx.light(slot, [25.0, y + 0.7, -6.8], 1.0);
+  }
 
   const c = S.chimneys;
   fx.smoke('chimneys', [c.kitchenA, c.kitchenB, c.bakehouse, c.brewhouse, c.hall], { count: 16 });

@@ -48,6 +48,8 @@ export const S = {
     door: [-11.2, -8.2],
   },
   well: { x: -2, z: 0, axleY: 1.62, axleZ: -0.5, x0: -3.45, x1: -0.55, troughAt: [0.6, -1.3] },
+  forge: [29.5, -0.62, -14.6],
+  ghFires: [5.8, 11.6],
   chimneys: {
     kitchenA: [-3.4, 16.6, -22.5],
     kitchenB: [2.2, 16.6, -22.5],

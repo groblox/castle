@@ -55,7 +55,7 @@ try {
   await page.goto(`http://localhost:${port}/`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__castle && window.__castle.ready, null, { timeout: 60000 });
   await page.waitForTimeout(1500);
-  if (extra) await page.evaluate(extra);
+  if (extra) console.log("eval:", JSON.stringify(await page.evaluate(extra)));
   const info = await page.evaluate(() => ({
     triangles: window.__castle.world.triangles,
     calls: window.__castle.renderer.info.render.calls,

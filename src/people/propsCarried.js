@@ -126,6 +126,43 @@ export function carried(name, mat) {
         b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.4, 0), v3(0, -0.9, 0.15), 0.03, 0.03));
         b.with({ kind: K.STRAW, color: 0x9a8050 }, () => lathe(b, v3(0, -1.25, 0.2), 'y', [[0.1, 0], [0.03, 0.35]], 6));
       }), mat);
+    case 'hammer':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.02, 0), v3(0, -0.04, 0.32), 0.03, 0.03));
+        b.with({ kind: K.METAL, color: P.iron }, () => obox(b, 0, -0.04, 0.32, 0.06, 0.16, 0.06, 0));
+      }), mat);
+    case 'mallet':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.02, 0), v3(0, -0.04, 0.26), 0.035, 0.035));
+        b.with({ kind: K.TIMBER, color: 0x8a6a48 }, () => lathe(b, v3(0, -0.04, 0.3), 'y', [[0.07, -0.07], [0.08, 0.07]], 8));
+      }), mat);
+    case 'hoe':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.45, -0.1), v3(0, -1.0, 0.35), 0.035, 0.035));
+        b.with({ kind: K.METAL, color: P.iron }, () => obox(b, 0, -1.05, 0.45, 0.2, 0.03, 0.14, 0));
+      }), mat);
+    case 'crook':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0x8a6a48 }, () => {
+          beam(b, v3(0, -0.95, 0.05), v3(0, 0.6, 0), 0.035, 0.035);
+          beam(b, v3(0, 0.6, 0), v3(0, 0.72, 0.08), 0.03, 0.03);
+          beam(b, v3(0, 0.72, 0.08), v3(0, 0.62, 0.15), 0.03, 0.03);
+        });
+      }), mat);
+    case 'basket':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.WATTLE, color: 0xa88a5a }, () => lathe(b, v3(0, -0.05, 0.12), 'y', [[0.13, 0], [0.18, 0.18]], 10));
+        b.with({ kind: K.STRAW, color: 0xd8b860 }, () => lathe(b, v3(0, 0.1, 0.12), 'y', [[0.16, 0], [0.001, 0.04]], 10));
+      }), mat);
+    case 'pack':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.CLOTH, color: 0x7a6a4a }, () => lump(b, 0, 0.05, -0.12, 0.2, 0.26, 0.14, 0x7a6a4a, K.CLOTH));
+        b.with({ kind: K.CLOTH, color: 0x5a3e2a }, () => obox(b, 0, 0.12, -0.05, 0.42, 0.04, 0.04, 0));
+      }), mat);
+    case 'linen':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.CLOTH, color: 0xf2ede0 }, () => obox(b, 0, -0.1, 0.18, 0.5, 0.06, 0.3, 0));
+      }), mat);
     default:
       return null;
   }

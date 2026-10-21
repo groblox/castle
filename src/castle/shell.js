@@ -9,6 +9,14 @@ import {
   GH, HALL, SERV, NR, WELL, DITCH,
 } from './layout.js';
 
+// Corners of the northern fall of the ground, split into planar triangles.
+export const NORTH_FALL = [
+  [[-40, OUTER_Y, -40], [72, -4, -40], [72, -12, -62]],
+  [[-40, OUTER_Y, -40], [72, -12, -62], [-40, -12, -62]],
+  [[-62, -14, -40], [-40, OUTER_Y, -40], [-40, -12, -62]],
+  [[-62, -14, -40], [-40, -12, -62], [-62, -18, -62]],
+];
+
 const ROCK = { kind: K.ROCK, color: P.rock, capKind: K.CUT_ROCK, capColor: P.cutRock };
 
 export function buildShell(b) {
@@ -63,6 +71,9 @@ function terrain(b) {
     strip(WELL.x + 2, IC_OUT.x1, OUTER_Y);
     strip(IC_OUT.x1, OC_IN.x1, OUTER_Y - SK);
     skin(IC_OUT.x1, OC_IN.x1, OUTER_Y, 'outerWard', 'outerWard');
+    // turf over the rock in the north outer ward and outside the north curtain
+    // (just proud of the rock top so the two faces do not fight)
+    b.with({ label: lab('outerWard', 'outerWard'), kind: K.GROUND, color: P.turf, capKind: K.CUT_EARTH }, () => b.box(IC_OUT.x0, OUTER_Y - 0.06, zBack, IC_OUT.x1, OUTER_Y + 0.02, IC_OUT.z0));
     strip(OC_IN.x1, DITCH.x0, OUTER_Y - SK);
     skin(OC_IN.x1, DITCH.x0, OUTER_Y, 'turf', null);
     strip(DITCH.x0, DITCH.x1, DITCH.y - SK);
@@ -73,17 +84,11 @@ function terrain(b) {
       [v3(DITCH.x1, -2.2, zBack), v3(72, -4, zBack), v3(72, -4, 0), v3(DITCH.x1, -2.2, 0)],
       { topKind: K.GROUND, topColor: P.turf },
     );
-    // northern fall of the ground
-    b.loft(
-      [v3(-40, BASE_Y, -62), v3(72, BASE_Y, -62), v3(72, BASE_Y, zBack), v3(-40, BASE_Y, zBack)],
-      [v3(-40, -12, -62), v3(72, -12, -62), v3(72, -4, zBack), v3(-40, OUTER_Y, zBack)],
-      { topKind: K.GROUND, topColor: P.turf },
-    );
-    b.loft(
-      [v3(-62, BASE_Y, -62), v3(-40, BASE_Y, -62), v3(-40, BASE_Y, zBack), v3(-62, BASE_Y, zBack)],
-      [v3(-62, -18, -62), v3(-40, -12, -62), v3(-40, OUTER_Y, zBack), v3(-62, -14, zBack)],
-      { topKind: K.GROUND, topColor: P.turf },
-    );
+    // northern fall of the ground, as triangular prisms so that each top is
+    // a true plane (groundY in landscape.js follows the same triangles)
+    for (const tri of NORTH_FALL) {
+      b.loft(tri.map(([x, , z]) => v3(x, BASE_Y, z)), tri.map(([x, y, z]) => v3(x, y, z)), { topKind: K.GROUND, topColor: P.turf });
+    }
   });
 
   // inner platform (rock, ward level 0) with a skin of trodden earth

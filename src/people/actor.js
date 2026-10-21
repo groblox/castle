@@ -32,6 +32,7 @@ export class Actor {
     this.speed = opts.speed ?? 1.05;
     this.stride = opts.stride ?? 1.3;
     this.floor = opts.floor ?? null;
+    this.floorFn = opts.floorFn ?? floorAt;
     this.yOffset = opts.yOffset ?? 0;
     this.turnRate = opts.turnRate ?? 6;
     this.i = 0;
@@ -51,7 +52,7 @@ export class Actor {
   }
   place() {
     const r = this.e.root;
-    const y = this.floor !== null ? this.floor : floorAt(this.pos.x, this.pos.y);
+    const y = this.floor !== null ? this.floor : this.floorFn(this.pos.x, this.pos.y);
     r.position.set(this.pos.x, y + this.yOffset, this.pos.y);
     r.rotation.y = this.heading;
   }

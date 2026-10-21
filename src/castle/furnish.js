@@ -713,7 +713,11 @@ function chamber(b) {
     b.with({ kind: K.CLOTH, color: 0xeee6d2 }, () => lump(b, -24.2, f + 0.75, -19.7, 0.3, 0.1, 0.6, 0xeee6d2));
     chest(b, -21.6, -20.2, -20.9, -20.2, f, 0.6, P.timberDark);
     bench(b, -17.0, -14.4, -20.9, -20.5, 0.45, f);
-    b.with({ kind: K.CLOTH, color: 0x5d7a8c }, () => b.box(-19.5, f + 1.0, -21.0, -16.5, f + 3.0, -20.97)); // hanging
+    b.with({ kind: K.CLOTH, color: 0x5d7a8c }, () => b.box(-19.5, f + 1.0, -20.98, -16.5, f + 3.0, -20.95)); // hanging
+    b.with({ kind: K.CLOTH, color: 0xd8c48a }, () => {
+      b.box(-19.5, f + 2.85, -20.95, -16.5, f + 3.0, -20.94);
+      b.box(-19.5, f + 1.0, -20.95, -16.5, f + 1.15, -20.94);
+    });
   });
 }
 

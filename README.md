@@ -6,6 +6,12 @@ in half along the gate passage, the well and the great hall. Full interior detai
 to the service rooms (kitchen, bakehouse, brewhouse, buttery, pantry, larder, well,
 undercroft and store-house), where the household works through its morning before dinner.
 
+Around them the castle is lived in and worn. Stone is weathered, with damp at the wall feet, rain
+streaks, lichen and soot-blackened kitchens. The wards hold a kitchen garden, beehives, woodstacks,
+sawyers, a masons' lodge and scaffold, a smithy, cobbles, hens and hounds. Outside, sheep graze among
+gorse, bracken and thorn trees, a pedlar comes up the road, banners stream from the turrets and
+jackdaws wheel round the towers.
+
 All geometry is built procedurally in code, and all art is original.
 
 ## Running
@@ -42,11 +48,14 @@ npm run sources  # regenerate SOURCES.md from src/data/sources.js and src/data/n
 - `src/geom/builder.js`: a geometry builder that clips convex solids against the cut plane and
   generates real cap faces tagged as section fill. Coplanar T-junctions are welded to avoid cracks.
 - `src/castle/`: layout, shell (curtains, towers, gatehouse, ranges, rock), furnishings, effects.
+  `landscape.js`, `wards.js` and `interiors.js` dress the ground, the wards and walls, and the rooms;
+  `src/geom/nature.js` makes boulders, bushes, tufts and trees as convex solids so they cut cleanly.
 - `src/render/`: one surface shader writing colour, normals and picking labels to three targets.
   A post pass draws wobbling ink lines, pigment pooling, granulation and paper. Smoke, steam and
   flames are watercolour particles.
 - `src/people/`: articulated procedural figures (smooth, pleated surfaces of revolution), animals,
-  the routine engine, and the watch patrolling the wall-walks.
+  the routine engine, and the watch patrolling the wall-walks. `life.js` adds the people at work in
+  the wards, hens, hounds, sheep, birds and the rippling banners (`banners.js`).
 - `src/mech/`: the five working mechanisms.
 - `src/data/`: glossary, notes and sources. `SOURCES.md` lists every reference and the claims it
   supports, and every statement marked as conjecture.

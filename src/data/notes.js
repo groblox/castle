@@ -104,14 +104,16 @@ export const ROOM_NOTES = {
       'The great hall was where the household ate together at trestle tables, cleared away after meals. The lord and his guests sat on the dais at the upper end, which lies in the removed half of the castle {@woolgarHousehold}.',
       'At the lower end a timber screen hides the screens passage. Doors from it lead to the buttery and pantry, and the main door opens to the courtyard. The hall is heated by a fireplace with a hood in the curtain wall and lit by tall windows to the courtyard. Its open timber roof is of a [[conj]] form.',
       'Tables are being laid for dinner with cloths and trenchers, and the butler and pantler come and go with ale and bread.',
+      'The walls are limewashed and lined out in red to look like fine ashlar, a finish much used in the king\'s works {@maspattern}. Rushes are strewn on the boards {@rushes}. A striped hanging runs along the screens gallery, a candle-beam hangs from a tie beam, and the cupboard by the screens shows off the plate. Two hounds doze by the fire. These furnishings are [[conj]].',
     ],
-    also: [{ type: 'person', id: 'butler' }, { type: 'person', id: 'pantler' }],
+    also: [{ type: 'person', id: 'butler' }, { type: 'person', id: 'pantler' }, { type: 'person', id: 'hound' }],
   },
   chamber: {
     terms: 'Chamber',
     body: [
       'A chamber over the services, reached from the hall, is a common arrangement. Who used it here is [[conj]]: perhaps the constable or an officer of the garrison.',
       'In Edward\'s Welsh castles the finest lodgings were often in the great gatehouse {@wikiHarlech}.',
+      'The room is furnished for its occupant: a bed with a hung tester and curtains, a chest, a laver for washing hands, clothes on a pole, rush matting and a garderobe (latrine) door in the corner. A hooded falcon sits on its perch, for hawking was a passion of the king and his lords {@hawking}, and a game of chess is set out {@chess}. The walls are lined out in red like the hall\'s {@maspattern}. The furnishings are [[conj]].',
     ],
   },
   gatehouse: {
@@ -120,6 +122,8 @@ export const ROOM_NOTES = {
       'The great gatehouse is modelled on Harlech\'s. Two D-shaped towers face the field, and the passage between them is closed by doors and three portcullises and overlooked by murder holes {@wikiHarlech}.',
       'Above the passage are two floors of chambers with fireplaces and large windows to the ward, high-status lodgings for the constable or the king. Historians disagree about who used which floor {@wikiHarlech}.',
       'The cut runs down the middle of the gate passage, showing the vault, the portcullis grooves and the chambers above.',
+      'The lower chamber is shown as the guardroom, with spears in a rack, shields on the wall, kettle hats on a shelf, crossbows on pegs and a mail hauberk on a stand {@morganBible}. Dice lie on the table, and a pallet bed is made up in the corner. The upper chamber is a lodging with a curtained bed, a writing table and painted walls. Both fires are lit. This use of the two floors is [[conj]].',
+      'The king\'s arms fly from the gatehouse stair turret: three gold lions on red {@royalArms}.',
     ],
   },
   ward: {
@@ -127,14 +131,20 @@ export const ROOM_NOTES = {
     body: [
       'The inner ward is the courtyard within the high inner curtain, ringed by the main buildings: hall, services, kitchen, stores and chapel {@wikiHarlech}. The chapel and the southern ranges lie in the removed half.',
       'Edward\'s castles were not grey. Conwy was rendered and limewashed white {@cadwConwy}; the stone colours here are left as stone so that the masonry reads.',
+      'The ward is a working yard. Cobbled paths join the hall door, the service doors and the gate. Fuel is stacked against the kitchen, empty casks wait outside the brewhouse, and hens scratch about while a woman feeds them. A hound wanders, and weeds grow where feet do not go. These details are [[conj]].',
+      'Timber shutters hang in some embrasures of the inner parapet, propped open. Pivot sockets for such shutters survive in the merlons at Conwy {@shutters}.',
     ],
+    also: [{ type: 'person', id: 'henwife' }, { type: 'person', id: 'hen' }, { type: 'person', id: 'hound' }],
   },
   outerWard: {
     terms: 'Outer ward; outer curtain',
     body: [
       'In a concentric castle a lower outer curtain wraps the inner one, so that defenders on both walls can shoot at once {@taylorKW}. The narrow space between them is the outer ward.',
       'Beyond the outer gate a timber bridge crosses a rock-cut ditch.',
+      'The outer ward is a working space. On the west are a kitchen garden, bee skeps {@skeps}, a hen-house and linen laid out to bleach; Conwy had a garden made for Queen Eleanor {@conwyGarden}. On the north are the kitchens\' woodstacks, sawyers at work, a masons\' lodge and a scaffold against the curtain {@putlogs}, lime and sand for mortar, and the midden. On the east is a smithy beside the gate; Harlech kept a smith, a carpenter and a mason in its garrison {@wikiHarlech}. All of this is [[conj]] in its detail and placing.',
+      'Banners fly from the turrets: the king\'s arms {@royalArms}, and the red cross of St George that English foot soldiers wore in Wales {@stGeorge}.',
     ],
+    also: [{ type: 'person', id: 'smith' }, { type: 'person', id: 'mason' }, { type: 'person', id: 'sawyer' }, { type: 'person', id: 'gardener' }, { type: 'person', id: 'laundress' }, { type: 'person', id: 'porter' }],
   },
 };
 
@@ -252,6 +262,71 @@ export const PERSON_NOTES = {
       'Ten of Harlech\'s thirty garrison soldiers were crossbowmen {@wikiHarlech}. This one walks the outer curtain on the west side with his crossbow slung on his back and a quiver of bolts at his hip, stopping at the embrasures to look out. The patrol is [[conj]].',
       'The crossbow has a wooden bow (prod) and a stirrup at its nose. The shooter put his foot in the stirrup to hold the bow down while he drew the string back {@morganBible}.',
     ],
+  },
+  smith: {
+    terms: 'Smith; Latin faber',
+    body: [
+      'Harlech\'s permanent garrison included a smith, with a carpenter and a mason {@wikiHarlech}. There was always ironwork to make and mend: nails, hinges, door bands, tools, horseshoes, crossbow stirrups and bolt-heads.',
+      'Here he works at a waist-high forge hearth in a lean-to against the inner curtain, with bellows, an anvil on a stump and a quench tub. The smithy and its place in the outer ward are [[conj]].',
+    ],
+  },
+  mason: {
+    terms: 'Mason; Latin cementarius',
+    body: [
+      'A mason was kept on Harlech\'s strength after the building was done {@wikiHarlech}. Weather and war kept him busy. One mason dresses a block on the banker in the lodge; another repoints the curtain from a scaffold of poles, with putlogs set into the putlog holes and hurdles laid on them to stand on {@putlogs}. The repair work and the lodge are [[conj]].',
+    ],
+  },
+  sawyer: {
+    terms: 'Sawyers',
+    body: [
+      'Planks were sawn by hand. Two sawyers worked a long saw, one standing on the timber and one below it, in a pit or with the log raised on trestles {@sawpit}. Here they rip a baulk raised on trestles, with sawn planks stacked to season beside them. Their work here is [[conj]].',
+    ],
+  },
+  gardener: {
+    terms: 'Gardener',
+    body: [
+      'Edward I\'s castles had gardens. At Conwy a garden with a lawn was made for Queen Eleanor in 1283 {@conwyGarden}. Here a gardener hoes beds of leeks, coleworts (a kale) and pot-herbs for the kitchen; the plants, the beds and their place in the outer ward are [[conj]].',
+    ],
+  },
+  laundress: {
+    terms: 'Laundress (lavender)',
+    body: [
+      'Great households were overwhelmingly male {@woolgarHousehold}. Washing linen was among the jobs most often done by women, so the laundress here is a woman. She spreads the cloths on the grass to bleach in the sun. The scene is [[conj]].',
+    ],
+  },
+  henwife: {
+    terms: 'Henwife',
+    body: [
+      'Eggs and poultry were everyday foods {@woolgarFood}. A few hens and a cockerel scratch about the inner ward, and a woman scatters grain for them from her basket. Keeping hens in the castle, and who kept them, are [[conj]].',
+    ],
+  },
+  porter: {
+    terms: 'Porter; Latin janitor',
+    body: [
+      'The gates were kept by a porter, who opened them at dawn, shut them at night and watched who came and went. Here he sits on a bench inside the outer gate and gets up now and then to look down the road. His post and bench are [[conj]].',
+    ],
+  },
+  pedlar: {
+    terms: 'Pedlar',
+    body: [
+      'Castles drew trade. Each of Edward\'s new castles had a chartered English town beside it {@taylorKW}. A pedlar with a sack on his shoulder walks up the road to the bridge and stops to look up at the gate. He is [[conj]].',
+    ],
+  },
+  shepherd: {
+    terms: 'Shepherd\'s boy',
+    body: ['A boy minds the flock on the slope below the north curtain, leaning on his crook. The hurdle fold nearby is where the sheep are penned. The scene is [[conj]].'],
+  },
+  sheep: {
+    terms: 'Sheep',
+    body: ['Small, hardy hill sheep, most white-faced, a few brown. Wool was the great export of thirteenth-century England and Wales. The flock and its pasture under the walls are [[conj]].'],
+  },
+  hen: {
+    terms: 'Hens and cockerel',
+    body: ['Hens peck and scratch in the inner ward and round their wattle hen-house in the outer ward, giving eggs and, in time, the pot {@woolgarFood}. Their presence here is [[conj]].'],
+  },
+  hound: {
+    terms: 'Hounds',
+    body: ['Hunting with hounds and hawking were the great pastimes of the king and his lords {@hawking}. Two hounds doze by the hall fire and a third noses about the ward for scraps. The hounds are [[conj]].'],
   },
   carter: {
     terms: 'Carter',
