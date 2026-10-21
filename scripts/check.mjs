@@ -62,7 +62,7 @@ try {
     tris: window.__castle.renderer.info.render.triangles,
   }));
   console.log('scene:', JSON.stringify(info));
-  for (const s of shots) {
+  for (const [i, s] of shots.entries()) {
     if (s === 'overview') {
       await page.evaluate(() => window.__castle.overview({ instant: true }));
     } else if (s.startsWith('js:')) {
@@ -72,7 +72,8 @@ try {
     }
     await page.evaluate(() => window.__castle.settle());
     await page.waitForTimeout(900);
-    const file = `${out}/${s.replace(/[^a-z0-9_-]/gi, '_').slice(0, 40)}.png`;
+    const name = s.startsWith('js:') ? `js${i}` : s.replace(/[^a-z0-9_-]/gi, '_').slice(0, 40);
+    const file = `${out}/${name}.png`;
     await page.screenshot({ path: file });
     console.log('shot:', file);
   }

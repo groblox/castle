@@ -2,11 +2,13 @@ import * as THREE from 'three';
 
 const DEG = Math.PI / 180;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const wrap = (a) => a - Math.round(a / (2 * Math.PI)) * 2 * Math.PI;
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 /**
- * Orbit controls for a cutaway: the camera orbits a target within limits that
- * keep the cut face (the plane z = 0, facing +z) towards the viewer.
+ * Orbit controls for a cutaway. Over the whole castle the camera can circle
+ * all the way round; inside a room it orbits within limits that keep the
+ * room's open side towards the viewer.
  *   left-drag: orbit   right-drag / shift-drag: pan   wheel: zoom
  *   WASD / arrows: pan   Q/E: down/up
  */
@@ -17,11 +19,11 @@ export class CutawayControls {
     this.state = { target: new THREE.Vector3(4, 0, -10), dist: 150, az: 0, el: 22 * DEG };
     this.goal = { target: this.state.target.clone(), dist: this.state.dist, az: this.state.az, el: this.state.el };
     this.overviewLimits = {
-      az: [-55 * DEG, 55 * DEG],
-      el: [2 * DEG, 68 * DEG],
+      az: null, // free all the way round
+      el: [2 * DEG, 80 * DEG],
       dist: [8, 240],
-      box: new THREE.Box3(new THREE.Vector3(-60, -30, -34), new THREE.Vector3(65, 30, 4)),
-      minCamZ: 2,
+      box: new THREE.Box3(new THREE.Vector3(-60, -30, -60), new THREE.Vector3(65, 30, 4)),
+      minCamY: -10,
     };
     this.limits = this.overviewLimits;
     this.flight = null;
@@ -141,7 +143,11 @@ export class CutawayControls {
 
   /** Fly to a view: {target, dist, az, el} (angles in radians). */
   flyTo(view, duration = 1.4) {
-    const from = { target: this.state.target.clone(), dist: this.state.dist, az: this.state.az, el: this.state.el };
+    const s = this.state;
+    // take the short way round
+    s.az = view.az + wrap(s.az - view.az);
+    this.goal.az = s.az;
+    const from = { target: s.target.clone(), dist: s.dist, az: s.az, el: s.el };
     this.flight = { from, to: { ...view, target: view.target.clone() }, t: 0, duration };
   }
 
@@ -159,7 +165,7 @@ export class CutawayControls {
   _clampGoal() {
     const L = this.limits;
     const g = this.goal;
-    g.az = clamp(g.az, L.az[0], L.az[1]);
+    if (L.az) g.az = clamp(g.az, L.az[0], L.az[1]);
     g.el = clamp(g.el, L.el[0], L.el[1]);
     g.dist = clamp(g.dist, L.dist[0], L.dist[1]);
     L.box.clampPoint(g.target, g.target);

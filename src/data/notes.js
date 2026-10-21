@@ -55,7 +55,8 @@ export const ROOM_NOTES = {
   larder: {
     terms: 'Anglo-Norman lardier, from lard (bacon)',
     body: [
-      'The larder held meat and fish, much of it salted for keeping. Its name comes from lard, bacon fat. Flitches of bacon and hams hang from the beams, salted beef and pork sit in powdering tubs, and the salting trough stands ready {@brears}.',
+      'The larder held meat and fish, much of it salted for keeping. Its name comes from lard, bacon fat. Flitches of bacon and hams hang from the beams, salted beef and pork sit in powdering tubs under brine or a weighted lid, and pork joints lie in the salting trough in a bed of salt {@brears}.',
+      'Fresh meat came in on the hoof or as carcasses. A dressed sheep hangs from a gambrel by the block where it will be cut into joints. Mallard and a hare hang to age, and loops of puddings, sausages of blood or offal with oatmeal and suet, hang beside the bacon {@woolgarFood}. Crocks of salted butter and rendered fat stand on the shelves. The exact stock on any one morning is [[conj]].',
       'The Church\'s many fish days (Fridays, Lent and other fasts) were met with barrelled herring and dried stockfish {@woolgarFood}. In a royal household the larder had its own serjeant, the larderer {@ordinance1318}.',
       'The rats are black rats; the brown rat did not reach Britain until the eighteenth century {@rats}.',
     ],
@@ -236,6 +237,20 @@ export const PERSON_NOTES = {
     body: [
       'Clerks kept the household\'s accounts on parchment rolls. Deliveries were also recorded on notched wooden tallies, split so that each party kept a half {@clanchy} {@tally} {@woolgarAccounts}.',
       'Here he notches the tally as each sack goes into the store-house and writes up the delivery. A clerk was often in minor orders and dressed accordingly in a long gown.',
+    ],
+  },
+  watchman: {
+    terms: 'Watchman (Latin vigil); a man of the garrison',
+    body: [
+      'Harlech\'s garrison was set at 36: the constable, thirty men of whom ten were crossbowmen, a chaplain, a smith, a carpenter and a mason {@wikiHarlech}. Some of them were always on watch. Here one man walks the inner wall-walk above the kitchens and another the outer curtain by the gate; the routes and the numbers on watch are [[conj]].',
+      'He wears a quilted aketon (gambeson) over his tunic, a mail coif and a broad-brimmed iron kettle hat (chapel de fer), and carries a spear. Foot soldiers equipped like this appear in mid-thirteenth-century pictures {@morganBible}; his exact kit is [[conj]].',
+    ],
+  },
+  crossbowman: {
+    terms: 'Crossbowman (arbalaster)',
+    body: [
+      'Ten of Harlech\'s thirty garrison soldiers were crossbowmen {@wikiHarlech}. This one walks the outer curtain on the west side with his crossbow slung on his back and a quiver of bolts at his hip, stopping at the embrasures to look out. The patrol is [[conj]].',
+      'The crossbow has a wooden bow (prod) and a stirrup at its nose. The shooter put his foot in the stirrup to hold the bow down while he drew the string back {@morganBible}.',
     ],
   },
   carter: {

@@ -66,6 +66,7 @@ export const SOURCES = {
     claims: [
       'Bread of different grades for different ranks; ale as the everyday drink and wine for the better sort.',
       'Many fish days in the year, met with salt and dried fish (herring, stockfish).',
+      'Meat came into great households on the hoof or as carcasses. Wildfowl, hares and puddings (sausages of blood or offal) were all part of the diet, and butter and fat were salted and potted.',
       'The foods shown are all available in England c. 1290. New World foods such as potatoes, maize, tomatoes and turkeys are absent, being post-1492.',
     ],
   },
@@ -158,6 +159,15 @@ export const SOURCES = {
     claims: [
       'Domed ovens were heated by burning faggots inside them. The embers were then raked out with a scuffle, and the floor was cleaned with a wet mop (a mawkin or malkin).',
       'The mouth was closed with a stop of clay, iron or timber, and the bread baked in the stored heat. Sealing the stop with clay is attested in later practice and is assumed here.',
+    ],
+  },
+  morganBible: {
+    cite: 'The Morgan Picture Bible ("Crusader Bible" or Maciejowski Bible), Paris, c. 1244–1254. New York, Morgan Library & Museum, MS M.638.',
+    url: 'https://www.themorgan.org/collection/crusader-bible',
+    short: 'Morgan Picture Bible',
+    claims: [
+      'Mid-13th-century pictures of foot soldiers in quilted coats, mail coifs and broad-brimmed iron kettle hats, armed with spears and swords.',
+      'Crossbowmen shown with stirruped crossbows. The kit of the castle\'s watch is modelled on these pictures, and its details are conjecture.',
     ],
   },
   white: {

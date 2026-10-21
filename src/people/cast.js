@@ -168,6 +168,25 @@ export function buildCast(scene) {
   const horse = new Horse(labPerson('horse', 'granary'), G.people);
   add('horse', horse, [{ pose: 'stand', dur: 1e9 }], { start: [11.85, -9.2], heading: W, floor: 0 });
 
+  // ---- the watch on the walls -------------------------------------------------
+  // Wall-walk levels: inner curtain 12 m above the inner ward, outer curtain
+  // 5 m (6.5 m above the outer ward).
+  const soldier = (over) => ({ tunic: 0xc4b48a, quilt: 0xa69670, hose: 0x5a5048, mail: 0x8c8e90, kettle: 0x66666a, sword: true, shoes: 0x3a2a1e, ...over });
+  const arm = (a, slots) => { for (const [slot, prop] of slots) a.e.hold(slot, carried(prop, a.e.mat)); };
+  const patrol = (from, to, look, pose = 'sentry') => [
+    { go: [to], pose },
+    { pose, params: { moving: false }, face: look, dur: 6 },
+    { go: [from], pose },
+    { pose, params: { moving: false }, face: look, dur: 4 },
+  ];
+  const wNorth = add('watchNorth', fig(soldier({}), 'watchman', 'outerWard'), patrol([-20.2, -22.3], [-5.4, -22.3], N), { floor: 12.0, speed: 0.75 });
+  arm(wNorth, [['spear', 'spear']]);
+  const wWest = add('watchWest', fig(soldier({ tunic: 0xb8a882, quilt: 0x9a8a64, kettle: null, hood: 0x6a5a40 }), 'crossbowman', 'outerWard'), patrol([-38.45, -18.8], [-38.45, -30.8], W, 'walk'), { floor: 5.0, speed: 0.7 });
+  arm(wWest, [['back', 'crossbow'], ['hip', 'quiver']]);
+  wWest.steps[1].pose = wWest.steps[3].pose = 'look';
+  const wEast = add('watchEast', fig(soldier({ tunic: 0xa8a080, quilt: 0x8a8264, hose: 0x6a4a3a }), 'watchman', 'outerWard'), patrol([38.45, -31.0], [38.45, -8.2], E), { floor: 5.0, speed: 0.72 });
+  arm(wEast, [['spear', 'spear']]);
+
   // ---- the cat --------------------------------------------------------------
   const cat = new Cat(labPerson('cat', 'kitchen'), G.people);
   const fireToLarder = [[-3.4, -17.6], [-4.0, -13.6], [-4.9, -12.0], [-7.5, -11.0], [-9.8, -11.8], [-9.8, -13.8], [-10.3, -15.6]];

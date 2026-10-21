@@ -22,7 +22,8 @@ npm run sources  # regenerate SOURCES.md from src/data/sources.js and src/data/n
 
 ## Using it
 
-- **Orbit**: drag. The orbit is limited so the cut face always faces you.
+- **Orbit**: drag. Over the whole castle you can circle all the way round; inside a room the orbit is
+  limited so the open side of the room stays towards you.
 - **Pan**: right-drag, shift-drag or WASD / arrow keys (Q/E for down/up).
 - **Zoom**: scroll; it zooms towards the cursor.
 - **Fly to a room**: click it in the view, the room list or the plan. The rest of the castle fades back.
@@ -44,7 +45,8 @@ npm run sources  # regenerate SOURCES.md from src/data/sources.js and src/data/n
 - `src/render/`: one surface shader writing colour, normals and picking labels to three targets.
   A post pass draws wobbling ink lines, pigment pooling, granulation and paper. Smoke, steam and
   flames are watercolour particles.
-- `src/people/`: articulated procedural figures, animals and the routine engine.
+- `src/people/`: articulated procedural figures (smooth, pleated surfaces of revolution), animals,
+  the routine engine, and the watch patrolling the wall-walks.
 - `src/mech/`: the five working mechanisms.
 - `src/data/`: glossary, notes and sources. `SOURCES.md` lists every reference and the claims it
   supports, and every statement marked as conjecture.

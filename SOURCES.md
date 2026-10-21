@@ -33,7 +33,7 @@ Supports:
 - The inner ward held a chapel, kitchen, service buildings, a granary and a great hall.
 - A water gate and stair to the shore let the castle be resupplied by sea, as it was from Ireland during the siege of 1294–95.
 
-Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward
+Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward; Person: watchman; Person: crossbowman
 
 ## 3. Wikipedia, "Beaumaris Castle"
 
@@ -89,6 +89,7 @@ Supports:
 
 - Bread of different grades for different ranks; ale as the everyday drink and wine for the better sort.
 - Many fish days in the year, met with salt and dried fish (herring, stockfish).
+- Meat came into great households on the hoof or as carcasses. Wildfowl, hares and puddings (sausages of blood or offal) were all part of the diet, and butter and fat were salted and potted.
 - The foods shown are all available in England c. 1290. New World foods such as potatoes, maize, tomatoes and turkeys are absent, being post-1492.
 
 Cited in: Room: kitchen; Room: bakehouse; Room: larder
@@ -222,7 +223,18 @@ Supports:
 
 Cited in: Room: bakehouse; Mechanism: oven
 
-## 20. White, Medieval Technology
+## 20. Morgan Picture Bible
+
+The Morgan Picture Bible ("Crusader Bible" or Maciejowski Bible), Paris, c. 1244–1254. New York, Morgan Library & Museum, MS M.638. <https://www.themorgan.org/collection/crusader-bible>
+
+Supports:
+
+- Mid-13th-century pictures of foot soldiers in quilted coats, mail coifs and broad-brimmed iron kettle hats, armed with spears and swords.
+- Crossbowmen shown with stirruped crossbows. The kit of the castle's watch is modelled on these pictures, and its details are conjecture.
+
+Cited in: Person: watchman; Person: crossbowman
+
+## 21. White, Medieval Technology
 
 Lynn White Jr, *Medieval Technology and Social Change* (Oxford: Clarendon Press, 1962).
 
@@ -233,7 +245,7 @@ Supports:
 
 Cited in: Mechanism: windlass
 
-## 21. Wikipedia, "Windlass"
+## 22. Wikipedia, "Windlass"
 
 "Windlass", *Wikipedia* (accessed October 2026). <https://en.wikipedia.org/wiki/Windlass>
 
@@ -243,7 +255,7 @@ Supports:
 
 Cited in: Mechanism: windlass; Mechanism: hoist
 
-## 22. York, black rats
+## 23. York, black rats
 
 University of York, "Black rats colonised Europe twice" (news release on an ancient-DNA study, 2022); Max Planck Society release on the same study. <https://www.york.ac.uk/news-and-events/news/2022/research/black-rat-europe>
 
@@ -267,6 +279,7 @@ Cited in: Room: larder; Person: rat
 - **Room: kitchen**: The great kitchen stands against the north curtain, as Conwy's kitchen does on the north side of its outer ward. Its two fireplaces are built into the thickness of the curtain, with flues rising to chimneys on the wall-walk, and a louvre in the roof carries off the rest of the smoke and heat. The fireplace and louvre arrangement is *(conjecture)*.
 - **Room: brewhouse**: The water is heated in a great metal vessel, the lead, set over a furnace. The furnace, lead and vessel arrangement follows later brewhouse practice and is *(conjecture)*.
 - **Room: granary**: Harlech's inner ward had a granary among its buildings. Here a store-house with a grain loft stands in the north range, beside the gatehouse. Its position, and the raised loft to keep grain dry, are *(conjecture)*.
+- **Room: larder**: Fresh meat came in on the hoof or as carcasses. A dressed sheep hangs from a gambrel by the block where it will be cut into joints. Mallard and a hare hang to age, and loops of puddings, sausages of blood or offal with oatmeal and suet, hang beside the bacon. Crocks of salted butter and rendered fat stand on the shelves. The exact stock on any one morning is *(conjecture)*.
 - **Room: pantry**: Pantry and buttery stand side by side at the lower end of the hall, entered from the screens passage. This is the standard arrangement of a medieval hall. The chamber over them is *(conjecture)*.
 - **Room: pantry**: Where cheese was kept varied between households; it is shown here on a pantry shelf *(conjecture)*.
 - **Room: buttery**: Many of the jugs in Welsh and English castles were glazed wares, some of them imported from south-west France along with the Gascon wine. The colours here are *(conjecture)*.
@@ -279,4 +292,7 @@ Cited in: Room: larder; Person: rat
 - **Person: spitBoy**: The lowest job in the kitchen: sitting by the fire for hours turning the spit by hand. The term turnbroche and the exact arrangement are *(conjecture)* for 1290; the job itself was done by boys until dogs and jacks took over centuries later.
 - **Person: brewer**: Ale-brewing in medieval England was very often women's work: brewster is the feminine form. Great households, however, were overwhelmingly male, and a castle's brewing may well have been done by men. A woman brewing here is *(conjecture)*.
 - **Person: waterCarrier**: Water for cooking, washing and brewing all had to be carried, from the well to the kitchen trough and the brewhouse. The job is shown here as a single servant's round *(conjecture)*.
+- **Person: watchman**: Harlech's garrison was set at 36: the constable, thirty men of whom ten were crossbowmen, a chaplain, a smith, a carpenter and a mason. Some of them were always on watch. Here one man walks the inner wall-walk above the kitchens and another the outer curtain by the gate; the routes and the numbers on watch are *(conjecture)*.
+- **Person: watchman**: He wears a quilted aketon (gambeson) over his tunic, a mail coif and a broad-brimmed iron kettle hat (chapel de fer), and carries a spear. Foot soldiers equipped like this appear in mid-thirteenth-century pictures; his exact kit is *(conjecture)*.
+- **Person: crossbowman**: Ten of Harlech's thirty garrison soldiers were crossbowmen. This one walks the outer curtain on the west side with his crossbow slung on his back and a quiver of bolts at his hip, stopping at the embrasures to look out. The patrol is *(conjecture)*.
 - **Person: horse**: A working horse in the shafts of a two-wheeled cart, in a padded collar. Horse collars of this kind were in use in England by the 13th century; the harness details are *(conjecture)*.

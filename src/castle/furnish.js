@@ -154,50 +154,222 @@ function larder(b) {
   const f = S.larder.floor;
   const r = NR.rooms.larder;
   const y = S.larder.beamY;
+  const hook = (x, z, len) => {
+    cord(b, v3(x, y, z), v3(x, y - len, z), 0.018, 0x6e5a40);
+    b.with({ kind: K.METAL, color: P.iron }, () => beam(b, v3(x, y - len, z), v3(x, y - len - 0.08, z), 0.02, 0.02));
+    return y - len - 0.08;
+  };
   b.with({ ...IN(g, 'larder', 'flitch'), kind: K.TIMBER, color: P.timberDark }, () => {
     for (const z of [-19.6, -16.8]) b.box(r.x0, y, z - 0.1, r.x1, y + 0.2, z + 0.1);
-    // flitches of bacon and hams on cords
-    const hang = [[-11.2, -19.6, 'flitch'], [-10.4, -19.6, 'flitch'], [-9.6, -19.6, 'ham'], [-8.6, -19.6, 'flitch'], [-11.0, -16.8, 'ham'], [-10.2, -16.8, 'fish'], [-9.4, -16.8, 'fish'], [-8.4, -16.8, 'ham']];
-    for (const [x, z, what] of hang) {
-      cord(b, v3(x, y, z), v3(x, y - 0.6, z), 0.02, 0x6e5a40);
-      if (what === 'flitch') {
-        b.with({ kind: K.PLAIN, color: 0xb7765a }, () => obox(b, x, y - 1.05, z, 0.55, 0.85, 0.08, 0.1));
-        b.with({ kind: K.PLAIN, color: 0xdcbf9c }, () => obox(b, x, y - 1.05, z + 0.045, 0.5, 0.78, 0.01, 0.1));
-      } else if (what === 'ham') {
-        lump(b, x, y - 1.0, z, 0.2, 0.36, 0.17, 0xa8634a);
-      } else {
-        b.with({ kind: K.PLAIN, color: 0xc4b48a, label: lab('stockfish', 'larder') }, () => {
-          for (let i = 0; i < 4; i++) obox(b, x + (i - 1.5) * 0.08, y - 0.95, z, 0.1, 0.7, 0.04, i * 0.15);
-        });
+  });
+
+  // ---- hanging from the beams ----
+  const flitch = (x, z, rot) => b.with(IN(g, 'larder', 'flitch'), () => {
+    const top = hook(x, z, 0.35);
+    const cy = top - 0.42;
+    b.with({ kind: K.PLAIN, color: 0x9a5a40 }, () => obox(b, x, cy, z, 0.5, 0.8, 0.07, rot)); // rind
+    // streaks of lean and fat on the cut face
+    const s = Math.sin(rot);
+    const c = Math.cos(rot);
+    for (let i = 0; i < 5; i++) {
+      const col = i % 2 ? 0xe2c6a4 : 0xb86a52;
+      b.with({ kind: K.PLAIN, color: col }, () => obox(b, x + s * 0.04, cy - 0.32 + i * 0.16, z + c * 0.04, 0.46, 0.14, 0.012, rot));
+    }
+  });
+  const ham = (x, z) => b.with(IN(g, 'larder', 'ham'), () => {
+    const top = hook(x, z, 0.3);
+    b.with({ kind: K.PLAIN, color: 0xa25a40 }, () =>
+      lathe(b, v3(x, top - 0.66, z), 'y', [[0.04, 0], [0.15, 0.08], [0.2, 0.24], [0.18, 0.38], [0.1, 0.5], [0.045, 0.58], [0.035, 0.66]], 12));
+    b.with({ kind: K.PLAIN, color: 0xe6d6c0 }, () => lathe(b, v3(x, top - 0.08, z), 'y', [[0.03, 0], [0.03, 0.08]], 6)); // knuckle
+  });
+  const puddings = (x, z) => b.with(IN(g, 'larder', 'puddings'), () => {
+    const top = hook(x, z, 0.4);
+    // a looped string of puddings: links down one side and up the other
+    const n = 7;
+    for (let i = 0; i < n; i++) {
+      const a = (i / (n - 1)) * Math.PI;
+      const px = x - Math.cos(a) * 0.17;
+      const py = top - 0.05 - Math.sin(a) * 0.55;
+      lump(b, px, py, z, 0.045, 0.085, 0.045, i % 2 ? 0x6a2e28 : 0x7a3a2e);
+    }
+  });
+  const ducks = (x, z) => b.with(IN(g, 'larder', 'game'), () => {
+    const top = hook(x, z, 0.3);
+    for (const dx of [-0.1, 0.1]) {
+      b.with({ kind: K.PLAIN, color: 0xd8d0c0 }, () => beam(b, v3(x, top, z), v3(x + dx, top - 0.12, z), 0.012, 0.012));
+      lump(b, x + dx, top - 0.18, z, 0.04, 0.06, 0.045, 0x2f5a3c, K.FUR); // drake's green head
+      lump(b, x + dx * 1.1, top - 0.24, z, 0.022, 0.05, 0.022, 0xe8e2d6, K.FUR); // white collar and neck
+      lump(b, x + dx * 1.2, top - 0.42, z, 0.09, 0.17, 0.08, 0x8a7a68, K.FUR); // body
+      lump(b, x + dx * 1.2, top - 0.42, z + 0.05, 0.07, 0.12, 0.04, 0x9a6a4a, K.FUR); // chestnut breast
+      lump(b, x + dx * 1.2, top - 0.6, z, 0.045, 0.04, 0.03, 0x4a4a4a, K.FUR); // tail
+    }
+  });
+  const hare = (x, z) => b.with(IN(g, 'larder', 'game'), () => {
+    const top = hook(x, z, 0.25);
+    // hung by the hind feet: legs up, body, head and ears down
+    b.with({ kind: K.FUR, color: 0x8a7458 }, () => {
+      beam(b, v3(x - 0.05, top, z), v3(x - 0.04, top - 0.28, z), 0.035, 0.03);
+      beam(b, v3(x + 0.05, top, z), v3(x + 0.04, top - 0.28, z), 0.035, 0.03);
+    });
+    lump(b, x, top - 0.45, z, 0.09, 0.22, 0.08, 0x8f785a, K.FUR);
+    lump(b, x, top - 0.45, z + 0.04, 0.06, 0.16, 0.05, 0xc8b89a, K.FUR); // pale belly
+    lump(b, x, top - 0.72, z + 0.02, 0.05, 0.07, 0.06, 0x846c50, K.FUR);
+    b.with({ kind: K.FUR, color: 0x7a6448 }, () => {
+      obox(b, x - 0.025, top - 0.86, z - 0.01, 0.03, 0.16, 0.015, 0);
+      obox(b, x + 0.025, top - 0.86, z - 0.01, 0.03, 0.16, 0.015, 0);
+    });
+  });
+  const stockfishBundle = (x, z) => b.with(IN(g, 'larder', 'stockfish'), () => {
+    const top = hook(x, z, 0.3);
+    for (let i = 0; i < 5; i++) dryFish(b, x + (i - 2) * 0.07, top - 0.38, z + (i % 2) * 0.02, 'y', i * 0.12);
+  });
+  const carcass = (x, z) => b.with(IN(g, 'larder', 'carcass'), () => {
+    const top = hook(x, z, 0.2);
+    // hung from a gambrel (spreader) through the hind legs
+    b.with({ kind: K.TIMBER, color: P.timber }, () => beam(b, v3(x - 0.22, top, z), v3(x + 0.22, top, z), 0.035, 0.035));
+    b.with({ kind: K.PLAIN, color: 0xc98a72 }, () => {
+      beam(b, v3(x - 0.18, top + 0.02, z), v3(x - 0.1, top - 0.4, z), 0.07, 0.06);
+      beam(b, v3(x + 0.18, top + 0.02, z), v3(x + 0.1, top - 0.4, z), 0.07, 0.06);
+      lathe(b, v3(x, top - 1.3, z), 'y', [[0.05, 0], [0.1, 0.12], [0.18, 0.35], [0.2, 0.6], [0.17, 0.85], [0.15, 0.95]], 12);
+    });
+    b.with({ kind: K.PLAIN, color: 0xeee0c8 }, () => {
+      // fat over the loin and the line of the backbone
+      lump(b, x, top - 0.6, z - 0.12, 0.16, 0.24, 0.07, 0xeee0c8);
+      lump(b, x, top - 0.25, z, 0.17, 0.08, 0.13, 0xeee0c8);
+    });
+    // ribs on the opened belly
+    b.with({ kind: K.PLAIN, color: 0xa85a4a }, () => {
+      for (let i = 0; i < 5; i++) obox(b, x, top - 0.65 - i * 0.09, z + 0.17, 0.26 - i * 0.02, 0.025, 0.02, 0);
+    });
+  });
+  // the back beam: bacon, hams and puddings
+  flitch(-11.25, -19.6, 0.15);
+  ham(-10.55, -19.6);
+  puddings(-9.95, -19.6);
+  flitch(-9.3, -19.6, -0.1);
+  ham(-8.55, -19.6);
+  puddings(-7.95, -19.6);
+  // the front beam: game, fish and a sheep for cutting up
+  ducks(-11.2, -16.8);
+  hare(-10.55, -16.8);
+  stockfishBundle(-9.85, -16.8);
+  carcass(-8.3, -16.8);
+
+  // ---- powdering tubs and salting trough ----
+  b.with(IN(g, 'larder', 'powderingTub'), () => {
+    // an open tub of brine with joints of salt beef
+    tub(b, -11.1, f, -20.3, 0.36, 0.78, { color: 0x9b7a50 });
+    b.with({ kind: K.WATER, color: 0xb5a690 }, () => b.cylinder(-11.1, -20.3, 0.33, f + 0.62, f + 0.66, 14));
+    lump(b, -11.18, f + 0.68, -20.25, 0.13, 0.07, 0.1, 0xa04a3a);
+    lump(b, -11.0, f + 0.67, -20.4, 0.1, 0.06, 0.12, 0xb05a44);
+    lump(b, -11.02, f + 0.68, -20.15, 0.07, 0.05, 0.07, 0xeee0c8);
+    // a lidded tub weighted with a stone
+    tub(b, -10.0, f, -20.35, 0.36, 0.78, { color: 0x95744c });
+    b.with({ kind: K.TIMBER, color: 0x8d6d48 }, () => b.cylinder(-10.0, -20.35, 0.34, f + 0.74, f + 0.79, 14));
+    lump(b, -10.0, f + 0.86, -20.35, 0.14, 0.08, 0.12, 0x9a958a, K.STONE);
+    // salting trough: pork joints in a bed of salt
+    b.with({ kind: K.TIMBER, color: P.oak }, () => {
+      b.box(-9.0, f, -20.7, -7.6, f + 0.18, -19.8);
+      b.box(-9.0, f + 0.18, -20.7, -7.6, f + 0.6, -20.62);
+      b.box(-9.0, f + 0.18, -19.88, -7.6, f + 0.6, -19.8);
+      b.box(-9.0, f + 0.18, -20.62, -8.92, f + 0.6, -19.88);
+      b.box(-7.68, f + 0.18, -20.62, -7.6, f + 0.6, -19.88);
+      for (const x of [-8.85, -7.75]) b.box(x - 0.06, f, -20.75, x + 0.06, f + 0.3, -19.75);
+    });
+    b.with({ kind: K.STRAW, color: 0xf2eee4 }, () => b.box(-8.92, f + 0.18, -20.62, -7.68, f + 0.5, -19.88));
+    lump(b, -8.6, f + 0.53, -20.25, 0.18, 0.07, 0.12, 0xb86a54, K.PLAIN, 0.3);
+    lump(b, -8.15, f + 0.54, -20.3, 0.15, 0.08, 0.11, 0xc07058, K.PLAIN, -0.4);
+    lump(b, -7.92, f + 0.52, -20.05, 0.1, 0.05, 0.09, 0xa85e4a, K.PLAIN, 0.8);
+  });
+  b.with(IN(g, 'larder', 'larderSalt'), () => {
+    sack(b, -10.75, f, -18.75, 0.55, 0.8, 0.2, 0xe2dcc8);
+    b.with({ kind: K.STRAW, color: 0xf4f0e6 }, () => heap(b, -10.15, f, -18.6, 0.6, 0.5, 0.22, 0xf4f0e6));
+  });
+
+  // ---- block and cleaver, by the carcass ----
+  b.with(IN(g, 'larder', 'block'), () => {
+    b.with({ kind: K.TIMBER, color: 0x8a6a48 }, () => lathe(b, v3(-8.5, f, -15.55), 'y', [[0.3, 0], [0.28, 0.72]], 12));
+    b.with({ kind: K.TIMBER, color: 0xc6a47a }, () => b.cylinder(-8.5, -15.55, 0.27, f + 0.72, f + 0.735, 12));
+    // the cleaver bitten into the block
+    b.with({ kind: K.METAL, color: 0x8e8c86 }, () => obox(b, -8.5, f + 0.82, -15.55, 0.22, 0.16, 0.012, 0.6));
+    b.with({ kind: K.TIMBER, color: 0x4a3626 }, () => beam(b, v3(-8.42, f + 0.88, -15.66), v3(-8.27, f + 1.02, -15.86), 0.03, 0.03));
+    lump(b, -8.62, f + 0.76, -15.45, 0.1, 0.035, 0.07, 0xb05a44); // a cut chop
+  });
+
+  // ---- herring by the door: one barrel opened ----
+  b.with(IN(g, 'larder', 'stockfish'), () => {
+    cask(b, v3(-11.2, f + 0.33, -13.6), 'y', 0.3, 0.66, { color: 0x9a7a52 });
+    cask(b, v3(-10.55, f + 0.33, -13.25), 'y', 0.3, 0.66, { color: 0x95744c });
+    cask(b, v3(-10.85, f + 0.95, -13.42), 'x', 0.28, 0.6, { color: 0x9a7a52 });
+    // packed herring, heads outward in rings
+    const [hx, hz] = [-11.2, -13.6];
+    b.with({ kind: K.WATER, color: 0xa9a48e }, () => b.cylinder(hx, hz, 0.24, f + 0.66, f + 0.67, 14));
+    for (const [rr, n] of [[0.17, 10], [0.08, 5]]) {
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        lump(b, hx + Math.cos(a) * rr, f + 0.685, hz + Math.sin(a) * rr, 0.03, 0.018, 0.075, 0xb8c0c2, K.PLAIN, -a);
+      }
+    }
+    // stockfish stacked crosswise like firewood
+    for (let i = 0; i < 6; i++) {
+      for (let k = 0; k < 4; k++) {
+        const along = i % 2 === 0;
+        const off = (k - 1.5) * 0.17;
+        dryFish(b, -8.2 + (along ? 0 : off), f + 0.04 + i * 0.05, -14.2 + (along ? off : 0), along ? 'x' : 'z', k * 0.3 + i);
       }
     }
   });
-  b.with(IN(g, 'larder', 'powderingTub'), () => {
-    for (const [x, z] of [[-11.1, -20.3], [-10.0, -20.35]]) {
-      cask(b, v3(x, f + 0.4, z), 'y', 0.36, 0.8, { color: 0x9b7a50 });
-      b.with({ kind: K.TIMBER, color: 0x8d6d48 }, () => b.cylinder(x, z, 0.33, f + 0.8, f + 0.85, 12));
-    }
-    // salting trough with a block of salt
-    b.with({ kind: K.TIMBER, color: P.oak }, () => {
-      b.box(-9.0, f, -20.7, -7.6, f + 0.55, -19.8);
-      b.with({ kind: K.PLAIN, color: 0xa86a52 }, () => b.box(-8.9, f + 0.55, -20.6, -7.7, f + 0.6, -19.9));
-    });
-    b.with({ kind: K.PLAIN, color: 0xf0ece0 }, () => b.box(-8.7, f + 0.6, -20.5, -8.3, f + 0.75, -20.1));
-  });
-  b.with(IN(g, 'larder', 'stockfish'), () => {
-    // barrels of herring by the door, and a stack of stockfish
-    cask(b, v3(-11.2, f + 0.33, -13.6), 'y', 0.3, 0.66, { color: 0x9a7a52 });
-    cask(b, v3(-10.6, f + 0.33, -13.2), 'y', 0.3, 0.66, { color: 0x95744c });
-    cask(b, v3(-10.9, f + 0.95, -13.4), 'x', 0.28, 0.6, { color: 0x9a7a52 });
-    b.with({ kind: K.PLAIN, color: 0xcbbb90 }, () => {
-      for (let i = 0; i < 6; i++) obox(b, -8.2, f + 0.05 + i * 0.07, -14.2, 0.9, 0.06, 0.3, (i % 2) * 0.2 - 0.1);
-    });
-  });
+
+  // ---- shelves: crocks of butter and grease, salt fish, bowls ----
   shelvesZ(b, -18.4, -15.0, r.x1, 1.0, 3, 0.55, 0.4, -1);
-  b.with(IN(g, 'larder', 'larder'), () => {
-    for (let i = 0; i < 3; i++) jug(b, -7.62, 1.04, -18.0 + i * 0.9, 1.1, 0x8a7a5a);
-    for (let i = 0; i < 4; i++) sack(b, -7.7, 1.59, -18.2 + i * 0.75, 0.32, 0.4, 0, 0xd6cdb4);
-    sack(b, -8.6, f, -15.6, 0.55, 0.8, 0.2, 0xe2dcc8); // salt
+  b.with(IN(g, 'larder', 'crocks'), () => {
+    const crock = (x, yb, z, s, col, lidCol) => {
+      b.with({ kind: K.PLAIN, color: col }, () => lathe(b, v3(x, yb, z), 'y', [[0.08 * s, 0], [0.12 * s, 0.08 * s], [0.13 * s, 0.17 * s], [0.1 * s, 0.25 * s], [0.095 * s, 0.28 * s]], 12));
+      if (lidCol) b.with({ kind: K.CLOTH, color: lidCol }, () => b.cylinder(x, z, 0.105 * s, yb + 0.28 * s, yb + 0.3 * s, 12));
+    };
+    crock(-7.65, 1.04, -18.05, 1.1, 0x9a7a4a, 0xe8e0cc);
+    crock(-7.65, 1.04, -17.6, 1.0, 0x8f9a5a, 0xe8e0cc);
+    crock(-7.62, 1.04, -17.15, 1.2, 0x9a7a4a, 0xd8ccb0);
+    crock(-7.65, 1.04, -16.6, 0.9, 0xb08a5a, null);
+    lump(b, -7.65, 1.04 + 0.26, -16.6, 0.08, 0.035, 0.08, 0xf0e2a8); // butter
+    jug(b, -7.62, 1.04, -16.05, 1.0, 0x8a7a5a);
+    jug(b, -7.62, 1.04, -15.5, 0.85, 0x8f9a5a);
+    // middle shelf: salt fish laid flat and bowls of suet
+    for (let i = 0; i < 4; i++) dryFish(b, -7.62, 1.6 + i * 0.03, -18.0 + i * 0.12, 'z', i);
+    bowl(b, -7.62, 1.59, -17.0, 0.15, 0x9b7b55);
+    lump(b, -7.62, 1.64, -17.0, 0.1, 0.04, 0.1, 0xf2ecdc);
+    bowl(b, -7.62, 1.59, -16.4, 0.13, 0x8b6b45);
+    lump(b, -7.62, 1.63, -16.4, 0.08, 0.035, 0.08, 0xeee4d0);
+    for (let i = 0; i < 3; i++) sack(b, -7.68, 1.59, -15.9 + i * 0.32, 0.26, 0.32, 0, 0xd6cdb4);
+    // top shelf: spare crocks upside down to dry
+    for (let i = 0; i < 4; i++) {
+      b.with({ kind: K.PLAIN, color: i % 2 ? 0x9a7a4a : 0xa88a5a }, () =>
+        lathe(b, v3(-7.62, 2.14, -18.0 + i * 0.6), 'y', [[0.1, 0], [0.13, 0.08], [0.1, 0.22], [0.06, 0.24]], 10));
+    }
+  });
+}
+
+/** A dried, split cod: a flat body tapering to the tail. */
+function dryFish(b, x, y, z, axis, seed = 0) {
+  const len = 0.5 + (seed % 3) * 0.04;
+  const rot = axis === 'x' ? Math.PI / 2 : 0;
+  b.with({ kind: K.PLAIN, color: (seed | 0) % 2 ? 0xcfc09a : 0xc4b48a }, () => {
+    if (axis === 'y') {
+      b.loft(
+        [v3(x - 0.07, y - len / 2, z - 0.012), v3(x + 0.07, y - len / 2, z - 0.012), v3(x + 0.07, y - len / 2, z + 0.012), v3(x - 0.07, y - len / 2, z + 0.012)],
+        [v3(x - 0.02, y + len / 2, z - 0.008), v3(x + 0.02, y + len / 2, z - 0.008), v3(x + 0.02, y + len / 2, z + 0.008), v3(x - 0.02, y + len / 2, z + 0.008)],
+      );
+      obox(b, x, y + len / 2 + 0.04, z, 0.1, 0.08, 0.01, 0); // tail, tied to the hook
+    } else {
+      const c = Math.cos(rot);
+      const s = Math.sin(rot);
+      const P2 = (lx, ly, lz) => v3(x + lx * c + lz * s, y + ly, z - lx * s + lz * c);
+      b.loft(
+        [P2(-0.07, 0, -len / 2), P2(0.07, 0, -len / 2), P2(0.02, 0, len / 2), P2(-0.02, 0, len / 2)],
+        [P2(-0.07, 0.025, -len / 2), P2(0.07, 0.025, -len / 2), P2(0.02, 0.02, len / 2), P2(-0.02, 0.02, len / 2)],
+      );
+      obox(b, x + s * (len / 2 + 0.04), y + 0.012, z + c * (len / 2 + 0.04), 0.1, 0.02, 0.08, rot);
+    }
   });
 }
 

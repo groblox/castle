@@ -82,6 +82,45 @@ export function carried(name, mat) {
         lump(b, 0, -0.22, 0, 0.1, 0.13, 0.08, 0xd8c8b0);
         b.with({ kind: K.SKIN, color: 0xd09060 }, () => beam(b, v3(0, -0.1, 0), v3(0, 0.02, 0), 0.025, 0.025));
       }), mat);
+    case 'spear':
+      // held upright: ash shaft from the ground to above the head, iron head
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0xa88a5e }, () => lathe(b, v3(0, -0.98, 0), 'y', [[0.018, 0], [0.016, 2.25]], 6));
+        b.with({ kind: K.METAL, color: 0x8e8c86 }, () => {
+          lathe(b, v3(0, 1.22, 0), 'y', [[0.022, 0], [0.022, 0.08]], 6);
+          lathe(b, v3(0, 1.3, 0), 'y', [[0.035, 0], [0.03, 0.1], [0, 0.26]], 4);
+        });
+      }), mat);
+    case 'crossbow':
+      // slung across the back: tiller, bow (prod), string and spanning stirrup
+      return mesh(geo(name, (b) => {
+        const tilt = v3(0.55, 1, 0).normalize();
+        const at = (d) => v3(tilt.x * d, tilt.y * d, 0);
+        b.with({ kind: K.TIMBER, color: 0x7a5a3a }, () => beam(b, at(-0.38), at(0.38), 0.045, 0.05));
+        const side = v3(tilt.y, -tilt.x, 0);
+        const prod = (s) => at(0.34).addScaledVector(side, s * 0.36).add(v3(0, 0, -0.06 * Math.abs(s)));
+        b.with({ kind: K.TIMBER, color: 0x5a4a36 }, () => {
+          beam(b, at(0.34), prod(1), 0.035, 0.03);
+          beam(b, at(0.34), prod(-1), 0.035, 0.03);
+        });
+        b.with({ kind: K.PLAIN, color: 0xe8e0cc }, () => {
+          beam(b, prod(1), at(0.12), 0.008, 0.008);
+          beam(b, prod(-1), at(0.12), 0.008, 0.008);
+        });
+        b.with({ kind: K.METAL, color: P.iron }, () => {
+          beam(b, at(0.36).addScaledVector(side, 0.07), at(0.47).addScaledVector(side, 0.07), 0.015, 0.015);
+          beam(b, at(0.36).addScaledVector(side, -0.07), at(0.47).addScaledVector(side, -0.07), 0.015, 0.015);
+          beam(b, at(0.47).addScaledVector(side, 0.07), at(0.47).addScaledVector(side, -0.07), 0.015, 0.015);
+        });
+      }), mat);
+    case 'quiver':
+      // bolts in a leather quiver at the right hip
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.PLAIN, color: 0x6b4a30 }, () => obox(b, 0, 0, 0, 0.09, 0.26, 0.06, 0));
+        b.with({ kind: K.PLAIN, color: 0xd8d0bc }, () => {
+          for (let i = 0; i < 4; i++) obox(b, -0.03 + i * 0.02, 0.16, 0, 0.012, 0.07, 0.02, 0);
+        });
+      }), mat);
     case 'broom':
       return mesh(geo(name, (b) => {
         b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.4, 0), v3(0, -0.9, 0.15), 0.03, 0.03));

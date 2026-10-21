@@ -80,7 +80,7 @@ export const ROOMS = [
     group: G.larder,
     service: true,
     box: [[r.larder.x0, 0, NR.z0], [r.larder.x1, 4.2, NR.zf]],
-    view: { az: 6, el: 18, fit: 1.05 },
+    view: { az: -4, el: 18, fit: 0.8 },
     camBox: IN_WARD,
   },
   {
