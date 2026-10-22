@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { makePostMaterial } from './post.js';
 import { makePaperTexture } from './paper.js';
+import { uploadTables } from './material.js';
 
 // Scene -> MRT (colour, normal+fade, label) -> post pass (ink & wash) -> screen.
 export class Pipeline {
@@ -60,6 +61,8 @@ export class Pipeline {
     this.post.uniforms.uTime.value = time;
     this.post.uniforms.uNear.value = this.camera.near;
     this.post.uniforms.uFar.value = this.camera.far;
+    // the light and fade tables, before the pass begins
+    uploadTables(r.getContext());
     r.setRenderTarget(this.target);
     // clear each attachment separately: colour to the paper, normals to
     // "facing the viewer, not faded", labels to "nothing"
@@ -72,6 +75,9 @@ export class Pipeline {
     gl.clearBufferfv(gl.COLOR, 2, [0, 0, 0, 0]);
     r.clearDepth();
     r.render(this.scene, this.camera);
+    // the scene pass's own counts, before the post pass resets them
+    this.calls = r.info.render.calls;
+    this.tris = r.info.render.triangles;
     r.setRenderTarget(null);
     r.render(this.postScene, this.postCam);
   }

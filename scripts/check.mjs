@@ -56,11 +56,17 @@ try {
   await page.waitForFunction(() => window.__castle && window.__castle.ready, null, { timeout: 60000 });
   await page.waitForTimeout(1500);
   if (extra) console.log("eval:", JSON.stringify(await page.evaluate(extra)));
-  const info = await page.evaluate(() => ({
-    triangles: window.__castle.world.triangles,
-    calls: window.__castle.renderer.info.render.calls,
-    tris: window.__castle.renderer.info.render.triangles,
-  }));
+  // draw calls and triangles of the scene pass alone (not the post pass)
+  const info = await page.evaluate(() => {
+    const a = window.__castle;
+    const r = a.renderer;
+    r.info.autoReset = false;
+    r.info.reset();
+    r.render(a.scene, a.camera);
+    const out = { triangles: a.world.triangles, calls: r.info.render.calls, tris: r.info.render.triangles };
+    r.info.autoReset = true;
+    return out;
+  });
   console.log('scene:', JSON.stringify(info));
   for (const [i, s] of shots.entries()) {
     if (s === 'overview') {

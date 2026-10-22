@@ -9,7 +9,7 @@ import { Horse } from './animals.js';
 import { Hen, Hound, Sheep, Bird } from './creatures.js';
 import { Banner } from './banners.js';
 import { carried } from './propsCarried.js';
-import { partGeo, figureMaterial, mesh } from './parts.js';
+import { partGeo, figureMaterial, mesh, rig } from './parts.js';
 
 // Life about the castle beyond the service rooms: people at work in the
 // wards, hens, hounds, a flock on the hill, birds over the towers and
@@ -223,7 +223,10 @@ export function buildLife({ scene, add, fig }) {
       beak: 0xd8b04a, span: 0.75, len: 0.24, flap: 6,
     }));
   }
-  for (const bd of birds) scene.add(bd.root);
+  for (const bd of birds) {
+    rig(bd.root);
+    scene.add(bd.root);
+  }
   updaters.push((t) => {
     for (const bd of birds) bd.update(t);
   });

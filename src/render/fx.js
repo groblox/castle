@@ -227,7 +227,7 @@ export class Effects {
   /** Register a flickering fire light in the shared material uniform. opts.dusk: lit only towards dusk. */
   light(index, pos, base, color = 0xffa040, opts = {}) {
     shared.uFirePos.value[index].set(pos[0], pos[1], pos[2], base);
-    shared.uFireCol.value[index].set(...new THREE.Color(color).toArray());
+    shared.uFireCol.value[index].set(...new THREE.Color(color).toArray(), 1);
     this.lights.push({ index, base, pos, on: 1, dusk: !!opts.dusk });
   }
   /** Fire and smoke systems that are only lit towards dusk (torches). */

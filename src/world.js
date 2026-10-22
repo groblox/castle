@@ -8,12 +8,12 @@ import { interiors } from './castle/interiors.js';
 import { towers } from './castle/towers.js';
 import { stable } from './castle/stable.js';
 import { farm } from './castle/farm.js';
-import { makeMaterial } from './render/material.js';
+import { makeMaterial, makeDepthMaterial } from './render/material.js';
 import { Effects } from './render/fx.js';
 import { setupEffects } from './castle/ambient.js';
 import { buildCast } from './people/cast.js';
 
-/** Build all static geometry into a single mesh (one draw call). */
+/** Build all static geometry into a single mesh (one draw call, after a depth pre-pass). */
 export function buildWorld(scene) {
   const b = new GeoBuilder();
   buildShell(b);
@@ -25,7 +25,15 @@ export function buildWorld(scene) {
   stable(b);
   farm(b);
   const geo = b.build();
-  const mesh = new THREE.Mesh(geo, makeMaterial());
+  // drawn twice: depth first, then the full shader where the depth matches
+  const depth = new THREE.Mesh(geo, makeDepthMaterial());
+  depth.frustumCulled = false;
+  depth.matrixAutoUpdate = false;
+  depth.renderOrder = -1;
+  scene.add(depth);
+  const mat = makeMaterial();
+  mat.depthWrite = false;
+  const mesh = new THREE.Mesh(geo, mat);
   mesh.frustumCulled = false;
   mesh.matrixAutoUpdate = false;
   scene.add(mesh);

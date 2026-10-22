@@ -8,7 +8,7 @@ import { Figure } from './figure.js';
 import { Cat, Rat, Horse } from './animals.js';
 import { Actor } from './actor.js';
 import { carried } from './propsCarried.js';
-import { partGeo, figureMaterial, mesh } from './parts.js';
+import { partGeo, figureMaterial, mesh, rig } from './parts.js';
 import { buildLife } from './life.js';
 import { crowd } from './crowd.js';
 import { buildHousehold } from './household.js';
@@ -24,6 +24,7 @@ const Sth = 0; // facing south (+z)
 export function buildCast(scene) {
   const actors = {};
   const add = (name, entity, steps, opts) => {
+    rig(entity.root);
     scene.add(entity.root);
     const a = new Actor(entity, steps, opts);
     a.name = name;

@@ -133,7 +133,7 @@ npm run check -- --no-build --out DIR  # reuse the last build; choose the output
 npm run sources                        # regenerate SOURCES.md from src/data/
 ```
 
-`check` runs the build in headless Chromium with software WebGL. Its frame rate is not representative of a real GPU.
+`check` runs the build in headless Chromium with software WebGL. Its frame rate is not representative of a real GPU. For a frame-rate readout in the app, press **F** or open it with `?stats`.
 
 ---
 
@@ -144,7 +144,7 @@ Three.js and Vite, in plain JavaScript modules. There are no textures or models:
 - **Real sections.** `src/geom/builder.js` clips every convex solid against the cut plane and generates true cap faces, tagged as section fill. Coplanar T-junctions are welded so no cracks show. Boulders, bushes and trees in `src/geom/nature.js` are built the same way, so they cut cleanly too.
 - **One shader, three targets.** The surface shader in `src/render/material.js` writes watercolour colour, view normals and a picking label in a single pass. It draws coursed masonry, slates, boards, flags, cobbles, wattle, painted false-ashlar and log ends, plus the weathering. It also handles daylight that dims indoors and up to 24 flickering fire lights.
 - **Ink and paper.** A post pass in `src/render/post.js` finds edges from depth, normals and labels, and draws them as wobbling, dry-brushed ink. It then pools pigment at wash edges, granulates it into the paper tooth and prints the whole frame on paper. Smoke, steam, flames and light halos are watercolour particles (`src/render/fx.js`).
-- **People.** The figures in `src/people/` are articulated, built from smooth pleated surfaces of revolution and driven by looping routines of walks and poses. `life.js` populates the wards and fields. `banners.js` ripples the flags with smooth cloth normals.
+- **People.** The figures in `src/people/` are articulated, built from smooth pleated surfaces of revolution and driven by looping routines of walks and poses. `life.js` populates the wards and fields. `banners.js` sets up the flags, which the vertex shader ripples with smooth cloth normals.
 - **The castle.** `src/castle/` holds the layout, the shell (curtains, towers, gatehouse, ranges, rock), the furnished rooms (`furnish.js`, `interiors.js`), the wards (`wards.js`), the landscape (`landscape.js`), and the fires and smoke (`ambient.js`).
 - **Mechanisms** live in `src/mech/`. **Glossary, notes and sources** live in `src/data/`.
 

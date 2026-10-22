@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Pipeline } from './render/pipeline.js';
-import { shared } from './render/material.js';
+import { shared, setFades } from './render/material.js';
 import { CutawayControls, DEG } from './ui/controls.js';
 import { ROOMS, ROOM_BY_ID, GROUP_COUNT } from './castle/rooms.js';
 import { LABELS } from './data/labels.js';
@@ -52,6 +52,7 @@ export class App {
     day.addEventListener('input', setDay);
     setDay();
     this._bindUI();
+    if (new URLSearchParams(location.search).has('stats')) this._toggleStats();
 
     window.addEventListener('resize', () => this.pipeline.resize());
     this.ready = false;
@@ -65,6 +66,7 @@ export class App {
     this.backBtn = document.getElementById('back');
     this.backBtn.addEventListener('click', () => this.overview());
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) this._toggleStats();
       if (e.key === 'Escape') {
         if (this.focus || this.following) this.overview();
         else this.panel.hide();
@@ -380,7 +382,7 @@ export class App {
     // fades
     const k = 1 - Math.exp(-dt * 4);
     for (let i = 0; i < GROUP_COUNT; i++) this.fade[i] += (this.fadeGoal[i] - this.fade[i]) * k;
-    shared.uFade.value.set(this.fade);
+    setFades(this.fade);
     shared.uFocusAmt.value += (this.focusAmtGoal - shared.uFocusAmt.value) * k;
     shared.uTime.value = this.time;
     shared.uCamPos.value.copy(this.camera.position);
@@ -392,12 +394,45 @@ export class App {
     this.pipeline.render(this.time);
     this.minimap.draw();
     this._updateHover(t0);
-    this._adapt(performance.now() - t0, dt);
+    const cpu = performance.now() - t0;
+    this._adapt(cpu, dt);
+    if (this.stats) this._updateStats(cpu);
 
     if (!this.ready) {
       this.ready = true;
       document.getElementById('loading').classList.add('done');
     }
+  }
+
+  /** Show or hide the frame-rate readout. */
+  _toggleStats() {
+    const el = document.getElementById('stats');
+    this.stats = this.stats ? null : { el, frames: 0, cpu: 0, worst: 0, t0: performance.now(), last: performance.now() };
+    el.hidden = !this.stats;
+  }
+
+  // fps over the last half second; cpu is the time spent in this loop (the
+  // GPU works on after it returns); worst is the longest gap between frames
+  _updateStats(cpu) {
+    const s = this.stats;
+    const now = performance.now();
+    s.frames++;
+    s.cpu += cpu;
+    s.worst = Math.max(s.worst, now - s.last);
+    s.last = now;
+    if (now - s.t0 < 500) return;
+    const p = this.pipeline;
+    const fps = (s.frames * 1000) / (now - s.t0);
+    s.el.textContent = [
+      `${fps.toFixed(fps < 10 ? 1 : 0)} fps  worst ${s.worst.toFixed(0)} ms`,
+      `cpu ${(s.cpu / s.frames).toFixed(1)} ms/frame`,
+      `${p.calls} draws  ${(p.tris / 1000).toFixed(0)}k tris`,
+      `${p.size.W}\u00d7${p.size.H}  scale ${p.scale.toFixed(2)}`,
+    ].join('\n');
+    s.frames = 0;
+    s.cpu = 0;
+    s.worst = 0;
+    s.t0 = now;
   }
 
   // drop resolution a little if frames are slow

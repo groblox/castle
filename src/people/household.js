@@ -12,7 +12,7 @@ import { FARM_AT } from '../castle/farm.js';
 import { Horse } from './animals.js';
 import { Beast, Goose, Bird } from './creatures.js';
 import { carried } from './propsCarried.js';
-import { partGeo, figureMaterial, mesh } from './parts.js';
+import { partGeo, figureMaterial, mesh, rig } from './parts.js';
 
 // The rest of the people: the king and his household in the north-west
 // tower, the garrison in the north-east tower, at the gate and at drill,
@@ -415,7 +415,10 @@ export function buildHousehold({ scene, add, fig }) {
       head: i % 3 ? 0x7a7e88 : 0xe8e6e0, wing: i % 3 ? 0x8a8e98 : 0xdedcd6, span: 0.3, len: 0.13, flap: 16, beak: 0xd8a080,
     }));
   }
-  for (const d of doves) scene.add(d.root);
+  for (const d of doves) {
+    rig(d.root);
+    scene.add(d.root);
+  }
   updaters.push((t) => {
     for (const d of doves) d.update(t);
   });

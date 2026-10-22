@@ -7,10 +7,10 @@ import { partGeo, mesh } from './parts.js';
 
 // Banners on the towers, streaming in the same wind that carries the smoke
 // (towards east-north-east). The cloth is a grid of small flat cells whose
-// colours are sampled from a painted pattern, and it ripples every frame.
+// colours are sampled from a painted pattern; the vertex shader ripples it
+// (BANNER in material.js), so only the gusting is worked out here.
 
 const WIND = new THREE.Vector3(2.6, 0, -0.8).normalize();
-const SIDE = new THREE.Vector3(-WIND.z, 0, WIND.x);
 
 // Gules, three lions passant guardant Or: the arms of England.
 function paintRoyal(ctx, w, h) {
@@ -97,11 +97,11 @@ export class Banner {
     this.nv = nv;
     this.pennon = !!opts.pennon;
     this.top = base[1] + poleH - 0.12;
-    this.foot = new THREE.Vector3(base[0], 0, base[2]);
     this.phase = opts.phase ?? 0;
     const sample = patternSampler(kind === 'royal' ? paintRoyal : paintStGeorge, 96, 64);
 
-    // non-indexed grid: two triangles per cell, each cell one flat colour
+    // non-indexed grid: two triangles per cell, each cell one flat colour.
+    // Positions hold (u, v) on the cloth; the vertex shader makes the ripple.
     const cells = nu * nv;
     const pos = new Float32Array(cells * 6 * 3);
     const col = new Float32Array(cells * 6 * 3);
@@ -110,7 +110,9 @@ export class Banner {
     for (let j = 0; j < nv; j++) {
       for (let i = 0; i < nu; i++) {
         const c = sample((i + 0.5) / nu, (j + 0.5) / nv);
-        for (let q = 0; q < 6; q++) {
+        for (const [di, dj] of [[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]]) {
+          pos[k * 3] = (i + di) / nu;
+          pos[k * 3 + 1] = (j + dj) / nv;
           col[k * 3] = c.r;
           col[k * 3 + 1] = c.g;
           col[k * 3 + 2] = c.b;
@@ -124,79 +126,25 @@ export class Banner {
     geo.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(cells * 18), 3));
     geo.setAttribute('acol', new THREE.BufferAttribute(col, 3));
     geo.setAttribute('info', new THREE.BufferAttribute(info, 3));
+    const top = this.top;
+    geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(base[0] + (WIND.x * L) / 2, top - D / 2, base[2] + (WIND.z * L) / 2), L + D);
     this.geo = geo;
     const clothMat = makeMaterial({ label, group, side: THREE.DoubleSide });
+    clothMat.defines = { BANNER: 1 };
+    Object.assign(clothMat.uniforms, {
+      uBannerTop: { value: new THREE.Vector3(base[0], top, base[2]) },
+      uBannerSize: { value: new THREE.Vector4(L, D, this.phase, this.pennon ? 1 : 0) },
+      uBannerWind: { value: new THREE.Vector2(WIND.x, WIND.z) },
+      uBannerStep: { value: new THREE.Vector2(1 / nu, 1 / nv) },
+      uGust: { value: 1 },
+    });
+    this.clothMat = clothMat;
     this.cloth = new THREE.Mesh(geo, clothMat);
-    this.cloth.frustumCulled = false;
     this.root.add(this.cloth);
-    this._grid = new Float32Array((nu + 1) * (nv + 1) * 3);
-    this._gn = new Float32Array((nu + 1) * (nv + 1) * 3);
     this.update(0);
   }
 
   update(t) {
-    const { nu, nv, L, D, _grid: g } = this;
-    const gust = 0.75 + 0.25 * Math.sin(t * 0.37 + this.phase) + 0.1 * Math.sin(t * 1.9 + this.phase);
-    for (let j = 0; j <= nv; j++) {
-      const v = j / nv;
-      for (let i = 0; i <= nu; i++) {
-        const u = i / nu;
-        // a pennon tapers to a point
-        const vv = this.pennon ? 0.5 + (v - 0.5) * (1 - u * 0.95) : v;
-        const wave = Math.sin(u * 9.5 - t * 5.2 * gust + this.phase + v * 0.6) * (0.04 + 0.2 * u) * gust;
-        const wave2 = Math.sin(u * 17 - t * 8 + v * 2) * 0.03 * u;
-        const along = u * L * (0.97 + 0.03 * gust);
-        const droop = (1 - gust) * u * u * 0.6;
-        const n = (j * (nu + 1) + i) * 3;
-        g[n] = this.foot.x + WIND.x * along + SIDE.x * (wave + wave2);
-        g[n + 1] = this.top - vv * D - droop;
-        g[n + 2] = this.foot.z + WIND.z * along + SIDE.z * (wave + wave2);
-      }
-    }
-    // smooth normals from the grid, so the cloth folds softly without facet lines
-    const gn = this._gn;
-    const at = (i, j, c) => g[(Math.min(nv, Math.max(0, j)) * (nu + 1) + Math.min(nu, Math.max(0, i))) * 3 + c];
-    for (let j = 0; j <= nv; j++) {
-      for (let i = 0; i <= nu; i++) {
-        const ux = at(i + 1, j, 0) - at(i - 1, j, 0);
-        const uy = at(i + 1, j, 1) - at(i - 1, j, 1);
-        const uz = at(i + 1, j, 2) - at(i - 1, j, 2);
-        const vx = at(i, j + 1, 0) - at(i, j - 1, 0);
-        const vy = at(i, j + 1, 1) - at(i, j - 1, 1);
-        const vz = at(i, j + 1, 2) - at(i, j - 1, 2);
-        let nx = uy * vz - uz * vy;
-        let ny = uz * vx - ux * vz;
-        let nz = ux * vy - uy * vx;
-        const l = Math.hypot(nx, ny, nz) || 1;
-        const n = (j * (nu + 1) + i) * 3;
-        gn[n] = nx / l;
-        gn[n + 1] = ny / l;
-        gn[n + 2] = nz / l;
-      }
-    }
-    const pos = this.geo.attributes.position.array;
-    const nrm = this.geo.attributes.normal.array;
-    let k = 0;
-    const put = (i, j) => {
-      const n = (j * (nu + 1) + i) * 3;
-      nrm[k] = gn[n];
-      pos[k++] = g[n];
-      nrm[k] = gn[n + 1];
-      pos[k++] = g[n + 1];
-      nrm[k] = gn[n + 2];
-      pos[k++] = g[n + 2];
-    };
-    for (let j = 0; j < nv; j++) {
-      for (let i = 0; i < nu; i++) {
-        put(i, j);
-        put(i, j + 1);
-        put(i + 1, j);
-        put(i + 1, j);
-        put(i, j + 1);
-        put(i + 1, j + 1);
-      }
-    }
-    this.geo.attributes.position.needsUpdate = true;
-    this.geo.attributes.normal.needsUpdate = true;
+    this.clothMat.uniforms.uGust.value = 0.75 + 0.25 * Math.sin(t * 0.37 + this.phase) + 0.1 * Math.sin(t * 1.9 + this.phase);
   }
 }

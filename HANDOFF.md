@@ -6,8 +6,8 @@ This is the state of the project and what you need to know to carry it on. Read 
 
 - **Branch:** `claude/compassionate-brahmagupta-u7beyj` (earlier work on `claude/compassionate-turing-u8pv6k`). All work is committed and pushed. **No pull request has been opened.**
 - **Build:** `npm run check` passes. It builds, renders every room headless and reports **no console errors**.
-- **Scene size:** about 174k static triangles in one mesh, plus about 1,480 small meshes for figures, animals, mechanisms, birds and banners, plus particle systems. Under SwiftShader a frame can take over 30 s, so `check.mjs` allows 180 s per screenshot.
-- **Performance is unmeasured.** The only renderer in this environment was SwiftShader (software WebGL). It ran at 0.3–1.4 fps, which says nothing about a real GPU. Check frame rate on real hardware before anything else (see *Known issues*).
+- **Scene size:** about 174k static triangles in one mesh (drawn twice: a depth pre-pass, then the full shader), plus figures, animals, mechanisms, birds and banners, plus particle systems: about 340 draw calls in the overview (down from 1,470 before the performance pass). Under SwiftShader a frame can take over 30 s, so `check.mjs` allows 180 s per screenshot.
+- **Performance on real GPUs is still unmeasured.** The only renderer in this environment was SwiftShader (software WebGL); there the performance pass roughly doubled the frame rate (0.8 → 1.5 fps in the overview) and cut CPU time per frame by more than half. Press **F** (or open with `?stats`) for a frame-rate readout on real hardware (see *Performance*).
 - **Content:**
   - 18 rooms the camera can fly to, 7 working mechanisms, and 129 animated people and animals (birds not counted).
   - 36 sources and 73 statements marked as conjecture, all listed in `SOURCES.md`.
@@ -23,6 +23,7 @@ This is the state of the project and what you need to know to carry it on. Read 
 | `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
 | `1431c5a` | README with screenshots in `docs/images/` |
 | (this branch) | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
+| (this branch, later) | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
 
 ## Running and verifying
 
@@ -96,9 +97,9 @@ src/
     life.js            ward workers, hens, hounds, sheep, shepherd, pedlar, birds, banners
     animals.js         Cat, Rat, Horse
     creatures.js       Hen, Hound, Sheep, Bird, Beast (cow, ox, pig, goat), Goose
-    banners.js         cloth banners rebuilt on the CPU each frame
+    banners.js         cloth banners, rippled in the vertex shader (BANNER in material.js)
     propsCarried.js    hand-held props attached to figure slots
-    parts.js           helpers for small animated meshes
+    parts.js           helpers for small animated meshes; rig() merges a figure's parts into one mesh
   mech/                Mechanism base + windlass, spit, oven, hoist, tap, alarm (bell + portcullises), butts (archery); index.js registers them
   data/activities.js   the live "Now: …" line for a followed person, from the pose of their current step
   data/                glossary (hover terms), labels (ids), notes (panel text), sources
@@ -115,7 +116,7 @@ src/
 - **Fade groups** (`G` in `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 32, and ids 0–28 are in use. The west and east inner curtains have their own groups (`curtainW`, `curtainE`) so the tower views can hide them.
 - **Labels** are 16-bit ids written to a picking target. `lab(key, room, mech)` registers a label and **throws if `key` is not in `GLOSSARY`**, so add the glossary entry first. A label with a room flies there on click; one with a mech operates it.
 - **Surface kinds** choose the pattern in `material.js`: masonry, slates, boards, flags, cobbles, wattle, painted false-ashlar, log ends, foliage, straw, fur and so on. `post.js` `isCut()` lists the kinds that get the heavy section outline.
-- **Lighting** comes from shared uniforms in `material.js`:
+- **Lighting** comes from shared uniforms in `material.js` (the light and fade arrays live in a uniform buffer, `Tables`; see *Performance*):
   - `uDay` is 0 for dusk and 1 for bright day; the default is 0.25.
   - `uFirePos`/`uFireCol` hold **24 light slots**.
   - `uGlowAmt` scales the additive halos.
@@ -194,6 +195,25 @@ src/
 - **Alarm.** Routines for the alarm are pairs `[actor, steps]` in `cast.alarm`; the alarm mechanism swaps them in with `setSteps()` and restores the saved routine on standing down.
 - **Seeds.** `rngOf()` scrambles its seed: plain LCGs started from nearby seeds give nearly the same first numbers, which once sent every cow to the same spot.
 
+## Performance
+
+Press **F** in the app (or open it with `?stats`) for a readout: frames per second, the worst frame in the last half second, CPU time per frame in the main loop, draw calls and triangles of the scene pass, and the render size and scale. `npm run check` prints the scene pass's draw calls and triangles too.
+
+What is in place:
+
+- **Merged figures** (`rig()` in `parts.js`). Each person or animal is one mesh, not a dozen. Every vertex carries the index of its body part (`part`), and the vertex shader moves it by that part's matrix (`uParts`, `RIGID_PARTS` in `material.js`). The original part meshes stay in the tree as stand-ins, with their layers disabled so they draw nothing; their matrices drive the merged mesh, so poses, joints and `hold()` work as before, and hiding a stand-in hides its part. `rig()` runs in `cast.js` `add()` and for the doves and birds. Run it **before** holding props: props stay separate meshes. Merged meshes are frustum-culled with a bounding sphere padded for posing.
+- **Depth pre-pass** for the static mesh (`makeDepthMaterial`, `renderOrder = -1` in `world.js`). The full surface shader then runs with depth writes off, so it shades only the nearest surface at each pixel. The vertex shader declares `invariant gl_Position` so both passes produce the same depths; anything that changes the static mesh's vertex positions must change them in both.
+- **A uniform buffer for the tables.** `uFirePos`, `uFireCol` and `uFade` are in the `Tables` uniform block, uploaded in one call per frame by `uploadTables()` before the scene pass. As plain uniform arrays three.js re-uploaded them at every change of material, which in SwiftShader cost about 9 ms a frame. Every element is a `vec4` (so `uFireCol` has a spare `w` and `uFade` packs four groups to an element); set fades with `setFades()`. The buffer sits at uniform binding point 0, where every block starts out, so three.js's own `UniformsGroup` must not be used alongside it.
+- **Banners in the vertex shader.** The cloth's positions hold (u, v); `bannerAt()` in `material.js` makes the ripple and the normals. The CPU only works out the gust.
+- **Shader trims.** The finer pigment noise (`blot2`) is computed only for the surface kinds that use it, and the light loop skips lights too far away to add a visible amount.
+
+Still to try, in rough order of likely gain:
+
+- skip posing actors whose merged mesh was culled last frame (posing and the crowd are most of the remaining CPU time);
+- cull lights per room on the CPU, so the light loop is shorter indoors;
+- a cheaper post pass at high pixel ratios (it takes about 40 texture reads per pixel);
+- instance the hens, sheep and birds (now one draw call each, so the gain is small).
+
 ## Gotchas
 
 - **Layout is hard-coded into the shaders.** Several approximations in `material.js` use world-space boxes from `layout.js` and must be updated if the plan changes:
@@ -211,19 +231,7 @@ src/
 
 ## Known issues and limitations
 
-1. **Frame rate on real GPUs is unknown.** The likely costs:
-   - about 1,480 separate figure, animal and part meshes, each its own draw call (more than doubled by this branch: merging each figure's static parts is now the first thing to try);
-   - a full-screen post pass with many texture taps;
-   - per-fragment work in `material.js` (fbm noise, Voronoi rubble and cobbles, a loop over 32 lights);
-   - CPU rebuilding of 4 banner meshes every frame.
-
-   Possible fixes if it is slow:
-   - merge each figure's static parts;
-   - instance the hens, sheep and birds;
-   - lower the light loop by culling lights per room;
-   - lower banner resolution.
-
-   `App._adapt` already drops render resolution to 60% when frames are slow.
+1. **Frame rate on real GPUs is still unknown.** See *Performance* for what has been done and what is left. The remaining likely costs are the per-fragment work in `material.js` (fbm noise, Voronoi rubble and cobbles, the light loop) and the full-screen post pass. `App._adapt` drops render resolution to 60% when frames are slow.
 2. **Touch and mobile layout have not been tested.** Controls are mouse and keyboard; the side panels are fixed-width.
 3. **Some sources are weaker than others.** The details are in `SOURCES.md`.
    - **Falconry:** the Oggins book was confirmed from a catalogue record only.
@@ -243,7 +251,7 @@ src/
 - The southern half as an optional ghost, or a second cut through the chapel and the southern ranges.
 - Sound: crackling fires, the spit, hens, wind on the wall-walk.
 - A guided tour mode that flies room to room with the notes.
-- Performance: per-figure mesh merging and hen, sheep and bird instancing, as above.
+- Performance: the items under *Still to try* in *Performance*.
 
 ## Conventions
 

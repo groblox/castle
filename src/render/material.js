@@ -10,11 +10,12 @@ import { GROUP_COUNT } from '../castle/rooms.js';
 export const MAX_FIRES = 32;
 
 export const shared = {
-  uFade: { value: new Float32Array(GROUP_COUNT) },
+  // fade per group, four groups to a vec4 (set them with setFades)
+  uFade: { value: Array.from({ length: GROUP_COUNT / 4 }, () => new THREE.Vector4()) },
   uTime: { value: 0 },
   uSunDir: { value: new THREE.Vector3(-0.45, 0.8, 0.42).normalize() },
   uFirePos: { value: Array.from({ length: MAX_FIRES }, () => new THREE.Vector4(0, -999, 0, 0)) },
-  uFireCol: { value: Array.from({ length: MAX_FIRES }, () => new THREE.Vector3(1, 0.6, 0.2)) },
+  uFireCol: { value: Array.from({ length: MAX_FIRES }, () => new THREE.Vector4(1, 0.6, 0.2, 1)) },
   uPaper: { value: new THREE.Color(0xf3ead6) },
   uCamPos: { value: new THREE.Vector3() },
   // spatial focus: everything outside this box fades back towards the paper
@@ -26,10 +27,63 @@ export const shared = {
   uGlowAmt: { value: 0.8 },
 };
 
+// The light and fade tables live in a uniform buffer shared by every surface
+// (block Tables, at binding point 0, where every block starts out). As plain
+// uniform arrays three.js uploaded them all over again at every change of
+// material, and there is one material per figure; this way they go up once a
+// frame, in one call, before the scene pass begins (uploadTables, called by
+// the pipeline). three.js's own uniform groups write element by element and
+// would claim binding point 0 for themselves. Every element is a vec4, so the
+// std140 layout is simply the tables one after another.
+const TABLES = ['uFirePos', 'uFireCol', 'uFade'];
+const tableData = new Float32Array((MAX_FIRES * 2 + GROUP_COUNT / 4) * 4);
+let tableBuf = null;
+
+export function uploadTables(gl) {
+  let o = 0;
+  for (const k of TABLES) {
+    for (const v of shared[k].value) {
+      v.toArray(tableData, o);
+      o += 4;
+    }
+  }
+  if (!tableBuf) {
+    tableBuf = gl.createBuffer();
+    gl.bindBuffer(gl.UNIFORM_BUFFER, tableBuf);
+    gl.bufferData(gl.UNIFORM_BUFFER, tableData.byteLength, gl.DYNAMIC_DRAW);
+    gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, tableBuf);
+  }
+  gl.bindBuffer(gl.UNIFORM_BUFFER, tableBuf);
+  gl.bufferSubData(gl.UNIFORM_BUFFER, 0, tableData);
+  gl.bindBuffer(gl.UNIFORM_BUFFER, null);
+}
+
+const TABLES_GLSL = /* glsl */ `
+layout(std140) uniform Tables {
+  vec4 uFirePos[${MAX_FIRES}];
+  vec4 uFireCol[${MAX_FIRES}];
+  vec4 uFade[${GROUP_COUNT / 4}];
+};
+`;
+
+/** Set the fade of every group from an array of GROUP_COUNT numbers. */
+export function setFades(f) {
+  for (let i = 0; i < GROUP_COUNT; i++) shared.uFade.value[i >> 2].setComponent(i & 3, f[i]);
+}
+
+// the per-material uniforms: the shared ones less the tables
+function surfaceUniforms(own) {
+  const u = { ...shared, ...own };
+  for (const k of TABLES) delete u[k];
+  return u;
+}
+
 const vertex = /* glsl */ `
+// the depth pre-pass must land on exactly the same depths as the full pass
+invariant gl_Position;
 in vec3 acol;
 in vec3 info;
-uniform float uFade[${GROUP_COUNT}];
+${TABLES_GLSL}
 uniform float uGroupOverride;
 uniform float uLabelOverride;
 uniform vec3 uTint;
@@ -37,6 +91,32 @@ uniform float uTintAmt;
 uniform vec3 uFocusMin;
 uniform vec3 uFocusMax;
 uniform float uFocusAmt;
+#ifdef RIGID_PARTS
+// a merged figure: each vertex follows the joint of its body part
+in float part;
+uniform mat4 uParts[RIGID_PARTS];
+#endif
+#ifdef BANNER
+// cloth streaming in the wind, rippled here rather than rebuilt on the CPU:
+// position.xy holds the point's place (u along, v down) on the cloth
+uniform float uTime;
+uniform vec3 uBannerTop;  // x, y, z where the cloth meets the pole
+uniform vec4 uBannerSize; // length, depth, phase, 1 for a tapering pennon
+uniform vec2 uBannerWind; // wind direction (x, z)
+uniform vec2 uBannerStep; // one grid cell in u and v
+uniform float uGust;
+vec3 bannerAt(vec2 q) {
+  float u = q.x;
+  float v = q.y;
+  float vv = uBannerSize.w > 0.5 ? 0.5 + (v - 0.5) * (1.0 - u * 0.95) : v;
+  float wave = sin(u * 9.5 - uTime * 5.2 * uGust + uBannerSize.z + v * 0.6) * (0.04 + 0.2 * u) * uGust;
+  wave += sin(u * 17.0 - uTime * 8.0 + v * 2.0) * 0.03 * u;
+  float along = u * uBannerSize.x * (0.97 + 0.03 * uGust);
+  float droop = (1.0 - uGust) * u * u * 0.6;
+  vec2 xz = uBannerTop.xz + uBannerWind * along + vec2(-uBannerWind.y, uBannerWind.x) * wave;
+  return vec3(xz.x, uBannerTop.y - vv * uBannerSize.y - droop, xz.y);
+}
+#endif
 
 out vec3 vWorld;
 out vec3 vNormal;
@@ -50,9 +130,20 @@ void main() {
 #ifdef USE_INSTANCING
   m = m * instanceMatrix;
 #endif
-  vec4 wp = m * vec4(position, 1.0);
+#ifdef RIGID_PARTS
+  m = m * uParts[int(part + 0.5)];
+#endif
+  vec3 pos = position;
+  vec3 nrm = normal;
+#ifdef BANNER
+  pos = bannerAt(position.xy);
+  vec2 su = vec2(uBannerStep.x, 0.0);
+  vec2 sv = vec2(0.0, uBannerStep.y);
+  nrm = normalize(cross(bannerAt(position.xy + su) - bannerAt(position.xy - su), bannerAt(position.xy + sv) - bannerAt(position.xy - sv)));
+#endif
+  vec4 wp = m * vec4(pos, 1.0);
   vWorld = wp.xyz;
-  vNormal = normalize(mat3(m) * normal);
+  vNormal = normalize(mat3(m) * nrm);
   vCol = mix(acol, uTint, uTintAmt);
 #ifdef USE_INSTANCING_COLOR
   vCol *= instanceColor;
@@ -62,7 +153,8 @@ void main() {
   vInfo = vec3(info.x, lb, grp);
   vec3 outside = max(uFocusMin - wp.xyz, wp.xyz - uFocusMax);
   float od = length(max(outside, 0.0));
-  float gf = uFade[int(grp + 0.5)];
+  int g = int(grp + 0.5);
+  float gf = uFade[g >> 2][g & 3];
   vHide = gf;
   vFade = max(gf, uFocusAmt * smoothstep(0.0, 1.2, od));
   vec4 mv = viewMatrix * wp;
@@ -82,8 +174,7 @@ layout(location = 2) out vec4 oLabel;
 
 uniform vec3 uSunDir;
 uniform float uTime;
-uniform vec4 uFirePos[MAX_FIRES];
-uniform vec3 uFireCol[MAX_FIRES];
+${TABLES_GLSL}
 uniform vec3 uPaper;
 uniform vec3 uCamPos;
 uniform float uEmissive;
@@ -222,7 +313,8 @@ void main() {
   vec2 uv = faceUV(vWorld, N);
   // pigment variation, a soft blotchy wash in world space
   float blot = fbm(vWorld * 0.35);
-  float blot2 = fbm(vWorld * 1.7 + 11.0);
+  // a finer one, only for the kinds that use it (fbm is not cheap)
+  float blot2 = (k == 3 || k == 13 || k == 6 || k == 9 || k == 18 || k == 19 || unlit) ? fbm(vWorld * 1.7 + 11.0) : 0.0;
 
   if (k == 1) { // stone: coursed rubble with dressed quoins
     vec2 m = masonry(uv, 0.42, 0.9);
@@ -454,10 +546,13 @@ void main() {
     vec4 fp = uFirePos[i];
     if (fp.w <= 0.0) continue;
     vec3 d = fp.xyz - vWorld;
-    float dist = length(d);
-    float fall = fp.w / (1.0 + dist * dist * 0.35);
+    // too far to add even one step of colour
+    float dd = dot(d, d);
+    if (dd * 0.35 > fp.w * 800.0) continue;
+    float dist = sqrt(dd);
+    float fall = fp.w / (1.0 + dd * 0.35);
     float facing = unlit ? 1.0 : clamp(dot(N, d / max(dist, 1e-3)) * 0.6 + 0.5, 0.0, 1.0);
-    glow += uFireCol[i] * fall * facing;
+    glow += uFireCol[i].rgb * fall * facing;
   }
   // firelight carries the rooms when daylight is low
   col += base * glow * mix(1.5, 0.8, uDay) + glow * 0.05;
@@ -492,16 +587,41 @@ export function makeMaterial(opts = {}) {
     glslVersion: THREE.GLSL3,
     vertexShader: vertex,
     fragmentShader: fragment,
-    uniforms: {
-      ...shared,
+    uniforms: surfaceUniforms({
       uGroupOverride: { value: opts.group ?? -1 },
       uLabelOverride: { value: opts.label ?? -1 },
       uEmissive: { value: 0 },
       uOpacity: { value: 1 },
       uTint: { value: new THREE.Color(opts.tint ?? 0xffffff) },
       uTintAmt: { value: opts.tintAmt ?? 0 },
-    },
+    }),
     side: opts.side ?? THREE.FrontSide,
+  });
+}
+
+/**
+ * Depth only, for a pre-pass over the static mesh. The full surface shader
+ * is costly, and the castle stacks many walls, floors and roofs behind one
+ * another; with the depths already laid down, only the nearest surface at
+ * each pixel runs it. Faded-out groups are discarded here as they are there.
+ */
+export function makeDepthMaterial() {
+  return new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    vertexShader: vertex,
+    fragmentShader: /* glsl */ `
+      in float vHide;
+      void main() {
+        if (vHide > 0.97) discard;
+      }
+    `,
+    uniforms: surfaceUniforms({
+      uGroupOverride: { value: -1 },
+      uLabelOverride: { value: -1 },
+      uTint: { value: new THREE.Color(0xffffff) },
+      uTintAmt: { value: 0 },
+    }),
+    colorWrite: false,
   });
 }
 
