@@ -113,6 +113,14 @@ export function carried(name, mat) {
           beam(b, at(0.47).addScaledVector(side, 0.07), at(0.47).addScaledVector(side, -0.07), 0.015, 0.015);
         });
       }), mat);
+    case 'adarga':
+      // a leather shield of two joined ovals, slung on the back (Castilian
+      // frontier riders and foot alike)
+      return mesh(geo(name, (b) => {
+        lump(b, -0.12, 0, 0, 0.2, 0.3, 0.03, 0x8a6038, K.PLAIN);
+        lump(b, 0.12, 0, 0, 0.2, 0.3, 0.03, 0x8a6038, K.PLAIN);
+        lump(b, 0, 0, 0.02, 0.05, 0.05, 0.03, 0x6a4a2a, K.PLAIN);
+      }), mat);
     case 'quiver':
       // bolts in a leather quiver at the right hip
       return mesh(geo(name, (b) => {

@@ -8,6 +8,8 @@ Aberwen is a fictional concentric castle modelled on Harlech, Conwy and Beaumari
 
 Everything is drawn in code: the masonry, the people, the hens and the paper texture. There are no models or image assets.
 
+A second, real castle sits alongside it: the **Castillo de las Aguzaderas** at El Coronil (Seville), as it may have stood about 1410. Switch between the two with the buttons at the top of the room list (see [below](#a-real-castle-las-aguzaderas-c-1410)).
+
 ---
 
 ## What's inside
@@ -92,6 +94,22 @@ The default light is a dim, overcast morning. The hearths, candles, lanterns and
 ### Old, and lived in
 
 Damp creeps up the wall feet, with rain streaks and lichen above it. Moss grows on the slates, and the flagstones are worn and cracked. Grass grows in the joints of the wall-walk, and there are putlog holes, spouts and scaffolding. Beyond the walls are gorse, russet bracken, wind-bent thorn trees, a rock-cut ditch with standing water, a rutted cart track and a hurdle sheepfold.
+
+---
+
+## A real castle: Las Aguzaderas, c. 1410
+
+![Las Aguzaderas cut through its keep, with the courtyard, the wall stair and the albarrana tower beyond](docs/images/aguzaderas.jpg)
+
+Aberwen is invented. Las Aguzaderas is not: it still stands in a shallow hollow near El Coronil, on what was the frontier with the Nasrid kingdom of Granada. Unusually, it was built low down, not on a height, because its job was to hold a spring. The model sticks to what is likely to be accurate:
+
+- **The plan is measured** from OpenStreetMap and the PNOA orthophoto: a near-square courtyard about 30 × 32 m, square towers at three corners, half-round towers on the east and west walls, and the square keep straddling the middle of the south wall.
+- **The towers and keep follow the published descriptions.** The corner towers are solid to the wall-walk, with one chamber under a pointed barrel vault and a ladder to the roof. The keep sits on a rubble podium, with two storeys under sail vaults, a machicolation over its door, corner bartizans and a small signal turret on the terrace.
+- **The albarrana tower** at the north-east stands out from the corner, joined by a pointed arch, and holds the well. It is cut open, and the later low enclosure with rounded corners wraps round it.
+- **What is not known is said to be unknown.** No measured section has been published online, so heights and wall thicknesses are estimates. Nothing is recorded of the garrison. The sources disagree about the gate, and the notes say so. The people (an alcaide, crossbowmen, a spearman with a leather adarga, a lookout, a lad and a herdsman with his cattle at the spring) are marked as conjecture.
+- **One working mechanism:** the signal turret. Light it by day for smoke or towards dusk for a beacon fire, and the lookout turns to watch.
+
+Every statement is cited: the IAPH heritage record, the 1923 monument order, local descriptions, Molina Rozalem's study of the sister tower at Lopera, and studies of frontier arms and fortification. [`SOURCES-AGUZADERAS.md`](SOURCES-AGUZADERAS.md) lists them, and [`docs/research/aguzaderas.md`](docs/research/aguzaderas.md) holds the full research, with a confidence mark on every claim.
 
 ---
 

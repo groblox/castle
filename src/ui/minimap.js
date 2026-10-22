@@ -104,15 +104,19 @@ export class Minimap {
     g.fillStyle = '#a2412f';
     g.font = 'italic 15px Georgia, serif';
     g.fillText('line of the cut', this.px(X0 + 3), this.pz(cutZ) + 15);
-    // compass
+    // compass; plan.north turns it where the model is squared up to its axes
+    g.save();
+    g.translate(this.W - 16, 37);
+    g.rotate((-(this.plan.north ?? 0) * Math.PI) / 180);
     g.fillStyle = ink;
     g.font = '15px Georgia, serif';
-    g.fillText('N', this.W - 22, 22);
+    g.fillText('N', -6, -15);
     g.beginPath();
-    g.moveTo(this.W - 16, 28);
-    g.lineTo(this.W - 16, 46);
+    g.moveTo(0, -9);
+    g.lineTo(0, 9);
     g.strokeStyle = ink;
     g.stroke();
+    g.restore();
     // the camera
     const cam = this.app.camera.position;
     const tgt = this.app.controls.state.target;

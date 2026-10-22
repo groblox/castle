@@ -52,7 +52,7 @@ page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 
 let code = 0;
 try {
-  await page.goto(`http://localhost:${port}/`, { waitUntil: 'load' });
+  await page.goto(`http://localhost:${port}/${opt('--query', '')}`, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__castle && window.__castle.ready, null, { timeout: 60000 });
   await page.waitForTimeout(1500);
   if (extra) console.log("eval:", JSON.stringify(await page.evaluate(extra)));

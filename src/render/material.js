@@ -477,6 +477,23 @@ void main() {
     base *= 0.84 + 0.26 * rb.y;
     base = mix(base, base * vec3(0.7, 0.68, 0.62), edge * 0.7);
     ink = edge * 0.35 * lod(uv.x / 0.16, 1.0);
+  } else if (k == 26) { // rubble masonry: irregular stones bedded in pale lime mortar
+    vec2 q = vec2(uv.x / 0.36, uv.y / 0.25);
+    vec2 rb = rubble(q);
+    float fw = max(fwidth(q.x), 1e-4);
+    float joint = (1.0 - smoothstep(0.5 * fw, 1.4 * fw + 0.07, rb.x)) * lod(q.x, 1.2);
+    base *= 0.86 + 0.24 * rb.y;
+    base = mix(base, base * vec3(1.08, 1.06, 1.0), joint * 0.6);
+    ink = joint * 0.2;
+    // the lifts in which the wall was raised, a little under a metre each
+    ink = max(ink, gridLine(uv.y / 0.85 + 0.3, 0.35) * 0.1 * lod(uv.y / 0.85, 1.0));
+    if (abs(N.y) < 0.5) {
+      float h = vWorld.y - groundAt(vWorld);
+      float damp = (1.0 - smoothstep(0.0, 1.0 + blot, h)) * step(-0.3, h);
+      base = mix(base, base * vec3(0.78, 0.8, 0.7), damp * 0.45);
+      float st = vnoise(vec3(uv.x * 3.4, vWorld.y * 0.22, 5.0));
+      base *= 1.0 - smoothstep(0.62, 0.85, st) * 0.08;
+    }
   } else if (k == 18) { // straw
     ink = gridLine(uv.x * 9.0 + blot2 * 4.0, 0.3) * 0.25 * lod(uv.x * 9.0, 1.0);
   } else if (k == 19) { // fur: short strokes

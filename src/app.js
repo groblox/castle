@@ -51,6 +51,7 @@ export class App {
     document.title = `${site.title}, ${site.date}: a cutaway`;
     document.getElementById('about').addEventListener('click', () => this.panel.showAbout());
     const day = document.getElementById('daylight');
+    day.value = String(site.day ?? 0.25);
     const setDay = () => (shared.uDay.value = Number(day.value));
     day.addEventListener('input', setDay);
     setDay();

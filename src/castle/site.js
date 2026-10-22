@@ -31,6 +31,7 @@ export const ABERWEN = {
     ['Kitchens & stores', ROOMS.filter((r) => r.service)],
     ['The rest of the castle', ROOMS.filter((r) => !r.service)],
   ],
+  day: 0.25, // a grey late-autumn morning
   overview: { target: new THREE.Vector3(4, 1, -9), dist: 128, az: -10 * DEG, el: 21 * DEG },
   /** All static geometry, into one GeoBuilder. */
   buildStatic(b) {

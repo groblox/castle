@@ -4,7 +4,7 @@
 
 export const SITES = [
   { id: 'aberwen', name: 'Aberwen Castle', when: 'c. 1290', where: 'A fictional Edwardian castle in North Wales' },
-  { id: 'aguzaderas', name: 'Castillo de las Aguzaderas', when: 'c. 1400', where: 'El Coronil, Seville' },
+  { id: 'aguzaderas', name: 'Castillo de las Aguzaderas', when: 'c. 1410', where: 'El Coronil, Seville' },
 ];
 
 const asked = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('castle');

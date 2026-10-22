@@ -23,7 +23,8 @@ This is the state of the project and what you need to know to carry it on. Read 
 | `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
 | `1431c5a` | README with screenshots in `docs/images/` |
 | (this branch) | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
-| (this branch, later) | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
+| (this branch, later) | Two castles: the app takes a site from `?castle=`; Aberwen's particulars gathered into `src/castle/site.js`; the Castillo de las Aguzaderas (c. 1410) built from research in `src/aguzaderas/` |
+| (this branch, earlier) | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
 
 ## Running and verifying
 
@@ -33,7 +34,8 @@ npm run dev                             # Vite dev server
 npm run check                           # build + headless render + screenshots; exits 1 on any console error
 npm run check -- --shots kitchen,hall   # room ids from src/castle/rooms.js
 npm run check -- --no-build --out DIR   # reuse dist/; screenshots go to DIR (default .shots/, gitignored)
-npm run sources                         # regenerate SOURCES.md; run it after editing notes or sources
+npm run check -- --query "?castle=aguzaderas" --shots overview,keep   # the second castle
+npm run sources                         # regenerate SOURCES.md and SOURCES-AGUZADERAS.md; run it after editing notes or sources
 ```
 
 ### `scripts/check.mjs` details
@@ -55,19 +57,37 @@ npm run sources                         # regenerate SOURCES.md; run it after ed
   - The camera sits at `target + dist·(cos el·sin az, sin el, cos el·cos az)`, so **az = 0 looks north from the south** and az = 90° puts the camera on the east.
   - `jumpTo` does not keep the camera out of walls, so a careless position renders the inside of a tower.
 
+## Two castles (sites)
+
+The app shows one castle per page load. `src/site.js` reads `?castle=` (Aberwen by default) and lists the castles for the switch at the top of the room list (`ui/siteswitch.js`), which reloads the page. `src/sites.js` exports `site`, the descriptor of the castle on show. Everything castle-specific is reached through it:
+
+- `G`, `ROOMS`, `ROOM_BY_ID`, `roomGroups` (the headings in the room list);
+- `overview` (camera) and `day` (the default daylight);
+- `buildStatic(b)`, `setupEffects(fx)`, `buildCast(scene)`, `createMechanisms(app)`;
+- `plan` (the minimap: bounds, clickable rooms, walls, the cut line, a turned north arrow);
+- `glossary`, `notes`, `sources`, and `greet` (who salutes, curtseys or waves).
+
+Two more pieces are chosen by `SITE_ID` directly, because modules read them at load: the glossary used by `lab()` (`data/labels.js`) and the shader functions that know the plan (`SITE_GLSL` in `material.js`). Each site supplies `roofed`, `groundAt`, `sectionSide`, `topsoil` and `soot` in its `shader.js`.
+
+Aberwen's descriptor is `src/castle/site.js`; its modules are unchanged otherwise. Las Aguzaderas lives in `src/aguzaderas/`: `layout.js` (every dimension, with where it comes from), `build.js` (all its geometry), `rooms.js`, `terrain.js`, `effects.js`, `cast.js`, `mechs.js` (the signal turret), `plan.js`, `shader.js`, `glossary.js`, `notes.js`, `sources.js`. The research behind it is `docs/research/aguzaderas.md`.
+
+**Adding a castle:** copy the shape of `src/aguzaderas/`, add it to `SITES` in `site.js` and to `sites.js`, add its glossary to `data/labels.js` and its GLSL to `material.js`, and give `scripts/sources.mjs` a `generate()` call for it. Fade groups share `GROUP_COUNT` (32), and `G.people` should stay 18 because `mech/base.js` uses it for mechanism parts.
+
 ## Architecture
 
 ```
 src/
   main.js, app.js      App: renderer, loop, hover/click picking, room focus and fades, daylight slider
-  world.js             builds all static geometry into ONE mesh, then effects and the cast
+  site.js, sites.js    which castle is on show (see Two castles)
+  world.js             builds a site's static geometry into ONE mesh, then its effects and its cast
   geom/
     builder.js         GeoBuilder: convex solids clipped to cut planes, with real section caps
     shapes.js          wall (with openings), crenellations, stairs, beam, obox, decals
     props.js           lathe, cask, tub, sack, tables, benches, shelves, lump (unclipped sphere)
     nature.js          seeded rng, blob (convex hull), boulder, bush, gorse, tuft, fern, tree, mound
     kinds.js           surface kinds K.*, what each shows when cut (CAP_OF), palette P
-  castle/
+  castle/              Aberwen
+    site.js            its site descriptor; plan.js (minimap), shader.js (plan-aware shader functions)
     layout.js          all key dimensions (metres)
     rooms.js           fade groups G, ROOMS (fly-to targets, camera framing and limits)
     spots.js           shared anchor points (fires, spit, cauldron, doors...)
@@ -103,7 +123,8 @@ src/
   mech/                Mechanism base + windlass, spit, oven, hoist, tap, alarm (bell + portcullises), butts (archery); index.js registers them
   data/activities.js   the live "Now: …" line for a followed person, from the pose of their current step
   data/                glossary (hover terms), labels (ids), notes (panel text), sources
-  ui/                  controls (orbit/pan/zoom/fly), panel, room list, minimap, style.css
+  ui/                  controls (orbit/pan/zoom/fly), panel, room list, minimap, castle switch, style.css
+  aguzaderas/          the second castle (see Two castles)
 ```
 
 ### Core ideas

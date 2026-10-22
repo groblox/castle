@@ -28,6 +28,7 @@ export const K = {
   SKEP: 23, // coiled straw
   LOGEND: 24, // the sawn ends of stacked billets
   COBBLE: 25, // cobbled yard
+  RUBBLE: 26, // rubble masonry (mamposteria): irregular stones in thick lime mortar
 };
 
 // What a solid of a given kind shows where it is cut.
@@ -51,6 +52,7 @@ export const CAP_OF = {
   [K.PAINTED]: K.CUT,
   [K.LOGEND]: K.CUT_TIMBER,
   [K.COBBLE]: K.CUT,
+  [K.RUBBLE]: K.CUT,
 };
 
 // Watercolour palette (display-space RGB, no colour management).
