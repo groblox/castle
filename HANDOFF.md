@@ -1,16 +1,20 @@
-# Handoff: Aberwen Castle cutaway
+# Handoff: castle cutaways (Las Aguzaderas and Aberwen)
 
 This is the state of the project and what you need to know to carry it on. Read it alongside `README.md`, which describes the experience; this file is about the code.
 
 ## Status
 
-- **Branch:** `claude/compassionate-brahmagupta-u7beyj` (earlier work on `claude/compassionate-turing-u8pv6k`). All work is committed and pushed. **No pull request has been opened.**
-- **Build:** `npm run check` passes. It builds, renders every room headless and reports **no console errors**.
-- **Scene size:** about 174k static triangles in one mesh (drawn twice: a depth pre-pass, then the full shader), plus figures, animals, mechanisms, birds and banners, plus particle systems: about 340 draw calls in the overview (down from 1,470 before the performance pass). Under SwiftShader a frame can take over 30 s, so `check.mjs` allows 180 s per screenshot.
+- **Branches:** all work is on `main` and on `claude/compassionate-brahmagupta-u7beyj` (the same commit). Earlier work was on `claude/compassionate-turing-u8pv6k`, which is still the repository's **default branch** on GitHub; switch the default to `main` in the repository settings. No pull request has been opened.
+- **Two castles.** The app opens on the **Castillo de las Aguzaderas** (El Coronil, Seville, c. 1410), a real castle modelled from research. The switch at the top of the room list, or `?castle=aberwen`, shows **Aberwen** (fictional, c. 1290). See *Two castles*.
+- **Build:** `npm run check` passes for both castles. It builds, renders the overview (or the rooms named with `--shots`) headless and reports **no console errors**.
+- **Scene size:**
+  - Aberwen: about 174k static triangles in one mesh (drawn twice: a depth pre-pass, then the full shader), plus figures, animals, mechanisms, birds and banners, plus particle systems. That makes about 340 draw calls in the overview, down from 1,470 before the performance pass.
+  - Las Aguzaderas: about 68k static triangles and 35 draw calls.
+  - Under SwiftShader a frame can take over 30 s, so `check.mjs` allows 180 s per screenshot.
 - **Performance on real GPUs is still unmeasured.** The only renderer in this environment was SwiftShader (software WebGL); there the performance pass roughly doubled the frame rate (0.8 → 1.5 fps in the overview) and cut CPU time per frame by more than half. Press **F** (or open with `?stats`) for a frame-rate readout on real hardware (see *Performance*).
 - **Content:**
-  - 18 rooms the camera can fly to, 7 working mechanisms, and 129 animated people and animals (birds not counted).
-  - 36 sources and 73 statements marked as conjecture, all listed in `SOURCES.md`.
+  - Aberwen: 18 rooms the camera can fly to, 7 working mechanisms, and 129 animated people and animals (birds not counted). 36 sources and 73 statements marked as conjecture, all listed in `SOURCES.md`.
+  - Las Aguzaderas: 9 places to fly to, 1 working mechanism (the signal turret), 7 people and 7 animals (a horse, a dog and five cattle). 15 sources and 26 statements marked as conjecture, listed in `SOURCES-AGUZADERAS.md`; the research behind them is in `docs/research/aguzaderas.md`.
 
 ### History
 
@@ -22,10 +26,11 @@ This is the state of the project and what you need to know to carry it on. Read 
 | `4ccadd6` | Darker default light, firelight, candles, lanterns, glow halos, Dusk ↔ Day slider |
 | `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
 | `1431c5a` | README with screenshots in `docs/images/` |
-| (this branch) | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
-| (this branch, latest) | Las Aguzaderas opens first; the switch leads to Aberwen (`?castle=aberwen`) |
-| (this branch, later) | Two castles: the app takes a site from `?castle=`; Aberwen's particulars gathered into `src/castle/site.js`; the Castillo de las Aguzaderas (c. 1410) built from research in `src/aguzaderas/` |
-| (this branch, earlier) | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
+| `b41cded` | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
+| `ef18d8a` | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
+| `d1310dc` | Two castles: the app takes a site from `?castle=`; Aberwen's particulars gathered into `src/castle/site.js` |
+| `b5fe203` | The Castillo de las Aguzaderas (c. 1410), built from research in `src/aguzaderas/` |
+| `4d07f1d` | Las Aguzaderas opens first; the switch leads to Aberwen (`?castle=aberwen`) |
 
 ## Running and verifying
 
@@ -45,6 +50,7 @@ npm run sources                         # regenerate SOURCES.md and SOURCES-AGUZ
   - `--shots` takes room ids, `overview`, or `js:<code>` (JavaScript run in the page before the screenshot).
   - If any shot contains commas, separate the shots with `@@` instead of commas.
   - `js:` shots are saved as `js<index>.png`.
+- **`--query "<search>"`** is added to the page address, e.g. `--query "?castle=aberwen"` (or `"?castle=aberwen&stats"`).
 - **`--eval "<expr>"`** runs once after load and prints its value. For example, `Object.keys(window.__castle.world.cast.actors).length`.
 - **`--probe`** prints the hover label for a grid of screen points.
 - **Debug hooks:** `window.__castle` is the `App` instance. Useful methods:
@@ -135,12 +141,12 @@ src/
   - Faces lying in the cut plane are welded at `build()` so no hairline cracks open between them.
   - `addGeometry` and `lump` are **not clipped**. Use them only for things that do not cross `z = 0`.
 - **One static mesh.** Everything static is in a single BufferGeometry with per-vertex `acol` (colour) and `info` = (surface kind, label id, fade group).
-- **Fade groups** (`G` in `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 32, and ids 0–28 are in use. The west and east inner curtains have their own groups (`curtainW`, `curtainE`) so the tower views can hide them.
+- **Fade groups** (`G` in each castle's `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 32 for both castles. Aberwen uses ids 0–28; its west and east inner curtains have their own groups (`curtainW`, `curtainE`) so the tower views can hide them. Las Aguzaderas uses 0–13 and 18 (people).
 - **Labels** are 16-bit ids written to a picking target. `lab(key, room, mech)` registers a label and **throws if `key` is not in `GLOSSARY`**, so add the glossary entry first. A label with a room flies there on click; one with a mech operates it.
-- **Surface kinds** choose the pattern in `material.js`: masonry, slates, boards, flags, cobbles, wattle, painted false-ashlar, log ends, foliage, straw, fur and so on. `post.js` `isCut()` lists the kinds that get the heavy section outline.
+- **Surface kinds** choose the pattern in `material.js`: coursed masonry, rubble masonry (`K.RUBBLE`, Las Aguzaderas' mampostería), slates, boards, flags, cobbles, wattle, painted false-ashlar, log ends, foliage, straw, fur and so on. `post.js` `isCut()` lists the kinds that get the heavy section outline.
 - **Lighting** comes from shared uniforms in `material.js` (the light and fade arrays live in a uniform buffer, `Tables`; see *Performance*):
-  - `uDay` is 0 for dusk and 1 for bright day; the default is 0.25.
-  - `uFirePos`/`uFireCol` hold **24 light slots**.
+  - `uDay` is 0 for dusk and 1 for bright day. Each castle sets its default (`site.day`): 0.25 for Aberwen's grey autumn morning, 0.6 for Las Aguzaderas' spring morning.
+  - `uFirePos`/`uFireCol` hold **32 light slots** (`MAX_FIRES`).
   - `uGlowAmt` scales the additive halos.
 
   `Effects.update()` flickers the lights and switches dusk-only systems (the gate cressets) on as `uDay` falls.
@@ -150,6 +156,8 @@ src/
   - `opts.floor` fixes the walking height, or `opts.floorFn(x, z)` computes it (`groundY` outdoors).
 
 ## How to…
+
+These recipes are written for Aberwen (`src/castle/`, `src/data/`, `src/people/`, `src/mech/`). For Las Aguzaderas the same steps apply to its own files: `glossary.js`, `build.js`, `cast.js`, `effects.js`, `mechs.js`, `rooms.js`, `notes.js` and `sources.js` in `src/aguzaderas/`.
 
 **Add a static object.**
 1. Add a glossary key in `src/data/glossary.js`.
@@ -169,7 +177,7 @@ src/
 4. New poses go in the `switch` in `figure.js`; new props in `propsCarried.js`.
 
 **Add a light.**
-1. Call `fx.light(slot, [x, y, z], strength, color, { dusk })` in `ambient.js`. Slots 0–21 are taken (see the table below).
+1. Call `fx.light(slot, [x, y, z], strength, color, { dusk })` in `ambient.js`. In Aberwen every slot is taken (see the table below); Las Aguzaderas uses 0–3 (`LIGHT` in its `effects.js`: courtyard fire, keep brazier, keep lantern, signal fire).
 2. Add `fx.glow(name, [[x, y, z]], { size, alpha })` for the halo.
 3. Add flames with `fx.flames`.
 
@@ -191,7 +199,7 @@ src/
 2. Cite it in note text with `{@id}`, and mark invented or weakly evidenced statements with `[[conj]]`.
 3. Run `npm run sources`. It throws on an unknown source id; the panel shows `?` for one.
 
-### Light slots in use
+### Light slots in use (Aberwen)
 
 | Slots | Use |
 |---|---|
@@ -238,13 +246,14 @@ Still to try, in rough order of likely gain:
 
 ## Gotchas
 
-- **Layout is hard-coded into the shaders.** Several approximations in `material.js` use world-space boxes from `layout.js` and must be updated if the plan changes:
+- **Layout is hard-coded into the shaders.** Each castle's `shader.js` (`src/castle/shader.js`, `src/aguzaderas/shader.js`) uses world-space boxes from its `layout.js` and must be updated if the plan changes:
   - `roofed()`: which rooms get less daylight;
   - `groundAt()`: where damp sits at the wall feet;
-  - the soot region over the kitchen, bakehouse and brewhouse, and the x-positions of its hearth plumes;
-  - the topsoil band in the rock section, with its terrain heights per x-range;
-  - the test that treats the terrain block's outer faces (x ≈ ±62/72, z ≈ −62) as section faces.
-- **`groundY()` must match the terrain solids.** The northern slope in `shell.js` is built from the triangles in `NORTH_FALL` so the two agree; the other regions are formulas in `terrain.js`.
+  - `soot()`: in Aberwen, the region over the kitchen, bakehouse and brewhouse, and the x-positions of its hearth plumes;
+  - `topsoil()`: in Aberwen, the topsoil band in the rock section, with its terrain heights per x-range;
+  - `sectionSide()`: which outer faces of the terrain block count as section faces (Aberwen x ≈ ±62/72, z ≈ −62; Las Aguzaderas x = ±96, z = −118).
+- **`groundY()` must match the terrain solids.** In Aberwen the northern slope in `shell.js` is built from the triangles in `NORTH_FALL` so the two agree; the other regions are formulas in `terrain.js`. In Las Aguzaderas the terrain is 4 m triangular prisms sampled from `groundY()`, so between grid points the two differ by a few centimetres.
+- **Mechanism parts use `G.people` from Aberwen's `rooms.js`** (`mech/base.js`), so every castle keeps people in fade group 18.
 - **`obox` rotates about y only.** For tilted boxes use `beam` or `loft`.
 - **Stale builds.** `--no-build` reuses `dist/`; rebuild after any source change.
 - **Picking reads the label target.** Particles write alpha 0 to it, so smoke and glows never block hover.
@@ -263,6 +272,13 @@ Still to try, in rough order of likely gain:
 4. **Hover text on fast-moving things.** Picking is asynchronous and throttled, so a quick bird or walker can show a stale tooltip.
 5. **Camera limits are boxes.** Inside a room the camera is kept in an axis-aligned `camBox`. Orbiting to the edge of the allowed angle can still put walls between you and the room in a few views.
 6. **No automated tests beyond `npm run check`.** It only catches console errors; visual regressions need a look at the screenshots.
+7. **Las Aguzaderas rests on incomplete evidence.** The details are in `docs/research/aguzaderas.md`.
+   - **No published heights or wall thicknesses** were found online, so these are estimated from photographs. The keep's wall thicknesses and its stair in the east wall follow the Torre Lopera.
+   - **The gate:** one source puts it in the west wall (modelled), another on the north side with a portcullis.
+   - **Compass bearings:** the IAPH record's bearings are a quarter-turn out from the imagery. The model follows the imagery, which puts the albarrana tower at the north-east; one local account puts it on the west.
+   - **Measured drawings not consulted:** Molina Rozalem's *Fortificaciones de la Banda Morisca* (2016) and Mora-Figueroa in *Castillos de España* (1973) were not reachable.
+   - **The DPEJ "ahumadas" entry** (smoke and fire signals) was confirmed through a search summary; the page itself refused the fetch.
+   - **The plan is squared up to the axes.** The real enclosure is turned about 19° and slightly trapezoidal. The minimap's north arrow shows the true bearing.
 
 ## Ideas not yet done
 
@@ -274,15 +290,17 @@ Still to try, in rough order of likely gain:
 - Sound: crackling fires, the spit, hens, wind on the wall-walk.
 - A guided tour mode that flies room to room with the notes.
 - Performance: the items under *Still to try* in *Performance*.
+- Las Aguzaderas: replace the estimated heights and thicknesses from Molina Rozalem's or Mora-Figueroa's drawings; give the gate alternative (north side, with portcullis) as a toggle; more of the frontier day (a mounted patrol, herds driven inside when the signal is lit).
 
 ## Conventions
 
 - **Code style:** plain ES modules with no TypeScript and no framework; two-space indent; comments short and explanatory.
 - **Units and axes:**
   - Metres; +x east, +y up, −z north.
-  - The cut plane is z = 0; the south half (z > 0) is removed.
-  - The inner ward is at y = 0 and the outer ward at y = −1.5.
+  - The cut plane is z = 0; the south half (z > 0) is removed. In Aberwen it runs through the middle of the wards. In Las Aguzaderas it runs along the middle of the south curtain, through the keep and the southern corner towers.
+  - Aberwen: the inner ward is at y = 0 and the outer ward at y = −1.5. Las Aguzaderas: the courtyard and the ground round it are at y = 0.
 - **Historical honesty:**
-  - Nothing post-1290 goes in: no hops, potatoes, turkeys or dug sawpits.
+  - Nothing later than the scene goes in. For Aberwen (1290) that rules out hops, potatoes, turkeys and dug sawpits. For Las Aguzaderas (c. 1410) it rules out anything after the early fifteenth century.
   - When in doubt, mark it `[[conj]]` rather than leave it out of the notes.
+  - Las Aguzaderas is a real castle: model only what the sources support or the plan shows, and mark everything else as conjecture.
 - **Commits:** clear messages, the attribution trailer the repo already uses, and no model names in commit text or code.
