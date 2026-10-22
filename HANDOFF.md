@@ -23,6 +23,7 @@ This is the state of the project and what you need to know to carry it on. Read 
 | `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
 | `1431c5a` | README with screenshots in `docs/images/` |
 | (this branch) | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
+| (this branch, latest) | Las Aguzaderas opens first; the switch leads to Aberwen (`?castle=aberwen`) |
 | (this branch, later) | Two castles: the app takes a site from `?castle=`; Aberwen's particulars gathered into `src/castle/site.js`; the Castillo de las Aguzaderas (c. 1410) built from research in `src/aguzaderas/` |
 | (this branch, earlier) | Performance: figures merged to one mesh each, depth pre-pass for the static mesh, a uniform buffer for lights and fades, banners rippled on the GPU, shader trims, **F** for a frame-rate readout |
 
@@ -32,9 +33,9 @@ This is the state of the project and what you need to know to carry it on. Read 
 npm install
 npm run dev                             # Vite dev server
 npm run check                           # build + headless render + screenshots; exits 1 on any console error
-npm run check -- --shots kitchen,hall   # room ids from src/castle/rooms.js
+npm run check -- --shots keep,gate      # room ids from src/aguzaderas/rooms.js (Las Aguzaderas opens first)
+npm run check -- --query "?castle=aberwen" --shots kitchen,hall   # Aberwen; room ids from src/castle/rooms.js
 npm run check -- --no-build --out DIR   # reuse dist/; screenshots go to DIR (default .shots/, gitignored)
-npm run check -- --query "?castle=aguzaderas" --shots overview,keep   # the second castle
 npm run sources                         # regenerate SOURCES.md and SOURCES-AGUZADERAS.md; run it after editing notes or sources
 ```
 
@@ -59,7 +60,7 @@ npm run sources                         # regenerate SOURCES.md and SOURCES-AGUZ
 
 ## Two castles (sites)
 
-The app shows one castle per page load. `src/site.js` reads `?castle=` (Aberwen by default) and lists the castles for the switch at the top of the room list (`ui/siteswitch.js`), which reloads the page. `src/sites.js` exports `site`, the descriptor of the castle on show. Everything castle-specific is reached through it:
+The app shows one castle per page load. `src/site.js` reads `?castle=` (Las Aguzaderas, the first in `SITES`, when none is given; `?castle=aberwen` for Aberwen) and lists the castles for the switch at the top of the room list (`ui/siteswitch.js`), which reloads the page. `src/sites.js` exports `site`, the descriptor of the castle on show. Everything castle-specific is reached through it:
 
 - `G`, `ROOMS`, `ROOM_BY_ID`, `roomGroups` (the headings in the room list);
 - `overview` (camera) and `day` (the default daylight);
@@ -124,7 +125,7 @@ src/
   data/activities.js   the live "Now: …" line for a followed person, from the pose of their current step
   data/                glossary (hover terms), labels (ids), notes (panel text), sources
   ui/                  controls (orbit/pan/zoom/fly), panel, room list, minimap, castle switch, style.css
-  aguzaderas/          the second castle (see Two castles)
+  aguzaderas/          Las Aguzaderas, the castle shown first (see Two castles)
 ```
 
 ### Core ideas

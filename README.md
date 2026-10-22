@@ -8,7 +8,7 @@ Aberwen is a fictional concentric castle modelled on Harlech, Conwy and Beaumari
 
 Everything is drawn in code: the masonry, the people, the hens and the paper texture. There are no models or image assets.
 
-A second, real castle sits alongside it: the **Castillo de las Aguzaderas** at El Coronil (Seville), as it may have stood about 1410. Switch between the two with the buttons at the top of the room list (see [below](#a-real-castle-las-aguzaderas-c-1410)).
+The app now opens on a second, real castle: the **Castillo de las Aguzaderas** at El Coronil (Seville), as it may have stood about 1410 (see [below](#a-real-castle-las-aguzaderas-c-1410)). The buttons at the top of the room list switch to Aberwen, or open the page with `?castle=aberwen`.
 
 ---
 
@@ -146,7 +146,8 @@ npm run preview  # serve the production build
 
 ```sh
 npm run check                          # build, render headless, screenshot, fail on any console error
-npm run check -- --shots kitchen,hall  # screenshots of particular rooms (room ids)
+npm run check -- --shots keep,gate    # screenshots of particular rooms (room ids); Las Aguzaderas opens first
+npm run check -- --query "?castle=aberwen" --shots kitchen,hall  # the same for Aberwen
 npm run check -- --no-build --out DIR  # reuse the last build; choose the output folder
 npm run sources                        # regenerate SOURCES.md from src/data/
 ```
