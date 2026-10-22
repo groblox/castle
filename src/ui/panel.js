@@ -1,8 +1,9 @@
-import { ROOM_BY_ID } from '../castle/rooms.js';
-import { GLOSSARY } from '../data/glossary.js';
-import { SOURCES, SOURCE_IDS } from '../data/sources.js';
-import { ABOUT, ROOM_NOTES, MECH_NOTES, PERSON_NOTES } from '../data/notes.js';
+import { site } from '../sites.js';
 import { activityOf } from '../data/activities.js';
+
+const { ROOM_BY_ID, glossary: GLOSSARY } = site;
+const { SOURCES, SOURCE_IDS } = site.sources;
+const { ABOUT, ROOM_NOTES, MECH_NOTES, PERSON_NOTES } = site.notes;
 
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const md = (s) => esc(s).replace(/\*(.+?)\*/g, '<i>$1</i>');

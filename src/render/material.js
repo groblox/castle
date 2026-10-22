@@ -1,5 +1,11 @@
 import * as THREE from 'three';
 import { GROUP_COUNT } from '../castle/rooms.js';
+import { SITE_ID } from '../site.js';
+import { ABERWEN_GLSL } from '../castle/shader.js';
+import { AGUZADERAS_GLSL } from '../aguzaderas/shader.js';
+
+// the parts of the shader that know the plan of the castle on show
+const SITE_GLSL = SITE_ID === 'aguzaderas' ? AGUZADERAS_GLSL : ABERWEN_GLSL;
 
 // One shader drives every surface in the scene. It writes three targets:
 //  0: watercolour-lit colour
@@ -261,31 +267,7 @@ vec2 rubble(vec2 x) {
   return vec2(sqrt(F2) - sqrt(F1), id);
 }
 
-// Roofed rooms get little daylight: 1 outdoors, smaller inside.
-float roofed(vec3 p) {
-  float m = 0.0;
-  // north range of service rooms
-  if (p.x > -11.85 && p.x < 25.05 && p.z > -21.05 && p.z < -12.45 && p.y < 7.5) m = 1.0;
-  // services, chamber, hall and undercroft
-  if (p.x > -25.05 && p.x < -12.95 && p.z > -21.05 && p.y < 8.6 && p.y > -4.1) m = 1.0;
-  // gatehouse chambers and gate passage
-  if (p.x > 20.15 && p.x < 29.85 && p.z > -7.85 && p.y > 5.5 && p.y < 16.6) m = 1.0;
-  if (p.x > 19.5 && p.x < 35.0 && p.z > -1.65 && p.y < 4.3) m = 0.8;
-  // the rooms in the two cut corner towers
-  if (p.z < -20.95 && p.y > -1.6 && p.y < 18.05 && (length(p.xz - vec2(-27.6, -23.6)) < 4.25 || length(p.xz - vec2(27.6, -23.6)) < 4.25)) m = 1.0;
-  if (p.z < -20.95 && p.y < 4.0 && p.y > -1.6 && length(p.xz - vec2(-27.6, -23.6)) < 4.25) m = 1.3; // the prison
-  // the stable in the north outer ward
-  if (p.x > -18.6 && p.x < -5.4 && p.z < -29.9 && p.z > -33.6 && p.y < 2.6) m = 0.8;
-  // the undercroft is darker still
-  if (p.x > -25.05 && p.x < -12.95 && p.z > -9.1 && p.y < 0.55 && p.y > -4.1) m = 1.4;
-  return m;
-}
-
-// Rough ground level under a point: the inner ward is at 0, the outer ward
-// and the field round about at -1.5. Used to put damp and grime at wall feet.
-float groundAt(vec3 p) {
-  return (abs(p.x) < 25.2 && p.z > -21.2) ? 0.0 : -1.5;
-}
+${SITE_GLSL}
 // Lichen: small round rosettes scattered on a face.
 float lichen(vec2 uv, float scale, float density) {
   vec2 q = uv * scale;
@@ -306,7 +288,7 @@ void main() {
   vec3 base = vCol;
   float ink = 0.0; // procedural ink lines (0..1)
   // the outer sides of the terrain block are section faces too
-  if (k == 5 && abs(N.y) < 0.3 && (vWorld.x > 71.9 || vWorld.x < -61.9 || vWorld.z < -61.9)) k = 14;
+  if (k == 5 && sectionSide(vWorld, N)) k = 14;
   bool cut = (k == 2 || k == 13 || k == 14 || k == 17);
   bool unlit = (k == 8);
 
@@ -394,17 +376,7 @@ void main() {
     base = mix(base, vec3(0.86, 0.84, 0.78), vein * 0.5 * lod(vWorld.x * 0.2, 1.0));
     base = mix(base, base * vec3(1.05, 0.94, 0.84), smoothstep(0.6, 0.8, fbm(vWorld * 0.12 + 9.0)) * 0.5);
     base *= 0.9 + 0.2 * blot;
-    // a ragged band of stony topsoil under the turf, where the cut crosses open ground
-    if (abs(N.z) > 0.9 && abs(vWorld.x) > 28.6) {
-      float x = vWorld.x;
-      float top = x < -40.0 ? -14.0 + (x + 62.0) / 22.0 * 12.5 : (x > 44.0 && x < 52.0) ? -7.0 : x > 52.0 ? -2.2 - (x - 52.0) / 20.0 * 1.8 : -1.5;
-      float depth = top - vWorld.y + (fbm(vWorld * 1.5) - 0.5) * 0.35;
-      float soil = 1.0 - smoothstep(0.45, 0.6, depth);
-      vec2 sc = floor(vWorld.xy * 7.0);
-      float stone = step(0.88, hash12(sc)) * (1.0 - smoothstep(0.2, 0.4, length(fract(vWorld.xy * 7.0) - 0.5)));
-      base = mix(base, mix(vec3(0.55, 0.45, 0.34), vec3(0.72, 0.68, 0.6), stone), soil * step(-0.05, depth));
-      ink = mix(ink, max(stone * 0.3, gridLine(depth * 2.0 - 1.0, 0.4) * 0.15), soil);
-    }
+    topsoil(vWorld, N, base, ink);
   } else if (k == 17) { // earth in section
     ink = step(0.93, hash12(floor(vWorld.xy * 9.0))) * 0.4 * lod(vWorld.x * 9.0, 1.0);
   } else if (k == 5) { // rock surface: weathered beds and fissures on steep faces
@@ -511,15 +483,7 @@ void main() {
     ink = gridLine(uv.x * 14.0 + blot2 * 6.0, 0.25) * 0.18 * lod(uv.x * 14.0, 1.0);
   }
 
-  // smoke-blackened walls and timbers in the rooms with open fires
-  // (kitchen, bakehouse, brewhouse): darker towards the roof
-  if ((k == 1 || k == 3 || k == 4 || k == 10) && N.y < 0.3 && vWorld.x > -6.65 && vWorld.x < 18.65 && vWorld.z < -12.45 && vWorld.z > -21.05 && vWorld.y < 11.9) {
-    // plumes of soot rising from each hearth mouth
-    float px = min(min(abs(vWorld.x + 3.4), abs(vWorld.x - 2.2)), min(abs(vWorld.x - 9.2), abs(vWorld.x - 13.4)));
-    float plume = exp(-px * px / (0.8 + 0.25 * max(vWorld.y - 2.5, 0.0))) * smoothstep(2.0, 3.6, vWorld.y) * step(vWorld.z, -20.0);
-    float sm = smoothstep(0.8, 6.5, vWorld.y) * (0.75 + 0.5 * fbm(vWorld * 0.5 + 2.0)) + plume * 0.8;
-    base = mix(base, base * vec3(0.4, 0.36, 0.33), clamp(sm, 0.0, 1.0) * 0.75);
-  }
+  soot(k, vWorld, N, base);
 
   // ---- watercolour light --------------------------------------------------
   vec3 col;

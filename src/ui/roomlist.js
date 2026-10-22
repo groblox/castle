@@ -1,4 +1,4 @@
-import { ROOMS } from '../castle/rooms.js';
+import { site } from '../sites.js';
 
 /** Room list in the left-hand panel: click to fly to a room. */
 export class RoomList {
@@ -6,11 +6,7 @@ export class RoomList {
     this.app = app;
     this.el = el;
     this.buttons = new Map();
-    const groups = [
-      ['Kitchens & stores', ROOMS.filter((r) => r.service)],
-      ['The rest of the castle', ROOMS.filter((r) => !r.service)],
-    ];
-    for (const [title, rooms] of groups) {
+    for (const [title, rooms] of site.roomGroups) {
       const h = document.createElement('h3');
       h.textContent = title;
       el.appendChild(h);

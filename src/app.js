@@ -2,23 +2,21 @@ import * as THREE from 'three';
 import { Pipeline } from './render/pipeline.js';
 import { shared, setFades } from './render/material.js';
 import { CutawayControls, DEG } from './ui/controls.js';
-import { ROOMS, ROOM_BY_ID, GROUP_COUNT } from './castle/rooms.js';
+import { GROUP_COUNT } from './castle/rooms.js';
 import { LABELS } from './data/labels.js';
 import { buildWorld } from './world.js';
 import { Panel } from './ui/panel.js';
 import { RoomList } from './ui/roomlist.js';
-import { createMechanisms } from './mech/index.js';
 import { Minimap } from './ui/minimap.js';
+import { SiteSwitch } from './ui/siteswitch.js';
+import { site } from './sites.js';
 
 THREE.ColorManagement.enabled = false;
 
-// how people acknowledge you when clicked
-const SOLDIERS = new Set(['watchman', 'crossbowman', 'gateGuard', 'sergeant', 'recruit', 'archer', 'soldierOff', 'constable', 'knight']);
-const WOMEN = new Set(['brewer', 'laundress', 'henwife', 'lady', 'milkmaid', 'swineherd', 'gooseGirl', 'goatherd']);
-const YOUNG = new Set(['child', 'page', 'squire', 'spitBoy', 'shepherd']);
+const { ROOMS, ROOM_BY_ID } = site;
 const SEATED = new Set(['sit', 'sitWork', 'sitCrank', 'polish', 'dice', 'milk', 'saw', 'kneel', 'shoot', 'drill', 'crank']);
 
-const OVERVIEW = { target: new THREE.Vector3(4, 1, -9), dist: 128, az: -10 * DEG, el: 21 * DEG };
+const OVERVIEW = site.overview;
 
 export class App {
   constructor(canvas) {
@@ -41,11 +39,16 @@ export class App {
     this.mechs = {}; // id -> mechanism (milestone 5)
     this.frameTimes = [];
 
-    this.world = buildWorld(this.scene, this);
-    this.mechs = createMechanisms(this);
+    this.site = site;
+    this.world = buildWorld(this.scene, site);
+    this.mechs = site.createMechanisms(this);
     this.panel = new Panel(this);
     this.roomList = new RoomList(this, document.getElementById('roomlist'));
     this.minimap = new Minimap(this, document.getElementById('minimap'));
+    new SiteSwitch(document.getElementById('siteswitch'));
+    document.getElementById('site-title').innerHTML = `${site.title} <span>${site.date}</span>`;
+    document.getElementById('site-subtitle').textContent = site.subtitle;
+    document.title = `${site.title}, ${site.date}: a cutaway`;
     document.getElementById('about').addEventListener('click', () => this.panel.showAbout());
     const day = document.getElementById('daylight');
     const setDay = () => (shared.uDay.value = Number(day.value));
@@ -186,7 +189,8 @@ export class App {
       return;
     }
     const face = Math.atan2(cam.x - a.pos.x, cam.z - a.pos.y);
-    const how = SOLDIERS.has(key) ? 'salute' : WOMEN.has(key) ? 'curtsey' : YOUNG.has(key) || key === 'king' ? 'wave' : 'bow';
+    const { soldiers, women, young } = site.greet;
+    const how = soldiers.has(key) ? 'salute' : women.has(key) ? 'curtsey' : young.has(key) ? 'wave' : 'bow';
     a.attend = { until: t + 3.2, x: cam.x, y: cam.y, z: cam.z };
     a.pause(how, 3.0, face);
   }

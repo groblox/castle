@@ -1,4 +1,9 @@
-import { GLOSSARY } from './glossary.js';
+import { SITE_ID } from '../site.js';
+import { GLOSSARY as ABERWEN } from './glossary.js';
+import { GLOSSARY as AGUZADERAS } from '../aguzaderas/glossary.js';
+
+// the hover terms of the castle on show
+const GLOSSARY = SITE_ID === 'aguzaderas' ? AGUZADERAS : ABERWEN;
 
 // Label ids are written into a picking buffer, one per vertex.
 // Id 0 means "nothing".
