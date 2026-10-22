@@ -5,6 +5,7 @@ import { lab } from '../data/labels.js';
 import { G } from './rooms.js';
 import { groundY } from './terrain.js';
 import { DITCH, OC_OUT } from './layout.js';
+import { FARM_CLEAR } from './farm.js';
 
 // The ground outside the walls: rock breaking through thin turf on the crag,
 // gorse, bracken and a few wind-cut thorn trees, the rock-cut ditch with its
@@ -19,9 +20,17 @@ const REGIONS = {
   ditch: [DITCH.x0 + 0.3, DITCH.x1 - 0.3, -39.5, -0.4],
 };
 
+// keep the field's boulders and scrub out of the farm's yards and buildings
+const clear = (x, z) => FARM_CLEAR.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
+
 function scatter(r, region, n, fn) {
   const [x0, x1, z0, z1] = region;
-  for (let i = 0; i < n; i++) fn(x0 + (x1 - x0) * r(), z0 + (z1 - z0) * r(), i);
+  for (let i = 0; i < n; i++) {
+    const x = x0 + (x1 - x0) * r();
+    const z = z0 + (z1 - z0) * r();
+    if (region === REGIONS.field && clear(x, z)) continue;
+    fn(x, z, i);
+  }
 }
 
 // lowest ground under a footprint, so things on slopes do not float

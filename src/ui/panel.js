@@ -2,6 +2,7 @@ import { ROOM_BY_ID } from '../castle/rooms.js';
 import { GLOSSARY } from '../data/glossary.js';
 import { SOURCES, SOURCE_IDS } from '../data/sources.js';
 import { ABOUT, ROOM_NOTES, MECH_NOTES, PERSON_NOTES } from '../data/notes.js';
+import { activityOf } from '../data/activities.js';
 
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const md = (s) => esc(s).replace(/\*(.+?)\*/g, '<i>$1</i>');
@@ -60,6 +61,12 @@ export class Panel {
       if (!a) return;
       e.preventDefault();
       const [type, id] = a.dataset.go.split(':');
+      if (type === 'follow') {
+        const c = this.current;
+        if (c && c.actor) app.follow(app.following === c.actor ? null : c.actor);
+        this.sync();
+        return;
+      }
       if (type === 'mech') {
         const m = app.mechs[id];
         if (m.room) app.focusRoom(m.room, { keepPanel: true });
@@ -95,12 +102,31 @@ export class Panel {
     this._show(`<h2>${esc(room.name)}</h2><p class="terms">${esc(note.terms ?? '')}</p>${paras}${this._also(note)}${src}${this._footer()}`);
   }
 
-  showPerson(key) {
-    this.current = { type: 'person', id: key };
+  /** Notes on a person or beast; with the actor clicked, a live line on what they are doing and a Follow button. */
+  showPerson(key, actor = null) {
+    this.current = { type: 'person', id: key, actor };
     const g = GLOSSARY[key];
     const note = PERSON_NOTES[key] || { body: [g?.gloss ?? ''] };
     const { paras, src } = renderNote(note);
-    this._show(`<h2>${esc(g?.term ?? key)}</h2><p class="terms">${esc(note.terms ?? '')}</p>${paras}${src}${this._footer()}`);
+    const live = actor ? `<p class="status live"></p><div class="mech-controls"><button type="button" class="follow" data-go="follow:${esc(key)}"></button></div>` : '';
+    this._show(`<h2>${esc(g?.term ?? key)}</h2><p class="terms">${esc(note.terms ?? '')}</p>${live}${paras}${src}${this._footer()}`);
+    this.sync();
+  }
+
+  /** Refresh the live line and Follow button for the person on show. */
+  sync() {
+    const c = this.current;
+    if (!c || c.type !== 'person' || !c.actor) return;
+    const st = this.body.querySelector('.live');
+    const btn = this.body.querySelector('button.follow');
+    if (!st || !btn) return;
+    const following = this.app.following === c.actor;
+    const term = GLOSSARY[c.id]?.term ?? c.id;
+    const what = activityOf(c.actor);
+    st.textContent = `Now: ${what}.`;
+    btn.textContent = following ? 'Stop following' : `Follow this ${term.toLowerCase().split(/[;(,]/)[0].trim()}`;
+    btn.classList.toggle('next', !following);
+    this._liveT = performance.now();
   }
 
   showMech(m) {
@@ -174,5 +200,6 @@ export class Panel {
   update() {
     const c = this.current;
     if (c && c.type === 'mech' && c.m.version !== this._ver) this._sync(c.m);
+    if (c && c.type === 'person' && c.actor && performance.now() - (this._liveT ?? 0) > 400) this.sync();
   }
 }

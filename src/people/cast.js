@@ -10,6 +10,8 @@ import { Actor } from './actor.js';
 import { carried } from './propsCarried.js';
 import { partGeo, figureMaterial, mesh } from './parts.js';
 import { buildLife } from './life.js';
+import { crowd } from './crowd.js';
+import { buildHousehold } from './household.js';
 
 // The household at work on a morning before dinner. Each servant loops
 // through a short routine drawn from the duties of their office.
@@ -167,7 +169,7 @@ export function buildCast(scene) {
   ]);
 
   const horse = new Horse(labPerson('horse', 'granary'), G.people);
-  add('horse', horse, [{ pose: 'stand', dur: 1e9 }], { start: [11.85, -9.2], heading: W, floor: 0 });
+  add('horse', horse, [{ pose: 'stand', dur: 1e9 }], { start: [11.85, -9.2], heading: W, floor: 0, radius: 0.6, yields: false });
 
   // ---- the watch on the walls -------------------------------------------------
   // Wall-walk levels: inner curtain 12 m above the inner ward, outer curtain
@@ -199,10 +201,10 @@ export function buildCast(scene) {
     { pose: 'crouch', face: [-11.0, -20.4], dur: 6 },
     { pose: 'sit', face: [-11.0, -20.4], dur: 6 },
     { go: fireToLarder.slice(0, -1).reverse().concat([[-1.9, -18.9]]), pose: 'walk' },
-  ], { speed: 0.55, stride: 0.35, turnRate: 4 });
+  ], { speed: 0.55, stride: 0.35, turnRate: 4, radius: 0.15, shy: 1 });
 
   // ---- rats in the stores ----------------------------------------------------
-  const rat = (name, room, floor, steps) => add(name, new Rat(labPerson('rat', room), G.people), steps, { speed: 1.5, stride: 0.16, floor, turnRate: 14 });
+  const rat = (name, room, floor, steps) => add(name, new Rat(labPerson('rat', room), G.people), steps, { speed: 1.5, stride: 0.16, floor, turnRate: 14, solid: false });
   const scurry = (pts, pauses = ['sniff', 'rear', 'sniff']) => {
     const steps = [];
     pts.forEach((p, i) => {
@@ -219,11 +221,27 @@ export function buildCast(scene) {
   rat('ratLoft', 'granary', 3.85, scurry([[19.7, -15.5], [23.9, -15.5], [24.5, -19.0], [23.9, -15.5]]));
 
   const life = buildLife({ scene, add, fig });
+  const household = buildHousehold({ scene, add, fig });
 
+  // what the rest do when the alarm bell rings: the watch stands and looks
+  // out, the pedlar makes himself scarce, the henwife takes cover
+  const alarm = household.alarm;
+  const look = (a, face) => alarm.push([a, [{ pose: a.e.j ? 'look' : 'stand', dur: 1e9, face }]]);
+  for (const [name, face] of [['watchNorth', N], ['watchWest', W], ['watchEast', E], ['porter', E], ['shepherd', Sth], ['smith', W], ['mason', Sth], ['gardener', E], ['laundress', E]]) {
+    if (actors[name]) look(actors[name], face);
+  }
+  alarm.push([actors.pedlar, [{ go: [[70.5, -1.2]], pose: 'shoulder', speed: 1.8 }, { pose: 'look', dur: 1e9, face: W }]]);
+  alarm.push([actors.henwife, [{ go: [[-9.6, -8.6]], pose: 'scatter', speed: 1.4 }, { pose: 'idle', dur: 1e9, face: E }]]);
+
+  const solid = Object.values(actors).filter((a) => a.solid);
   return {
     actors,
     cart,
+    alarm,
+    archers: household.archers,
     update(t, dt) {
+      household.update(t, dt);
+      crowd(solid, t, dt);
       for (const a of Object.values(actors)) {
         const st = a.steps[a.i];
         if (a === spitBoy && st.dynamic) st.params = { seat: 0.54, angle: spitBoy.crankAngle(t) };

@@ -3,6 +3,8 @@ import { Spit } from './spit.js';
 import { Oven } from './oven.js';
 import { Hoist } from './hoist.js';
 import { Tap } from './tap.js';
+import { Alarm } from './alarm.js';
+import { Butts } from './butts.js';
 
 // Short "how it worked" notes shown with each mechanism's controls.
 const NOTES = {
@@ -14,12 +16,16 @@ const NOTES = {
     'A domed oven bakes with stored heat. Brushwood is burnt inside it, the embers raked out and the floor swabbed. The loaves go in on a peel, and the mouth is stopped and sealed while the hot masonry bakes them.',
   hoist:
     'A hatch in the hall floor gives onto the undercroft. A hand windlass above it raises casks slung by chime hooks (hooks that grip the projecting ends of the staves). Casks were also rolled down ramps on skids.',
+  alarm:
+    'A portcullis was a heavy grille of oak, shod and bound with iron, that ran in grooves cut in the walls of the gate passage. It was raised by a windlass in the chamber above and could be let drop in moments. Harlech\'s gate passage was closed by several portcullises and doors, with murder holes between them. The bell, the signals and who ran where are invented for the scene.',
+  butts:
+    'Archers practised at butts: banks of earth with a target set against them. Practice at the butts is best known from later statutes that made it compulsory for Englishmen; in 1290 the garrisons of the Welsh castles relied more on crossbowmen, and the longbows here are a little ahead of their time.',
   tap:
     'Ale was drawn through a wooden spigot and faucet low in the cask head. A vent peg in the top had to be loosened to let air in, or the flow glugged and stopped. Driving it home again kept the ale from going flat.',
 };
 
 export function createMechanisms(app) {
-  const list = [new Windlass(app), new Spit(app), new Oven(app), new Hoist(app), new Tap(app)];
+  const list = [new Windlass(app), new Spit(app), new Oven(app), new Hoist(app), new Tap(app), new Alarm(app), new Butts(app)];
   const mechs = {};
   for (const m of list) {
     m.note = NOTES[m.id];

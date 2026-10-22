@@ -19,7 +19,7 @@ Supports:
 - Harlech, Conwy and Beaumaris as the models for the plan, proportions and building chronology used here.
 - Castles were garrisoned and supplied by the Crown, with stores brought in by sea and by cart.
 
-Cited in: About; Room: outerWard; Person: pedlar; Person: carter
+Cited in: About; Room: outerWard; Room: kingTower; Person: pedlar; Person: carter; Person: king
 
 ## 2. Wikipedia, "Harlech Castle"
 
@@ -33,7 +33,7 @@ Supports:
 - The inner ward held a chapel, kitchen, service buildings, a granary and a great hall.
 - A water gate and stair to the shore let the castle be resupplied by sea, as it was from Ireland during the siege of 1294–95.
 
-Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward; Room: outerWard; Person: watchman; Person: crossbowman; Person: smith; Person: mason
+Cited in: About; Room: granary; Room: chamber; Room: gatehouse; Room: ward; Room: outerWard; Room: garrison; Room: farm; Mechanism: alarm; Mechanism: butts; Person: watchman; Person: crossbowman; Person: smith; Person: mason; Person: constable; Person: soldierOff; Person: archer
 
 ## 3. Wikipedia, "Beaumaris Castle"
 
@@ -57,7 +57,7 @@ Supports:
 - A stone-lined well at Conwy is about 91 ft (28 m) deep.
 - Stone steps lead down to a cellar under Conwy's great hall range.
 
-Cited in: Room: kitchen; Room: bakehouse; Room: undercroft; Room: well
+Cited in: Room: kitchen; Room: bakehouse; Room: undercroft; Room: well; Room: kingTower
 
 ## 5. Cadw, Conwy Castle
 
@@ -67,7 +67,7 @@ Supports:
 
 - "This darkly forbidding fortress was originally white": Conwy's walls were rendered and limewashed.
 
-Cited in: Room: ward
+Cited in: Room: ward; Room: kingTower
 
 ## 6. Woolgar, Great Household
 
@@ -79,7 +79,7 @@ Supports:
 - The rhythm of the day: dinner, the main meal, in the late morning; a lighter supper later.
 - Servants of the household were overwhelmingly male; the lower kitchen offices were filled by boys and grooms.
 
-Cited in: About; Room: pantry; Room: hall; Person: cook; Person: scullion; Person: brewer; Person: laundress
+Cited in: About; Room: pantry; Room: hall; Person: cook; Person: scullion; Person: brewer; Person: laundress; Person: royalClerk; Person: page
 
 ## 7. Woolgar, Culture of Food
 
@@ -92,7 +92,7 @@ Supports:
 - Meat came into great households on the hoof or as carcasses. Wildfowl, hares and puddings (sausages of blood or offal) were all part of the diet, and butter and fat were salted and potted.
 - The foods shown are all available in England c. 1290. New World foods such as potatoes, maize, tomatoes and turkeys are absent, being post-1492.
 
-Cited in: Room: kitchen; Room: bakehouse; Room: larder; Person: henwife; Person: hen
+Cited in: Room: kitchen; Room: bakehouse; Room: larder; Room: farm; Person: henwife; Person: hen
 
 ## 8. Woolgar, Household Accounts
 
@@ -115,7 +115,7 @@ Supports:
 - In the kitchen: a chief clerk of the kitchen, cooks for the king and for the hall, a larderer, a poulterer, serjeants of the scullery and the saucery.
 - A castle garrison's household was far smaller, so the roles here are scaled down accordingly (conjecture as to exact numbers).
 
-Cited in: Room: larder; Room: buttery; Person: cook; Person: scullion; Person: baker; Person: butler; Person: pantler
+Cited in: Room: larder; Room: buttery; Person: cook; Person: scullion; Person: baker; Person: butler; Person: pantler; Person: chamberlain; Person: knight; Person: groom
 
 ## 10. Brears, Cooking and Dining
 
@@ -232,7 +232,7 @@ Supports:
 - Mid-13th-century pictures of foot soldiers in quilted coats, mail coifs and broad-brimmed iron kettle hats, armed with spears and swords.
 - Crossbowmen shown with stirruped crossbows. The kit of the castle's watch is modelled on these pictures, and its details are conjecture.
 
-Cited in: Room: gatehouse; Person: watchman; Person: crossbowman
+Cited in: Room: gatehouse; Room: garrison; Person: watchman; Person: crossbowman
 
 ## 21. White, Medieval Technology
 
@@ -273,7 +273,7 @@ Supports:
 
 - For his Welsh wars Edward ordered cloth for arm-pieces for his foot soldiers, marked with the cross of St George.
 
-Cited in: Room: outerWard
+Cited in: Room: outerWard; Person: gateGuard
 
 ## 25. Wikipedia, "Coat of arms of England"
 
@@ -283,7 +283,7 @@ Supports:
 
 - From Richard I's second great seal until 1340 the royal arms were gules, three lions passant guardant in pale or.
 
-Cited in: Room: gatehouse; Room: outerWard
+Cited in: Room: gatehouse; Room: outerWard; Room: kingTower; Person: king
 
 ## 26. Swallow, "Living the dream"
 
@@ -424,8 +424,17 @@ Cited in: Room: ward
 - **Room: ward**: The ward is a working yard. Cobbled paths join the hall door, the service doors and the gate. Fuel is stacked against the kitchen, empty casks wait outside the brewhouse, and hens scratch about while a woman feeds them. A hound wanders, and weeds grow where feet do not go. These details are *(conjecture)*.
 - **Room: ward**: Timber shutters hang in some embrasures of the inner parapet, propped open. Merlons could carry such pivoted shutters from the thirteenth century, but no evidence for them at the Welsh castles is known, so they are *(conjecture)*.
 - **Room: outerWard**: The outer ward is a working space. On the west are a kitchen garden, straw bee skeps, a hen-house and linen laid out to bleach; Conwy had a garden made for Queen Eleanor. On the north are the kitchens' woodstacks, sawyers at work, a masons' lodge and a scaffold against the curtain, lime and sand for mortar, and the midden. On the east is a smithy beside the gate; Harlech kept a smith, a carpenter and a mason in its garrison. All of this is *(conjecture)* in its detail and placing.
+- **Room: kingTower**: At the bottom, a prison: a dark chamber with a prisoner in fetters and his gaoler. Above it, the chamber of the household knights who travel with the king. Then the king's privy chamber, painted green and powdered with gold stars as Henry III liked his rooms, with the chair of state under a cloth of estate bearing the royal arms, and a carpet before it. At the top, the king's bedchamber, with a great bed hung in red and gold, a fire and a page asleep at the foot. The rooms' uses and furnishings are *(conjecture)*.
+- **Room: kingTower**: Edward I did stay in his Welsh castles while they were being built and garrisoned. His visit here, the messenger, the minstrel and the lady at her needlework are invented for the scene *(conjecture)*.
+- **Room: garrison**: Harlech's garrison was set at 36: the constable, thirty men of whom ten were crossbowmen, a chaplain, a smith, a carpenter and a mason. They had to sleep, eat and keep their arms somewhere; here they have the north-east tower *(conjecture)*.
+- **Room: garrison**: On the ground floor is the armoury: spears in a rack, bows and sheaves of arrows, crossbows on pegs, mail on stands, kettle hats on a shelf, shields on the wall. An armourer puts an edge on a blade at the grindstone while a boy turns it, and a fletcher makes arrows at his bench. Above are the men's dormitory, with straw pallets on the floor, and their chamber, where those off watch play at dice. At the top is the constable's chamber, with the chest that holds the garrison's pay. The arrangement is *(conjecture)*.
+- **Room: stable**: A castle needed stabling for the constable's and the garrison's horses and for visitors'. This one is a lean-to of timber against the north outer curtain, with five stalls, mangers and hay racks, saddles on a rail and a haystack at the end. Its place and form are *(conjecture)*.
+- **Room: farm**: Beyond the ditch is a little home farm for the castle: a byre and paddock for the cows, a pigsty, geese on a pond, goats among the rocks and a dovecote. A great household lived largely off the produce of its manors, and kept beasts, poultry and doves close at hand. All of the farm is invented for the scene *(conjecture)*.
+- **Room: farm**: Nearer the track are the butts, a bank of turf with a target, where archers of the garrison practise. You can call a volley, or draw a bow yourself. Edward I's garrisons in Wales relied above all on crossbowmen; the longbowmen practising here are a little ahead of their time *(conjecture)*.
 - **Mechanism: windlass**: The hand crank was known in Europe from the 9th century but spread slowly. A cranked windlass on a well in 1290 is plausible but *(conjecture)*; a spoked wheel or handspikes would be just as likely.
 - **Mechanism: hoist**: Here a hatch in the hall floor opens onto the undercroft. A hand windlass on a frame above raises a cask slung by chime hooks gripping its projecting ends. Windlasses and pulleys were everyday building-site machinery, but this particular arrangement is *(conjecture)*.
+- **Mechanism: alarm**: Ring the bell and the garrison turns out: the men at drill run to the gate, the archers come in from the butts, the watch stands to on the walls, and the portcullises drop behind them. Stand down and everyone goes back to work. The bell and who runs where are *(conjecture)*.
+- **Mechanism: butts**: Archers practised at butts: banks of earth with a target set in front. Compulsory practice for Englishmen belongs to later statutes; in 1290 Edward's garrisons in Wales leaned on crossbowmen, and these longbowmen are *(conjecture)*.
 - **Person: spitBoy**: The lowest job in the kitchen: sitting by the fire for hours turning the spit by hand. The term turnbroche and the exact arrangement are *(conjecture)* for 1290; the job itself was done by boys until dogs and jacks took over centuries later.
 - **Person: brewer**: Ale-brewing in medieval England was very often women's work: brewster is the feminine form. Great households, however, were overwhelmingly male, and a castle's brewing may well have been done by men. A woman brewing here is *(conjecture)*.
 - **Person: waterCarrier**: Water for cooking, washing and brewing all had to be carried, from the well to the kitchen trough and the brewhouse. The job is shown here as a single servant's round *(conjecture)*.
@@ -445,3 +454,28 @@ Cited in: Room: ward
 - **Person: hen**: Hens peck and scratch in the inner ward and round their wattle hen-house in the outer ward, giving eggs and, in time, the pot. Their presence here is *(conjecture)*.
 - **Person: hound**: Hunting with hounds and hawking were the great pastimes of the king and his lords. Two hounds doze by the hall fire and a third noses about the ward for scraps. The hounds are *(conjecture)*.
 - **Person: horse**: A working horse in the shafts of a two-wheeled cart, in a padded collar. Horse collars of this kind were in use in England by the 13th century; the harness details are *(conjecture)*.
+- **Person: king**: Edward I (1272–1307), builder of the castles of North Wales, in a red gown with an ermine collar and a gold circlet, in his chair of state under the cloth of his arms. His visit here is invented *(conjecture)*.
+- **Person: messenger**: The king's messengers carried letters across the realm on foot or on horseback. This one kneels to deliver his roll and then waits to be dismissed *(conjecture)*.
+- **Person: lady**: A lady of the court at her needlework in the window seat *(conjecture)*.
+- **Person: minstrel**: Minstrels were kept in great households and paid at feasts. He plays a vielle, the bowed fiddle of the day *(conjecture)*.
+- **Person: knight**: Household knights rode with the king and lodged where he lodged. One sleeps; another looks out of the window *(conjecture)*.
+- **Person: squire**: A squire served his knight, keeping his harness and arms in order. Mail and helms were scoured bright with sand *(conjecture)*.
+- **Person: gaoler**: Castles held prisoners for the king and the sheriff. The gaoler keeps the keys *(conjecture)*.
+- **Person: prisoner**: A man held in fetters in the tower's bottom chamber, waiting on the king's justice *(conjecture)*.
+- **Person: sergeant**: A sergeant of the garrison, drilling the new men with the spear in the ward and reporting to the constable *(conjecture)*.
+- **Person: armourer**: Keeping the garrison's arms in order: a boy turns the grindstone while the armourer puts an edge on a blade *(conjecture)*.
+- **Person: fletcher**: Arrows were made by the thousand for the king's wars: ash or aspen shafts, goose feathers bound and glued, iron heads from the smith *(conjecture)*.
+- **Person: soldierOff**: Men off watch slept, ate, played at dice and scoured their kit *(conjecture)*.
+- **Person: recruit**: New men learning to level and thrust the spear together on the word of command *(conjecture)*. When the alarm rings they run to hold the gate.
+- **Person: child**: Children of the household servants playing chase in the ward *(conjecture)*.
+- **Person: groom**: Grooms mucked out, filled the racks and brushed the horses down *(conjecture)*.
+- **Person: milkmaid**: Milking was women's work, into a wooden pail, on a low stool at the cow's side *(conjecture)*.
+- **Person: cowherd**: Minding the cows in their paddock *(conjecture)*.
+- **Person: swineherd**: Bringing swill to the pigs, and water from the pond *(conjecture)*.
+- **Person: goatherd**: Watching the goats among the rocks *(conjecture)*.
+- **Person: gooseGirl**: Minding the geese with a switch. Goose feathers fletched the garrison's arrows *(conjecture)*.
+- **Person: archer**: Archers practising at the butts while the master bowman watches. Call a volley, or try a shot yourself, from the panel of the butts. Longbowmen in a Welsh garrison of 1290 are *(conjecture)*: the crossbow was its weapon.
+- **Person: cow**: Small, hardy cattle of many colours, kept for milk, calves and beef *(conjecture)*.
+- **Person: pig**: Medieval pigs were lean, bristly and often dark, more like wild boar than modern pigs *(conjecture)*.
+- **Person: goat**: Goats kept for milk and kid on the rough ground *(conjecture)*.
+- **Person: goose**: Geese for the table and for their feathers *(conjecture)*.

@@ -78,13 +78,26 @@ export function wall(b, axis, a0, a1, c0, c1, y0, y1, openings = [], opts) {
 
 /**
  * Crenellated parapet along an axis. Parapet occupies c0..c1.
+ * opts.skip: [[s0, s1], ...] spans along the axis left out (where a tower or
+ * turret stands across the line), so the parapet stops at its face.
  */
 export function cren(b, axis, a0, a1, c0, c1, y, opts = {}) {
   const base = opts.base ?? 0.9;
   const mh = opts.mh ?? 1.5;
   const mw = opts.mw ?? 1.5;
   const gw = opts.gw ?? 0.8;
+  const skip = (opts.skip || []).slice().sort((p, q) => p[0] - q[0]);
   const box = (A0, A1, Y0, Y1) => {
+    // build only the parts outside the skipped spans
+    let cur = A0;
+    for (const [s0, s1] of skip) {
+      if (s1 <= cur || s0 >= A1) continue;
+      if (s0 - cur > 0.05) put(cur, s0, Y0, Y1);
+      cur = Math.max(cur, s1);
+    }
+    if (A1 - cur > 0.05) put(cur, A1, Y0, Y1);
+  };
+  const put = (A0, A1, Y0, Y1) => {
     if (axis === 'x') b.box(A0, Y0, c0, A1, Y1, c1, opts.solidOpts);
     else b.box(c0, Y0, A0, c1, Y1, A1, opts.solidOpts);
   };
@@ -96,6 +109,20 @@ export function cren(b, axis, a0, a1, c0, c1, y, opts = {}) {
     const s = a0 + i * (w + gw);
     box(s, s + w, y + base, y + base + mh);
   }
+}
+
+/**
+ * The span along a straight parapet (axis 'x' or 'z', depth c0..c1) taken up
+ * by a round tower at (cx, cz), radius r: the parapet should stop inside the
+ * tower's own wall, `inset` in from its face.
+ */
+export function towerSpan(axis, c0, c1, cx, cz, r, inset = 0.35) {
+  const [ca, cc] = axis === 'x' ? [cx, cz] : [cz, cx];
+  const d = cc >= c0 && cc <= c1 ? 0 : Math.min(Math.abs(c0 - cc), Math.abs(c1 - cc));
+  const rr = r - inset;
+  if (d >= rr) return [ca, ca];
+  const h = Math.sqrt(rr * rr - d * d);
+  return [ca - h, ca + h];
 }
 
 /** Round crenellated parapet. */

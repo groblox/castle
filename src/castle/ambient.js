@@ -1,4 +1,6 @@
 import { S } from './spots.js';
+import { KING, GARRISON } from './towers.js';
+import { STABLE } from './stable.js';
 
 // Fires, smoke and steam. Light slots in the shared material:
 // 0 roasting fire, 1 boiling fire, 2 hall fire, 3 brewhouse furnace, 4 bread oven.
@@ -92,6 +94,39 @@ export function setupEffects(fx) {
   // firelight showing at the hall and gatehouse windows
   for (const z of [-5.6, -2.2]) fx.glow(`hallWin${z}`, [[-12.4, 4.6, z]], { size: 3.0, alpha: 0.14, color: 0xffa860 });
   for (const y of [8.8, 14.4]) for (const z of [-6.3, -3.3]) fx.glow(`ghWin${y}${z}`, [[19.6, y, z]], { size: 2.6, alpha: 0.12, color: 0xffa860 });
+
+  // the corner towers: hearths and braziers, candles and lanterns
+  const fires = [[22, KING.bedFire, 1.0, 'kingFire'], [30, GARRISON.fire, 1.0, 'constableFire']];
+  for (const [slot, [x, y, z], str, name] of fires) {
+    fx.flames(name, [[x - 0.05, y, z - 0.25], [x + 0.05, y, z + 0.05], [x, y, z + 0.3]], { count: 4, size: 0.34, rise: 0.4 });
+    fx.light(slot, [x, y + 0.6, z], str);
+    fx.glow(`${name}Glow`, [[x, y + 0.5, z]], { size: 3.0, alpha: 0.3 });
+  }
+  for (const [slot, [x, y, z], name] of [[23, KING.brazier, 'kingBrazier'], [29, GARRISON.brazier, 'messBrazier']]) {
+    fx.flames(name, [[x, y, z]], { count: 4, size: 0.24, rise: 0.25 });
+    fx.light(slot, [x, y + 0.3, z], 0.75);
+    fx.glow(`${name}Glow`, [[x, y + 0.2, z]], { size: 2.2, alpha: 0.3 });
+  }
+  const lamps = [
+    [24, KING.bedCandle, 0.4, 1.2],
+    [25, KING.knightCandle, 0.35, 1.1],
+    [26, KING.prisonLamp, 0.4, 1.4],
+    [27, GARRISON.lamp, 0.5, 1.5],
+    [28, GARRISON.dormCandle, 0.35, 1.1],
+    [31, STABLE.lamp, 0.45, 1.5],
+  ];
+  for (const [slot, p, base, size] of lamps) {
+    fx.light(slot, p, base, CANDLE);
+    fx.glow(`candle${slot}`, [p], { size, alpha: 0.3, color: 0xffb060 });
+  }
+  fx.flames('towerCandles', [KING.bedCandle, KING.knightCandle, GARRISON.dormCandle, GARRISON.deskCandle].map(([x, y, z]) => [x, y - 0.02, z]), { count: 2, size: 0.07, rise: 0.06 });
+
+  // sparks off the blade at the armoury grindstone
+  const [wx, wy, wz] = GARRISON.grind;
+  fx.add('grindSparks', [[wx + 0.36, wy + 0.05, wz]], 8, {
+    kind: 'spark', life: 0.5, rise: 0.4, spread: 0.6, size0: 0.04, size1: 0.02, wobble: 0.1,
+    color: 0xffe2a0, color2: 0xff8a2a, alpha: 0.95, jitter: [0.05, 0.05, 0.1], order: 5,
+  });
 
   const c = S.chimneys;
   fx.smoke('chimneys', [c.kitchenA, c.kitchenB, c.bakehouse, c.brewhouse, c.hall], { count: 16 });

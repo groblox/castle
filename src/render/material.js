@@ -7,7 +7,7 @@ import { GROUP_COUNT } from '../castle/rooms.js';
 //  2: label id (rg), surface kind (b)            -> hover/click picking
 // Geometry attributes: position, normal, acol (rgb), info (kind, label, group).
 
-export const MAX_FIRES = 24;
+export const MAX_FIRES = 32;
 
 export const shared = {
   uFade: { value: new Float32Array(GROUP_COUNT) },
@@ -180,6 +180,11 @@ float roofed(vec3 p) {
   // gatehouse chambers and gate passage
   if (p.x > 20.15 && p.x < 29.85 && p.z > -7.85 && p.y > 5.5 && p.y < 16.6) m = 1.0;
   if (p.x > 19.5 && p.x < 35.0 && p.z > -1.65 && p.y < 4.3) m = 0.8;
+  // the rooms in the two cut corner towers
+  if (p.z < -20.95 && p.y > -1.6 && p.y < 18.05 && (length(p.xz - vec2(-27.6, -23.6)) < 4.25 || length(p.xz - vec2(27.6, -23.6)) < 4.25)) m = 1.0;
+  if (p.z < -20.95 && p.y < 4.0 && p.y > -1.6 && length(p.xz - vec2(-27.6, -23.6)) < 4.25) m = 1.3; // the prison
+  // the stable in the north outer ward
+  if (p.x > -18.6 && p.x < -5.4 && p.z < -29.9 && p.z > -33.6 && p.y < 2.6) m = 0.8;
   // the undercroft is darker still
   if (p.x > -25.05 && p.x < -12.95 && p.z > -9.1 && p.y < 0.55 && p.y > -4.1) m = 1.4;
   return m;

@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { K, P } from '../geom/kinds.js';
 import { MAIN_CUT, planeY } from '../geom/builder.js';
-import { wall, cren, crenRing, decalRing, decalX, decalZ, stairs, squareWithHole, beam, obox, v3 } from '../geom/shapes.js';
+import { wall, cren, crenRing, towerSpan, decalRing, decalX, decalZ, stairs, squareWithHole, beam, obox, v3 } from '../geom/shapes.js';
 import { lab } from '../data/labels.js';
 import { G } from './rooms.js';
 import {
-  WARD_Y, OUTER_Y, BASE_Y, IW, IC_T, IC_H, IC_OUT, OC_IN, OC_OUT, OC_H, TOWER_R, TOWER_H, TOWERS,
+  WARD_Y, OUTER_Y, BASE_Y, IW, IC_T, IC_H, IC_OUT, OC_IN, OC_OUT, OC_H, TOWER_R, TOWER_H, TOWERS, TOWER_IN,
   GH, HALL, SERV, NR, WELL, DITCH,
 } from './layout.js';
 
@@ -24,7 +24,6 @@ export function buildShell(b) {
   wellShaft(b);
   outerCurtain(b);
   innerCurtain(b);
-  cornerTowers(b);
   gatehouse(b);
   westRange(b);
   northRange(b);
@@ -129,6 +128,17 @@ function wellShaft(b) {
 // ---------------------------------------------------------------------------
 // Outer curtain with turrets, outer gate and bridge
 // ---------------------------------------------------------------------------
+// Turrets on the outer curtain: [x, z, radius]. The last is the gate turret
+// (its twin is in the removed half).
+export const OUTER_TURRETS = [
+  [OC_OUT.x0 + 1, OC_OUT.z0 + 1, 3.2],
+  [OC_OUT.x1 - 1, OC_OUT.z0 + 1, 3.2],
+  [-13, OC_OUT.z0 + 0.5, 2.5],
+  [13, OC_OUT.z0 + 0.5, 2.5],
+  [OC_OUT.x0 + 0.5, -15, 2.5],
+  [OC_OUT.x1 + 0.4, -4.6, 2.8],
+];
+
 function outerCurtain(b) {
   const top = OUTER_Y + OC_H;
   const o = { group: G.outer, kind: K.STONE, color: P.stone, label: lab('curtainOuter', 'outerWard') };
@@ -139,10 +149,12 @@ function outerCurtain(b) {
     b.box(OC_OUT.x0, OUTER_Y, OC_IN.z0, OC_IN.x0, top, 0, { topKind: K.PAVING, topColor: P.paving });
     // east, with the outer gate on the cut line
     wall(b, 'z', OC_IN.z0, 0, OC_IN.x1, OC_OUT.x1, OUTER_Y, top, [{ a0: -1.8, a1: 1.8, y0: OUTER_Y, y1: OUTER_Y + 3.6, arch: 'pointed', rise: 1.4 }]);
+    // the parapets stop at the turrets rather than running through them
+    const skips = (axis, c0, c1) => OUTER_TURRETS.map(([x, z, r]) => towerSpan(axis, c0, c1, x, z, r));
     b.with({ label: lab('parapet', 'outerWard') }, () => {
-      cren(b, 'x', OC_OUT.x0, OC_OUT.x1, OC_OUT.z0, OC_OUT.z0 + 0.7, top, { mh: 1.3 });
-      cren(b, 'z', OC_IN.z0, 0, OC_OUT.x0, OC_OUT.x0 + 0.7, top, { mh: 1.3 });
-      cren(b, 'z', OC_IN.z0, 0, OC_OUT.x1 - 0.7, OC_OUT.x1, top, { mh: 1.3 });
+      cren(b, 'x', OC_OUT.x0, OC_OUT.x1, OC_OUT.z0, OC_OUT.z0 + 0.7, top, { mh: 1.3, skip: skips('x', OC_OUT.z0, OC_OUT.z0 + 0.7) });
+      cren(b, 'z', OC_IN.z0, 0, OC_OUT.x0, OC_OUT.x0 + 0.7, top, { mh: 1.3, skip: skips('z', OC_OUT.x0, OC_OUT.x0 + 0.7) });
+      cren(b, 'z', OC_IN.z0, 0, OC_OUT.x1 - 0.7, OC_OUT.x1, top, { mh: 1.3, skip: skips('z', OC_OUT.x1 - 0.7, OC_OUT.x1) });
     });
     // arrow loops in the outer face would face away; put a few on the inner side as embrasures
     for (let x = -34; x <= 34; x += 6) decalX(b, x, OUTER_Y + 1.2, OUTER_Y + 3.0, 0.5, OC_IN.z0, 1, { label: lab('arrowLoop', 'outerWard'), color: P.soot });
@@ -153,12 +165,7 @@ function outerCurtain(b) {
       crenRing(b, x, z, r - 0.6, r, top + 1.2, { seg: 20, mh: 1.2 });
       for (let k = 0; k < 4; k++) decalRing(b, x, z, r, Math.PI / 2 + (k - 1.5) * 0.5, OUTER_Y + 1.5, OUTER_Y + 3.4, 0.16);
     };
-    t(OC_OUT.x0 + 1, OC_OUT.z0 + 1, 3.2);
-    t(OC_OUT.x1 - 1, OC_OUT.z0 + 1, 3.2);
-    t(-13, OC_OUT.z0 + 0.5, 2.5);
-    t(13, OC_OUT.z0 + 0.5, 2.5);
-    t(OC_OUT.x0 + 0.5, -15, 2.5);
-    t(OC_OUT.x1 + 0.4, -4.6, 2.8); // gate turret (its twin is in the removed half)
+    for (const [x, z, r] of OUTER_TURRETS) t(x, z, r);
   });
   // bridge across the ditch: stone pier, timber deck, cut on the line
   b.with({ group: G.outer, label: lab('bridge', 'outerWard') }, () => {
@@ -182,14 +189,18 @@ function innerCurtain(b) {
   const nz0 = IC_OUT.z0;
   const nz1 = IW.z0;
   const r = NR.rooms;
+  // the north curtain runs between the faces of the two corner towers
+  const edge = Math.sqrt(TOWER_R * TOWER_R - (IW.z0 - TOWERS.nw.z) ** 2);
+  const nx0 = TOWERS.nw.x + edge;
+  const nx1 = TOWERS.ne.x - edge;
   const segs = [
-    [IW.x0 - 1, SERV.part0 + 0.4, G.buttery],
+    [nx0, SERV.part0 + 0.4, G.buttery],
     [SERV.part0 + 0.4, SERV.x1 + 0.6, G.pantry],
     [SERV.x1 + 0.6, r.larder.x1 + 0.4, G.larder],
     [r.larder.x1 + 0.4, r.kitchen.x1 + 0.4, G.kitchen],
     [r.kitchen.x1 + 0.4, r.bakehouse.x1 + 0.4, G.bakehouse],
     [r.bakehouse.x1 + 0.4, r.brewhouse.x1 + 0.4, G.brewhouse],
-    [r.brewhouse.x1 + 0.4, IW.x1 + 1, G.granary],
+    [r.brewhouse.x1 + 0.4, nx1, G.granary],
   ];
   const kitchenFires = [{ c: -3.4, w: 3.8 }, { c: 2.2, w: 2.8 }];
   b.with(base, () => {
@@ -226,20 +237,27 @@ function innerCurtain(b) {
         }
       });
     }
-    b.with({ label: lab('parapet') }, () => cren(b, 'x', IW.x0 - 1, IW.x1 + 1, nz0, nz0 + 0.9, IC_H));
+    b.with({ label: lab('parapet') }, () => cren(b, 'x', nx0, nx1, nz0, nz0 + 0.9, IC_H));
+    // where the cut towers leave a slot between the curtain and the tower
+    // wall in the corners of the buttery and the store-house, close it
+    const inner = Math.sqrt(TOWER_IN * TOWER_IN - (IW.z0 - TOWERS.nw.z) ** 2);
+    b.with({ group: G.buttery }, () => b.box(IW.x0, OUTER_Y, IW.z0 - 0.3, TOWERS.nw.x + inner + 0.3, IC_H, IW.z0));
+    b.with({ group: G.granary }, () => b.box(TOWERS.ne.x - inner - 0.3, OUTER_Y, IW.z0 - 0.3, IW.x1, IC_H, IW.z0));
 
     // west curtain (cut). Deeper footing for the undercroft.
-    b.with({ group: G.buttery }, () => b.box(IC_OUT.x0, OUTER_Y, IW.z0, IW.x0, IC_H, SERV.z1, walkTop));
-    b.with({ group: G.hall }, () => {
+    b.with({ group: G.curtainW }, () => {
+      b.box(IC_OUT.x0, OUTER_Y, IW.z0, IW.x0, IC_H, SERV.z1, walkTop);
       b.box(IC_OUT.x0, -4, SERV.z1, IW.x0, IC_H, 0, walkTop);
-      hallFireplace(b);
-      b.with({ label: lab('chimney', 'hall') }, () => b.box(IC_OUT.x0 + 1.4, IC_H, -5.4, IW.x0 - 0.2, IC_H + 3.6, -3.8));
+      b.with({ label: lab('parapet') }, () => cren(b, 'z', IW.z0, 0, IC_OUT.x0, IC_OUT.x0 + 0.9, IC_H));
     });
-    b.with({ label: lab('parapet') }, () => cren(b, 'z', IW.z0, 0, IC_OUT.x0, IC_OUT.x0 + 0.9, IC_H));
+    b.with({ group: G.hall }, () => hallFireplace(b));
+    b.with({ group: G.curtainW, label: lab('chimney', 'hall') }, () => b.box(IC_OUT.x0 + 1.4, IC_H, -5.4, IW.x0 - 0.2, IC_H + 3.6, -3.8));
 
     // east curtain north of the gatehouse
-    b.with({ group: G.granary }, () => b.box(IW.x1, OUTER_Y, IW.z0, IC_OUT.x1, IC_H, GH.z0, walkTop));
-    b.with({ label: lab('parapet') }, () => cren(b, 'z', IW.z0, GH.z0, IC_OUT.x1 - 0.9, IC_OUT.x1, IC_H));
+    b.with({ group: G.curtainE }, () => {
+      b.box(IW.x1, OUTER_Y, IW.z0, IC_OUT.x1, IC_H, GH.z0, walkTop);
+      b.with({ label: lab('parapet') }, () => cren(b, 'z', IW.z0, GH.z0, IC_OUT.x1 - 0.9, IC_OUT.x1, IC_H));
+    });
   });
 }
 
@@ -257,33 +275,6 @@ function hallFireplace(b) {
     b.box(x, 2.6 + HALL.floorY - 0.1, zc - 1.7, x + 0.9, 3.2, zc + 1.7);
     decalZ(b, zc, HALL.floorY, 2.9, 2.3, x, 1, { color: P.soot, depth: 0.03 });
     b.with({ kind: K.PAVING, color: 0x9d9488 }, () => b.box(x, HALL.floorY, zc - 1.4, x + 1.2, HALL.floorY + 0.08, zc + 1.4));
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Corner towers (the two southern ones lie in the removed half)
-// ---------------------------------------------------------------------------
-function cornerTowers(b) {
-  b.with({ kind: K.STONE, color: P.ashlar, group: G.towers, label: lab('tower') }, () => {
-    for (const key of ['nw', 'ne']) {
-      const t = TOWERS[key];
-      b.cylinder(t.x, t.z, TOWER_R, OUTER_Y, TOWER_H, 32, { topKind: K.PAVING, topColor: P.lead });
-      b.with({ label: lab('parapet') }, () => crenRing(b, t.x, t.z, TOWER_R - 0.9, TOWER_R, TOWER_H, { seg: 32 }));
-      // stair turret on the ward side
-      const a = key === 'nw' ? Math.PI * 0.25 : Math.PI * 0.75;
-      const sx = t.x + Math.cos(a) * (TOWER_R - 1.6);
-      const sz = t.z + Math.sin(a) * (TOWER_R - 1.6);
-      b.with({ label: lab('turret') }, () => {
-        b.cylinder(sx, sz, 1.7, TOWER_H, TOWER_H + 4, 16, { topKind: K.PAVING, topColor: P.lead });
-        crenRing(b, sx, sz, 1.1, 1.7, TOWER_H + 4, { seg: 16, mh: 1.1 });
-      });
-      // loops facing the ward
-      b.with({ label: lab('arrowLoop') }, () => {
-        for (const y of [3, 8.5, 14]) {
-          for (const da of [-0.35, 0.35]) decalRing(b, t.x, t.z, TOWER_R, a + da, y, y + 1.8, 0.16);
-        }
-      });
-    }
   });
 }
 
@@ -358,7 +349,8 @@ function gatehouse(b) {
     b.with({ label: lab('parapet') }, () => {
       cren(b, 'x', x0, x1, z0, z0 + 0.8, roofY);
       cren(b, 'z', z0, 0, x0, x0 + 0.8, roofY);
-      cren(b, 'z', z0, 0, x1 - 0.8, x1, roofY);
+      // the east parapet stops where the D-tower's own parapet takes over
+      cren(b, 'z', z0, 0, x1 - 0.8, x1, roofY, { skip: [towerSpan('z', x1 - 0.8, x1, x1, -towerZ, towerR, 0)] });
     });
     // fireplaces in the chambers (north wall)
     b.with({ label: lab('ghChamber', 'gatehouse') }, () => {
@@ -390,14 +382,7 @@ function gatehouse(b) {
       crenRing(b, x0 - 0.4, -6.0, 1.2, 1.8, roofY + 3.4, { seg: 18, mh: 1.1 });
     });
 
-    // portcullises, mostly raised (timber lattice, cut on the line)
-    b.with({ kind: K.TIMBER, color: P.timberDark, label: lab('portcullis', 'gatehouse') }, () => {
-      for (const gx of [21.4, 26.6, 33.4]) {
-        const yb = 3.3;
-        for (let z = -ph + 0.15; z < 0.2; z += 0.4) b.box(gx - 0.08, yb, z - 0.06, gx + 0.08, floor1 - 1.6, z + 0.06);
-        for (let y = yb + 0.25; y < floor1 - 1.6; y += 0.45) b.box(gx - 0.07, y - 0.05, -ph, gx + 0.07, y + 0.05, 0);
-      }
-    });
+    // the portcullises themselves move: see mech/alarm.js
     // gate leaves, open back against the passage wall
     b.with({ kind: K.TIMBER, color: P.oak, label: lab('gatePassage', 'gatehouse') }, () => {
       b.box(22.2, WARD_Y, -ph + 0.02, 24.6, 3.6, -ph + 0.2);

@@ -5,7 +5,7 @@ import { lathe, cask, tub, sack, bench, stool, ladder, log, faggot, chest, cauld
 import { rng, blob, boulder, bush, tuft, mound } from '../geom/nature.js';
 import { lab } from '../data/labels.js';
 import { G } from './rooms.js';
-import { OUTER_Y, OC_IN, OC_OUT, OC_H, IC_OUT, IC_H, IW, NR } from './layout.js';
+import { OUTER_Y, OC_IN, OC_OUT, OC_H, IC_OUT, IC_H, IW, NR, TOWERS, TOWER_R } from './layout.js';
 
 // Everyday clutter of the wards and walls: the outer ward's garden, hives,
 // woodstacks, sawing, masons at work and a smithy; the inner ward's cobbles,
@@ -512,8 +512,9 @@ function walls(b) {
 
   // hinged timber shutters in the embrasures of the north inner parapet
   b.with({ group: G.inner, label: lab('shutter') }, () => {
-    const a0 = IW.x0 - 1;
-    const a1 = IW.x1 + 1;
+    const edge = Math.sqrt(TOWER_R * TOWER_R - (IW.z0 - TOWERS.nw.z) ** 2);
+    const a0 = TOWERS.nw.x + edge;
+    const a1 = TOWERS.ne.x - edge;
     const n = Math.round((a1 - a0 + 0.8) / 2.3);
     const w = (a1 - a0 + 0.8) / n - 0.8;
     const zf = IC_OUT.z0;

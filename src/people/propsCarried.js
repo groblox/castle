@@ -163,6 +163,95 @@ export function carried(name, mat) {
       return mesh(geo(name, (b) => {
         b.with({ kind: K.CLOTH, color: 0xf2ede0 }, () => obox(b, 0, -0.1, 0.18, 0.5, 0.06, 0.3, 0));
       }), mat);
+    case 'bow':
+      // a longbow held in the left hand, the stave upright when the arm is
+      // raised (along the hand's x), the string towards the archer (+y)
+      return mesh(geo(name, (b) => {
+        const pts = [];
+        for (let i = 0; i <= 8; i++) {
+          const u = -1 + i / 4;
+          pts.push(v3(u * 0.85, 0.15 * u * u, 0.02));
+        }
+        b.with({ kind: K.TIMBER, color: 0xa07a48 }, () => {
+          for (let i = 0; i < 8; i++) beam(b, pts[i], pts[i + 1], 0.035 - Math.abs(i - 3.5) * 0.003, 0.03);
+        });
+        b.with({ kind: K.PLAIN, color: 0xe8e0cc }, () => beam(b, pts[0], pts[8], 0.008, 0.008));
+      }), mat);
+    case 'arrows':
+      // a sheaf of arrows in a bag at the belt
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.CLOTH, color: 0x7a6a4a }, () => obox(b, 0, 0, 0, 0.1, 0.3, 0.08, 0));
+        b.with({ kind: K.TIMBER, color: 0xc8b48a }, () => {
+          for (let i = 0; i < 5; i++) obox(b, -0.03 + i * 0.015, 0.25, 0, 0.012, 0.3, 0.012, 0);
+        });
+        b.with({ kind: K.CLOTH, color: 0xece4d0 }, () => obox(b, 0, 0.38, 0, 0.09, 0.08, 0.02, 0));
+      }), mat);
+    case 'pike':
+      // a spear levelled before the body, held at the front slot
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0xa88a5e }, () => lathe(b, v3(0.04, -0.05, -1.3), 'z', [[0.02, 0], [0.018, 2.75]], 6));
+        b.with({ kind: K.METAL, color: 0x8e8c86 }, () => lathe(b, v3(0.04, -0.05, 1.45), 'z', [[0.035, 0], [0.03, 0.1], [0, 0.3]], 4));
+      }), mat);
+    case 'keys':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.METAL, color: P.iron }, () => {
+          lathe(b, v3(0, -0.05, 0.02), 'z', [[0.06, 0], [0.06, 0.015]], 10);
+          for (let i = 0; i < 3; i++) beam(b, v3(-0.03 + i * 0.03, -0.08, 0.02), v3(-0.04 + i * 0.04, -0.24, 0.03), 0.012, 0.012);
+        });
+      }), mat);
+    case 'fiddle':
+      // a vielle on the left shoulder, with its bow in the right hand drawn separately
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0x9a5a2a }, () => {
+          lump(b, 0, -0.06, 0.18, 0.1, 0.035, 0.2, 0x9a5a2a, K.TIMBER);
+          beam(b, v3(0, -0.06, 0.36), v3(0, -0.06, 0.55), 0.04, 0.025);
+        });
+        b.with({ kind: K.PLAIN, color: 0x2a2018 }, () => obox(b, 0, -0.03, 0.22, 0.06, 0.01, 0.2, 0));
+      }), mat);
+    case 'fiddleBow':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0x5a3a26 }, () => beam(b, v3(0, -0.02, 0), v3(0.02, -0.08, 0.55), 0.015, 0.015));
+      }), mat);
+    case 'fork':
+      // a hay fork, tines down
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, v3(0, 0.45, -0.1), v3(0, -1.0, 0.35), 0.032, 0.032));
+        b.with({ kind: K.TIMBER, color: 0x8a6a48 }, () => {
+          for (const dx of [-0.07, 0.07]) beam(b, v3(0, -1.0, 0.35), v3(dx, -1.35, 0.5), 0.02, 0.02);
+        });
+      }), mat);
+    case 'hay':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.STRAW, color: 0xd2bd7c }, () => lump(b, 0, 0.0, 0.08, 0.32, 0.2, 0.22, 0xd2bd7c, K.STRAW));
+      }), mat);
+    case 'sword':
+      // a blade held point-up, hilt in the hand
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.METAL, color: 0xa8aaae }, () => obox(b, 0, -0.02, 0.45, 0.05, 0.012, 0.8, 0));
+        b.with({ kind: K.METAL, color: P.iron }, () => obox(b, 0, -0.02, 0.04, 0.22, 0.03, 0.03, 0));
+        b.with({ kind: K.TIMBER, color: 0x3a2a1e }, () => obox(b, 0, -0.02, -0.06, 0.035, 0.035, 0.14, 0));
+      }), mat);
+    case 'helm':
+      // a great helm in the lap, being scoured
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.METAL, color: 0x8a8c90 }, () => lathe(b, v3(0, -0.05, 0.12), 'y', [[0.12, 0], [0.125, 0.2], [0.1, 0.27], [0.001, 0.3]], 12));
+        b.with({ kind: K.PLAIN, color: 0x2a2620 }, () => obox(b, 0, 0.12, 0.24, 0.16, 0.02, 0.02, 0));
+      }), mat);
+    case 'stick':
+      // a switch for driving geese
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0x8a6a48 }, () => beam(b, v3(0, 0.05, 0), v3(0, -0.6, 0.9), 0.02, 0.012));
+      }), mat);
+    case 'clothes':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.CLOTH, color: 0x9a2a2a }, () => obox(b, 0, -0.06, 0.18, 0.45, 0.08, 0.3, 0));
+        b.with({ kind: K.CLOTH, color: 0xf3eee2 }, () => obox(b, 0, 0.0, 0.18, 0.42, 0.05, 0.28, 0));
+      }), mat);
+    case 'brush':
+      return mesh(geo(name, (b) => {
+        b.with({ kind: K.TIMBER, color: 0x7a5a3a }, () => obox(b, 0, -0.04, 0.04, 0.08, 0.04, 0.16, 0));
+        b.with({ kind: K.STRAW, color: 0x5a4a3a }, () => obox(b, 0, -0.08, 0.04, 0.07, 0.04, 0.15, 0));
+      }), mat);
     default:
       return null;
   }

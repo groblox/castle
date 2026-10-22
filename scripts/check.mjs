@@ -74,7 +74,7 @@ try {
     await page.waitForTimeout(900);
     const name = s.startsWith('js:') ? `js${i}` : s.replace(/[^a-z0-9_-]/gi, '_').slice(0, 40);
     const file = `${out}/${name}.png`;
-    await page.screenshot({ path: file });
+    await page.screenshot({ path: file, timeout: 180000 });
     console.log('shot:', file);
   }
   if (has('--probe')) {

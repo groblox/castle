@@ -27,6 +27,9 @@ export class Minimap {
       ...['larder', 'kitchen', 'bakehouse', 'brewhouse', 'granary'].map((id) => ({ id, r: [r[id].x0, NR.z0, r[id].x1, NR.z1] })),
       { id: 'gatehouse', r: [GH.x0, GH.z0, GH.x1, GH.z1] },
       { id: 'well', r: [WELL.x - 1.6, -1.6, WELL.x + 1.6, 1.6] },
+      { id: 'kingTower', r: [TOWERS.nw.x - 4.2, TOWERS.nw.z - 4.2, TOWERS.nw.x + 4.2, TOWERS.nw.z + 2.6] },
+      { id: 'garrison', r: [TOWERS.ne.x - 4.2, TOWERS.ne.z - 4.2, TOWERS.ne.x + 4.2, TOWERS.ne.z + 2.6] },
+      { id: 'stable', r: [-18.4, OC_IN.z0, -5.4, -29.9] },
     ];
     this.hover = null;
     canvas.addEventListener('click', (e) => {

@@ -4,13 +4,13 @@ This is the state of the project and what you need to know to carry it on. Read 
 
 ## Status
 
-- **Branch:** `claude/compassionate-turing-u8pv6k`. All work is committed and pushed. **No pull request has been opened.**
+- **Branch:** `claude/compassionate-brahmagupta-u7beyj` (earlier work on `claude/compassionate-turing-u8pv6k`). All work is committed and pushed. **No pull request has been opened.**
 - **Build:** `npm run check` passes. It builds, renders every room headless and reports **no console errors**.
-- **Scene size:** about 153k static triangles in one mesh, plus about 590 small meshes for figures, animals, mechanisms, birds and banners, plus particle systems.
+- **Scene size:** about 174k static triangles in one mesh, plus about 1,480 small meshes for figures, animals, mechanisms, birds and banners, plus particle systems. Under SwiftShader a frame can take over 30 s, so `check.mjs` allows 180 s per screenshot.
 - **Performance is unmeasured.** The only renderer in this environment was SwiftShader (software WebGL). It ran at 0.3–1.4 fps, which says nothing about a real GPU. Check frame rate on real hardware before anything else (see *Known issues*).
 - **Content:**
-  - 14 rooms the camera can fly to, 5 working mechanisms, and 56 animated people and animals (birds not counted).
-  - 36 sources and 39 statements marked as conjecture, all listed in `SOURCES.md`.
+  - 18 rooms the camera can fly to, 7 working mechanisms, and 129 animated people and animals (birds not counted).
+  - 36 sources and 73 statements marked as conjecture, all listed in `SOURCES.md`.
 
 ### History
 
@@ -22,6 +22,7 @@ This is the state of the project and what you need to know to carry it on. Read 
 | `4ccadd6` | Darker default light, firelight, candles, lanterns, glow halos, Dusk ↔ Day slider |
 | `f7d8100` | Sources for the newer notes; notes reworded where the evidence was weaker |
 | `1431c5a` | README with screenshots in `docs/images/` |
+| (this branch) | Crowd avoidance, new walk cycle and pose blending; parapets stop at turrets; the two northern towers cut open (king's lodging, garrison and armoury); stable; home farm and butts; ~70 more people and animals; alarm bell and portcullises; archery; click to greet and follow |
 
 ## Running and verifying
 
@@ -69,7 +70,10 @@ src/
     layout.js          all key dimensions (metres)
     rooms.js           fade groups G, ROOMS (fly-to targets, camera framing and limits)
     spots.js           shared anchor points (fires, spit, cauldron, doors...)
-    shell.js           rock, curtains, towers, gatehouse, ranges, roofs
+    shell.js           rock, curtains, gatehouse, ranges, roofs (OUTER_TURRETS: the outer curtain's turrets)
+    towers.js          the two northern corner towers, cut open on z = TOWER_CUT, with all eight rooms; KING / GARRISON anchor points
+    stable.js          lean-to stable in the north outer ward (STABLE)
+    farm.js            byre, paddock, pigsty, goose pond, dovecote and butts beyond the ditch (FARM_AT, FARM_CLEAR)
     furnish.js         service rooms in detail (the original pass)
     interiors.js       hall, chamber, gatehouse, cellar, plus extras in the service rooms; lantern/cresset helpers
     wards.js           outer and inner ward dressing, weeds, spouts, shutters, wall-walk items
@@ -83,16 +87,20 @@ src/
     pipeline.js        MRT target, post pass, async/sync picking
     paper.js           procedural paper texture
   people/
-    figure.js          articulated human figure, specs, named poses
-    actor.js           routine runner (walk paths, timed poses, facing, floor height)
-    cast.js            household in the service rooms, the watch, cat, rats, cart
+    figure.js          articulated human figure, specs, named poses, pose blending, head turns (lookAt)
+    actor.js           routine runner: walk paths with acceleration, braking, turning on the spot and rounded corners;
+                       timed poses, facing, floor height; pause() for greetings; setSteps() for the alarm
+    cast.js            household in the service rooms, the watch, cat, rats, cart; runs the crowd and collects alarm routines
+    household.js       king's household, garrison, gate guards, drill, children, grooms, farm folk and beasts, archers
+    crowd.js           keeping walkers apart: sidesteps (Actor.off), slowing (Actor.hold), glances at passers-by
     life.js            ward workers, hens, hounds, sheep, shepherd, pedlar, birds, banners
     animals.js         Cat, Rat, Horse
-    creatures.js       Hen, Hound, Sheep, Bird
+    creatures.js       Hen, Hound, Sheep, Bird, Beast (cow, ox, pig, goat), Goose
     banners.js         cloth banners rebuilt on the CPU each frame
     propsCarried.js    hand-held props attached to figure slots
     parts.js           helpers for small animated meshes
-  mech/                Mechanism base + windlass, spit, oven, hoist, tap; index.js registers them
+  mech/                Mechanism base + windlass, spit, oven, hoist, tap, alarm (bell + portcullises), butts (archery); index.js registers them
+  data/activities.js   the live "Now: …" line for a followed person, from the pose of their current step
   data/                glossary (hover terms), labels (ids), notes (panel text), sources
   ui/                  controls (orbit/pan/zoom/fly), panel, room list, minimap, style.css
 ```
@@ -104,7 +112,7 @@ src/
   - Faces lying in the cut plane are welded at `build()` so no hairline cracks open between them.
   - `addGeometry` and `lump` are **not clipped**. Use them only for things that do not cross `z = 0`.
 - **One static mesh.** Everything static is in a single BufferGeometry with per-vertex `acol` (colour) and `info` = (surface kind, label id, fade group).
-- **Fade groups** (`G` in `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 24, and ids 0–21 are in use.
+- **Fade groups** (`G` in `rooms.js`) let a room fade the rest of the castle and hide occluders. `GROUP_COUNT` is 32, and ids 0–28 are in use. The west and east inner curtains have their own groups (`curtainW`, `curtainE`) so the tower views can hide them.
 - **Labels** are 16-bit ids written to a picking target. `lab(key, room, mech)` registers a label and **throws if `key` is not in `GLOSSARY`**, so add the glossary entry first. A label with a room flies there on click; one with a mech operates it.
 - **Surface kinds** choose the pattern in `material.js`: masonry, slates, boards, flags, cobbles, wattle, painted false-ashlar, log ends, foliage, straw, fur and so on. `post.js` `isCut()` lists the kinds that get the heavy section outline.
 - **Lighting** comes from shared uniforms in `material.js`:
@@ -170,7 +178,21 @@ src/
 | 15 | brazier on the north wall-walk |
 | 16–17 | cressets at the inner and outer gates (dusk only) |
 | 18–21 | lanterns in the larder, pantry, buttery and store-house |
-| 22–23 | free |
+| 22–23 | king's bedchamber fire, privy-chamber brazier |
+| 24–26 | bedchamber candle, knights' chamber candle, prison lantern |
+| 27–30 | armoury lantern, dormitory candle, mess brazier, constable's fire |
+| 31 | stable lantern |
+
+`MAX_FIRES` is now 32 and all slots are taken; raise it in `material.js` to add more.
+
+### People: crowd, gait and interaction
+
+- **Crowd.** `crowd.js` runs every frame over all actors with `solid` (rats are not). Each actor has a `radius`; `yields: false` keeps it planted (people seated or asleep, tethered horses); `shy` makes small creatures scatter from walkers. A walker sidesteps through `Actor.off` (a visual offset from its path, eased back to zero) and slows through `Actor.hold`. Offsets are small (≈0.5 m), so routes through doorways still need to be planned with some room.
+- **Checking for collisions.** Simulate in the page and look for pairs closer than their radii: see the snippet used during development in the commit history, or write one with `__castle.simulate()` and `world.cast.actors` (`a.x`, `a.z`, `a.radius`).
+- **Gait.** Pass `stepAmt` (0 standing … 1 normal) to walking poses; the actor computes it from its speed. A step may set `stride` (metres per full cycle), e.g. 2.4 for running.
+- **Greeting and following.** `App.actorAt(label, x, y)` finds which of the actors sharing a label was clicked; `App.greet()` pauses it with a bow, curtsey, salute or wave (seated people only look up); `App.follow(actor)` keeps the camera on it.
+- **Alarm.** Routines for the alarm are pairs `[actor, steps]` in `cast.alarm`; the alarm mechanism swaps them in with `setSteps()` and restores the saved routine on standing down.
+- **Seeds.** `rngOf()` scrambles its seed: plain LCGs started from nearby seeds give nearly the same first numbers, which once sent every cow to the same spot.
 
 ## Gotchas
 
@@ -190,9 +212,9 @@ src/
 ## Known issues and limitations
 
 1. **Frame rate on real GPUs is unknown.** The likely costs:
-   - about 590 separate figure, animal and part meshes, each its own draw call;
+   - about 1,480 separate figure, animal and part meshes, each its own draw call (more than doubled by this branch: merging each figure's static parts is now the first thing to try);
    - a full-screen post pass with many texture taps;
-   - per-fragment work in `material.js` (fbm noise, Voronoi rubble and cobbles, a loop over 24 lights);
+   - per-fragment work in `material.js` (fbm noise, Voronoi rubble and cobbles, a loop over 32 lights);
    - CPU rebuilding of 4 banner meshes every frame.
 
    Possible fixes if it is slow:
@@ -213,6 +235,9 @@ src/
 6. **No automated tests beyond `npm run check`.** It only catches console errors; visual regressions need a look at the screenshots.
 
 ## Ideas not yet done
+
+- Stairs between floors, so people can move up and down the towers (and the garrison can man the walls when the alarm rings).
+- Leading horses in and out of the stable; feeding the pigs as an interaction.
 
 - A day cycle driven by `uDay`, with the household's routines changing with it (supper by candlelight, gates shut at dusk).
 - The southern half as an optional ghost, or a second cut through the chapel and the southern ranges.

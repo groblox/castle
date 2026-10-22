@@ -1,4 +1,4 @@
-import { HALL, SERV, NR, GH, WELL, IW, IC_OUT, OC_IN, OUTER_Y } from './layout.js';
+import { HALL, SERV, NR, GH, WELL, IW, IC_OUT, OC_IN, OUTER_Y, TOWERS, TOWER_R, TOWER_CUT, TOWER_H, FARM } from './layout.js';
 
 // Camera boxes keep the eye out of walls when flying into a room.
 const IN_HALL = [[HALL.x0 + 0.6, HALL.floorY + 0.5, HALL.zCross1 + 0.6], [HALL.x1 - 0.6, 12, 60]];
@@ -28,8 +28,15 @@ export const G = {
   screens: 19,
   ghTurret: 20,
   hallRoof: 21,
+  curtainW: 22, // west inner curtain
+  curtainE: 23, // east inner curtain north of the gatehouse
+  kingTower: 24,
+  garrison: 25,
+  stable: 26,
+  farm: 27,
+  stableRoof: 28,
 };
-export const GROUP_COUNT = 24;
+export const GROUP_COUNT = 32;
 
 const r = NR.rooms;
 
@@ -141,6 +148,39 @@ export const ROOMS = [
     group: G.gatehouse,
     box: [[GH.x0, 0, GH.z0], [GH.x1 + GH.towerR, GH.roofY + 2, 0]],
     view: { az: 0, el: 8, fit: 1.0 },
+  },
+  {
+    id: 'kingTower',
+    name: 'King\'s tower (royal lodging)',
+    group: G.kingTower,
+    box: [[TOWERS.nw.x - TOWER_R, -1.5, TOWERS.nw.z - TOWER_R], [TOWERS.nw.x + TOWER_R, TOWER_H + 1, TOWER_CUT]],
+    view: { az: -8, el: 9, fit: 0.95 },
+    hide: [G.curtainW, G.buttery, G.pantry, G.screens, G.chamber],
+    margin: 0.6,
+  },
+  {
+    id: 'garrison',
+    name: 'Garrison tower & armoury',
+    group: G.garrison,
+    box: [[TOWERS.ne.x - TOWER_R, -1.5, TOWERS.ne.z - TOWER_R], [TOWERS.ne.x + TOWER_R, TOWER_H + 1, TOWER_CUT]],
+    view: { az: 8, el: 9, fit: 0.95 },
+    hide: [G.curtainE, G.granary, G.gatehouse, G.ghTurret],
+    margin: 0.6,
+  },
+  {
+    id: 'stable',
+    name: 'Stable',
+    group: G.stable,
+    box: [[-19.0, OUTER_Y, OC_IN.z0], [-2.4, OUTER_Y + 4.2, -28.6]],
+    view: { az: 180, el: 30, fit: 0.9 },
+    hide: [G.outer, G.stableRoof],
+  },
+  {
+    id: 'farm',
+    name: 'Home farm & butts',
+    group: G.farm,
+    box: [[FARM.x0, -4, FARM.z0], [FARM.x1, 3, -5]],
+    view: { az: -14, el: 30, fit: 0.95 },
   },
   {
     id: 'ward',

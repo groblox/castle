@@ -32,6 +32,21 @@ export const TOWERS = {
   se: { x: 27.6, z: 23.6 },
 };
 
+// The two northern corner towers are cut open along the inner face of the
+// north curtain (z = IW.z0) to show their floors: the king's lodging in the
+// north-west tower, the garrison in the north-east one.
+export const TOWER_IN = 4.2; // inner radius
+export const TOWER_CUT = IW.z0;
+export const TOWER_FLOORS = [0, 4.4, 8.6, 12.8]; // tops of the floors
+export const TOWER_CEIL = 18.0; // underside of the roof
+// stair turrets on the roofs (angle round the tower, radians), both on the kept side
+export const TURRET_A = { nw: -Math.PI * 0.62, ne: -Math.PI * 0.38 };
+
+// the farm outside the east gate, beyond the ditch
+export const FARM = { x0: 53.5, x1: 71.5, z0: -39.5, z1: -14 };
+// the archery butts in the field by the track
+export const BUTTS = { shootX: 57.5, targetX: 69.5, z: -9.0 };
+
 // gatehouse (east side, passage on the cut line)
 export const GH = {
   x0: 19,

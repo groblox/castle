@@ -146,6 +146,38 @@ export const ROOM_NOTES = {
     ],
     also: [{ type: 'person', id: 'smith' }, { type: 'person', id: 'mason' }, { type: 'person', id: 'sawyer' }, { type: 'person', id: 'gardener' }, { type: 'person', id: 'laundress' }, { type: 'person', id: 'porter' }],
   },
+  kingTower: {
+    terms: 'Mural tower; the king\'s lodging',
+    body: [
+      'Round mural towers were not solid: each held a chamber on every floor, with fireplaces, windows and latrines, linked by a newel stair in the wall. At Conwy the king\'s and queen\'s lodgings were in the towers and ranges of the inner ward, and another tower held a prison {@gatehouseConwy} {@cadwConwy}. This tower is cut open along the inner face of the curtain to show its four floors.',
+      'At the bottom, a prison: a dark chamber with a prisoner in fetters and his gaoler. Above it, the chamber of the household knights who travel with the king. Then the king\'s privy chamber, painted green and powdered with gold stars as Henry III liked his rooms, with the chair of state under a cloth of estate bearing the royal arms {@royalArms}, and a carpet before it. At the top, the king\'s bedchamber, with a great bed hung in red and gold, a fire and a page asleep at the foot. The rooms\' uses and furnishings are [[conj]].',
+      'Edward I did stay in his Welsh castles while they were being built and garrisoned {@taylorKW}. His visit here, the messenger, the minstrel and the lady at her needlework are invented for the scene [[conj]].',
+    ],
+    also: [{ type: 'person', id: 'king' }, { type: 'person', id: 'messenger' }, { type: 'person', id: 'lady' }, { type: 'person', id: 'minstrel' }, { type: 'person', id: 'chamberlain' }, { type: 'person', id: 'knight' }, { type: 'person', id: 'gaoler' }, { type: 'person', id: 'prisoner' }],
+  },
+  garrison: {
+    terms: 'Mural tower; armoury and garrison lodging',
+    body: [
+      'Harlech\'s garrison was set at 36: the constable, thirty men of whom ten were crossbowmen, a chaplain, a smith, a carpenter and a mason {@wikiHarlech}. They had to sleep, eat and keep their arms somewhere; here they have the north-east tower [[conj]].',
+      'On the ground floor is the armoury: spears in a rack, bows and sheaves of arrows, crossbows on pegs, mail on stands, kettle hats on a shelf, shields on the wall {@morganBible}. An armourer puts an edge on a blade at the grindstone while a boy turns it, and a fletcher makes arrows at his bench. Above are the men\'s dormitory, with straw pallets on the floor, and their chamber, where those off watch play at dice. At the top is the constable\'s chamber, with the chest that holds the garrison\'s pay. The arrangement is [[conj]].',
+    ],
+    also: [{ type: 'person', id: 'constable' }, { type: 'person', id: 'sergeant' }, { type: 'person', id: 'armourer' }, { type: 'person', id: 'fletcher' }, { type: 'person', id: 'soldierOff' }, { type: 'mech', id: 'alarm' }],
+  },
+  stable: {
+    terms: 'Stable',
+    body: [
+      'A castle needed stabling for the constable\'s and the garrison\'s horses and for visitors\'. This one is a lean-to of timber against the north outer curtain, with five stalls, mangers and hay racks, saddles on a rail and a haystack at the end. Its place and form are [[conj]].',
+    ],
+    also: [{ type: 'person', id: 'groom' }, { type: 'person', id: 'horse' }],
+  },
+  farm: {
+    terms: 'Home farm; the butts',
+    body: [
+      'Beyond the ditch is a little home farm for the castle: a byre and paddock for the cows, a pigsty, geese on a pond, goats among the rocks and a dovecote. A great household lived largely off the produce of its manors, and kept beasts, poultry and doves close at hand {@woolgarFood}. All of the farm is invented for the scene [[conj]].',
+      'Nearer the track are the butts, a bank of turf with a target, where archers of the garrison practise. You can call a volley, or draw a bow yourself. Edward I\'s garrisons in Wales relied above all on crossbowmen {@wikiHarlech}; the longbowmen practising here are a little ahead of their time [[conj]].',
+    ],
+    also: [{ type: 'mech', id: 'butts' }, { type: 'person', id: 'archer' }, { type: 'person', id: 'milkmaid' }, { type: 'person', id: 'swineherd' }, { type: 'person', id: 'gooseGirl' }, { type: 'person', id: 'goatherd' }, { type: 'person', id: 'cowherd' }],
+  },
 };
 
 export const MECH_NOTES = {
@@ -187,6 +219,20 @@ export const MECH_NOTES = {
       'Ale was drawn from the cask through a wooden tap low in the head. In medieval usage the spigot and faucet are the peg and the tube; the words were often swapped {@med}. A cask is airtight, so as ale runs out a partial vacuum forms and the flow glugs and stops. A vent peg in the top has to be eased out to let air in.',
       'The butler drove the vent peg home again when he had finished, to keep the ale from going flat and sour. Unhopped ale did not keep long in any case {@bennett}.',
       'Try opening the tap before loosening the vent peg.',
+    ],
+  },
+  alarm: {
+    terms: 'Portcullis (Old French porte coleïce, sliding gate); alarm bell',
+    body: [
+      'Harlech\'s gate passage was closed by doors and several portcullises, with murder holes in the vault between them {@wikiHarlech}. A portcullis was a heavy grille of oak shod with iron, running in grooves in the passage walls. It was wound up by a windlass in the chamber above, where its top stands in a slot in the guardroom floor, and could be dropped in moments.',
+      'Ring the bell and the garrison turns out: the men at drill run to the gate, the archers come in from the butts, the watch stands to on the walls, and the portcullises drop behind them. Stand down and everyone goes back to work. The bell and who runs where are [[conj]].',
+    ],
+  },
+  butts: {
+    terms: 'Butts; pricks',
+    body: [
+      'Archers practised at butts: banks of earth with a target set in front. Compulsory practice for Englishmen belongs to later statutes; in 1290 Edward\'s garrisons in Wales leaned on crossbowmen {@wikiHarlech}, and these longbowmen are [[conj]].',
+      'Hold the draw button to draw a bow and let go to loose. A full, steady draw flies true; under-drawn, the arrow falls short; held too long, it wobbles and flies high. Or call a volley and watch the archers loose together.',
     ],
   },
 };
@@ -348,4 +394,34 @@ export const PERSON_NOTES = {
     terms: 'Black rat (Rattus rattus)',
     body: ['The rat of medieval Britain was the black rat. The brown rat arrived only in the 18th century {@rats}. Rats in the stores were a constant loss and a reason for keeping cats.'],
   },
+  king: { terms: 'The king', body: ['Edward I (1272–1307), builder of the castles of North Wales {@taylorKW}, in a red gown with an ermine collar and a gold circlet, in his chair of state under the cloth of his arms {@royalArms}. His visit here is invented [[conj]].'] },
+  messenger: { terms: 'Nuncius; royal messenger', body: ['The king\'s messengers carried letters across the realm on foot or on horseback. This one kneels to deliver his roll and then waits to be dismissed [[conj]].'] },
+  royalClerk: { terms: 'Clerk of the chancery', body: ['Clerks of the chancery and the wardrobe travelled with the king, writing and sealing his letters and keeping his accounts {@woolgarHousehold}.'] },
+  lady: { terms: 'Lady of the court', body: ['A lady of the court at her needlework in the window seat [[conj]].'] },
+  minstrel: { terms: 'Minstrel; vielle player', body: ['Minstrels were kept in great households and paid at feasts. He plays a vielle, the bowed fiddle of the day [[conj]].'] },
+  chamberlain: { terms: 'Chamberlain; valet of the chamber', body: ['The chamber servants looked after the king\'s clothes, bed and fire {@ordinance1318}.'] },
+  page: { terms: 'Page', body: ['A boy of the chamber, asleep on a pallet at the foot of the bed, as servants commonly slept in their master\'s room {@woolgarHousehold}.'] },
+  knight: { terms: 'Knight of the household', body: ['Household knights rode with the king and lodged where he lodged {@ordinance1318}. One sleeps; another looks out of the window [[conj]].'] },
+  squire: { terms: 'Squire', body: ['A squire served his knight, keeping his harness and arms in order. Mail and helms were scoured bright with sand [[conj]].'] },
+  gaoler: { terms: 'Gaoler', body: ['Castles held prisoners for the king and the sheriff. The gaoler keeps the keys [[conj]].'] },
+  prisoner: { terms: 'Prisoner', body: ['A man held in fetters in the tower\'s bottom chamber, waiting on the king\'s justice [[conj]].'] },
+  constable: { terms: 'Constable of the castle', body: ['The constable commanded the castle and its garrison for the king. Master James of St George himself was constable of Harlech from 1290 to 1293 {@wikiHarlech}.'] },
+  sergeant: { terms: 'Sergeant', body: ['A sergeant of the garrison, drilling the new men with the spear in the ward and reporting to the constable [[conj]].'] },
+  armourer: { terms: 'Armourer', body: ['Keeping the garrison\'s arms in order: a boy turns the grindstone while the armourer puts an edge on a blade [[conj]].'] },
+  fletcher: { terms: 'Fletcher', body: ['Arrows were made by the thousand for the king\'s wars: ash or aspen shafts, goose feathers bound and glued, iron heads from the smith [[conj]].'] },
+  soldierOff: { terms: 'A man of the garrison, off watch', body: ['Men off watch slept, ate, played at dice and scoured their kit {@wikiHarlech} [[conj]].'] },
+  gateGuard: { terms: 'Gate guard', body: ['Two men of the watch keep the inner gate. The red cross of St George on their breasts was worn by English foot soldiers in Wales {@stGeorge}.'] },
+  recruit: { terms: 'Spearmen at drill', body: ['New men learning to level and thrust the spear together on the word of command [[conj]]. When the alarm rings they run to hold the gate.'] },
+  child: { terms: 'Children', body: ['Children of the household servants playing chase in the ward [[conj]].'] },
+  groom: { terms: 'Groom of the stable', body: ['Grooms mucked out, filled the racks and brushed the horses down {@ordinance1318} [[conj]].'] },
+  milkmaid: { terms: 'Dairymaid', body: ['Milking was women\'s work, into a wooden pail, on a low stool at the cow\'s side [[conj]].'] },
+  cowherd: { terms: 'Cowherd', body: ['Minding the cows in their paddock [[conj]].'] },
+  swineherd: { terms: 'Swineherd', body: ['Bringing swill to the pigs, and water from the pond [[conj]].'] },
+  goatherd: { terms: 'Goat-girl', body: ['Watching the goats among the rocks [[conj]].'] },
+  gooseGirl: { terms: 'Goose-girl', body: ['Minding the geese with a switch. Goose feathers fletched the garrison\'s arrows [[conj]].'] },
+  archer: { terms: 'Archers and the master bowman', body: ['Archers practising at the butts while the master bowman watches. Call a volley, or try a shot yourself, from the panel of the butts. Longbowmen in a Welsh garrison of 1290 are [[conj]]: the crossbow was its weapon {@wikiHarlech}.'] },
+  cow: { terms: 'Cattle', body: ['Small, hardy cattle of many colours, kept for milk, calves and beef [[conj]].'] },
+  pig: { terms: 'Pigs', body: ['Medieval pigs were lean, bristly and often dark, more like wild boar than modern pigs [[conj]].'] },
+  goat: { terms: 'Goats', body: ['Goats kept for milk and kid on the rough ground [[conj]].'] },
+  goose: { terms: 'Geese', body: ['Geese for the table and for their feathers [[conj]].'] },
 };

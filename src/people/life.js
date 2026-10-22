@@ -4,7 +4,7 @@ import { beam, obox, v3 } from '../geom/shapes.js';
 import { lab, labPerson } from '../data/labels.js';
 import { G } from '../castle/rooms.js';
 import { groundY } from '../castle/terrain.js';
-import { OUTER_Y, GH, TOWER_H, TOWERS, TOWER_R, OC_OUT, OC_H, IC_OUT } from '../castle/layout.js';
+import { OUTER_Y, GH, TOWER_H, TOWERS, TOWER_R, TURRET_A, OC_OUT, OC_H, IC_OUT } from '../castle/layout.js';
 import { Horse } from './animals.js';
 import { Hen, Hound, Sheep, Bird } from './creatures.js';
 import { Banner } from './banners.js';
@@ -21,7 +21,9 @@ const W = -Math.PI / 2;
 const OY = OUTER_Y;
 
 function rngOf(seed) {
-  let s = seed >>> 0 || 1;
+  // scramble the seed first: nearby seeds would otherwise start out nearly alike
+  let s = Math.imul((seed >>> 0) ^ 0x9e3779b9, 0x85ebca6b) >>> 0 || 1;
+  s = Math.imul(s ^ (s >>> 13), 0xc2b2ae35) >>> 0 || 1;
   return () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return s / 4294967296;
@@ -124,7 +126,7 @@ export function buildLife({ scene, add, fig }) {
   let hi = 0;
   const hen = (name, room, region, floor, opts = {}) => {
     const h = new Hen(room === 'ward' ? labPerson('hen', 'ward') : henLabel, G.people, { color: opts.color ?? henCols[hi % henCols.length], cock: opts.cock });
-    const a = add(name, h, wander(100 + hi * 17, region, 6, [['peck', 2, 5], ['scratch', 1, 2.5], ['stand', 1, 3], ['peck', 1.5, 3]]), { floor, speed: 0.45, stride: 0.12, turnRate: 9 });
+    const a = add(name, h, wander(100 + hi * 17, region, 6, [['peck', 2, 5], ['scratch', 1, 2.5], ['stand', 1, 3], ['peck', 1.5, 3]]), { floor, speed: 0.45, stride: 0.12, turnRate: 9, radius: 0.13, shy: 2.2 });
     hi++;
     return a;
   };
@@ -149,16 +151,16 @@ export function buildLife({ scene, add, fig }) {
   add('houndYard', new Hound(labPerson('hound', 'ward'), G.people, { color: 0xc8b08a, dark: 0x6a5440, patches: true }), [
     { go: [[-9.6, -6.6]], pose: 'walk' },
     { pose: 'lie', face: E, dur: 18 },
-    { go: [[-6.0, -4.0], [2.0, -3.4]], pose: 'walk' },
+    { go: [[-6.0, -4.0], [1.4, -6.3]], pose: 'walk' },
     { pose: 'sniff', dur: 3 },
-    { go: [[7.0, -6.0]], pose: 'walk' },
+    { go: [[9.2, -6.4]], pose: 'walk' },
     { pose: 'sniff', dur: 2.5 },
     { pose: 'sit', face: W, dur: 6 },
     { go: [[-2.0, -6.0]], pose: 'walk' },
-  ], { speed: 0.8, stride: 0.75, turnRate: 4 });
+  ], { speed: 0.8, stride: 0.75, turnRate: 4, radius: 0.3 });
   // hounds asleep in the hall
-  add('houndHall1', new Hound(houndLabel, G.people, { color: 0x8a7e70 }), [{ pose: 'lie', dur: 1e9, params: { seed: 1 } }], { floor: 0.6, start: [-20.3, -5.5], heading: W + 0.4 });
-  add('houndHall2', new Hound(houndLabel, G.people, { color: 0xe2d8c4, dark: 0x8a6a48, patches: true }), [{ pose: 'lie', dur: 1e9, params: { seed: 4 } }], { floor: 0.6, start: [-19.8, -0.9], heading: N + 0.8 });
+  add('houndHall1', new Hound(houndLabel, G.people, { color: 0x8a7e70 }), [{ pose: 'lie', dur: 1e9, params: { seed: 1 } }], { floor: 0.6, start: [-20.3, -5.5], heading: W + 0.4, radius: 0.35, yields: false });
+  add('houndHall2', new Hound(houndLabel, G.people, { color: 0xe2d8c4, dark: 0x8a6a48, patches: true }), [{ pose: 'lie', dur: 1e9, params: { seed: 4 } }], { floor: 0.6, start: [-19.8, -0.9], heading: N + 0.8, radius: 0.35, yields: false });
 
   // ---- the porter at the outer gate ------------------------------------------
   add('porter', fig({ tunic: 0x5a6a4a, hose: 0x4a4038, hood: 0x6a3a2a, beard: true, hair: 0x8a8070, scale: 1.0 }, 'porter', 'outerWard'), [
@@ -169,7 +171,7 @@ export function buildLife({ scene, add, fig }) {
   ], { floor: OY, start: [37.2, -5.3], heading: W, speed: 0.6 });
 
   // ---- a horse tied at the rail by the smithy ---------------------------------
-  add('hackney', new Horse(labPerson('horse', 'outerWard'), G.people), [{ pose: 'stand', dur: 1e9 }], { start: [35.0, -15.2], heading: N, floor: OY });
+  add('hackney', new Horse(labPerson('horse', 'outerWard'), G.people), [{ pose: 'stand', dur: 1e9 }], { start: [35.0, -15.2], heading: N, floor: OY, radius: 0.6, yields: false });
 
   // ---- a pedlar on the road up to the gate ------------------------------------
   const bridgeFloor = (x, z) => (x > OC_OUT.x1 - 0.2 && x < 53.6 && z > -1.95 ? -1.6 : groundY(x, z));
@@ -188,7 +190,7 @@ export function buildLife({ scene, add, fig }) {
     const brown = i % 4 === 3;
     add(`sheep${i}`, new Sheep(sheepLabel, G.people, { wool: brown ? 0x8a7a66 : i % 3 ? 0xe0d9c6 : 0xd2cab4, face: brown ? 0x5a4a3c : 0xe8e0d0 }),
       wander(300 + i * 13, flock, 5, [['graze', 6, 14], ['graze', 4, 9], ['stand', 2, 5], ['lie', 10, 20]]),
-      { floorFn: groundY, speed: 0.3, stride: 0.5, turnRate: 2 });
+      { floorFn: groundY, speed: 0.3, stride: 0.5, turnRate: 2, radius: 0.38, shy: 0.6 });
   }
   const shepherd = add('shepherd', fig({ tunic: 0x8a7a50, hose: 0x5a5040, hood: 0x5a6a3a, scale: 0.82 }, 'shepherd', null), [
     { go: [[2, -47]] },
@@ -231,7 +233,7 @@ export function buildLife({ scene, add, fig }) {
   const pennon = lab('pennon');
   const turret = (key) => {
     const t = TOWERS[key];
-    const a = key === 'nw' ? Math.PI * 0.25 : Math.PI * 0.75;
+    const a = TURRET_A[key];
     return [t.x + Math.cos(a) * (TOWER_R - 1.6), TOWER_H + 4, t.z + Math.sin(a) * (TOWER_R - 1.6)];
   };
   const flags = [

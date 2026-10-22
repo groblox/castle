@@ -43,20 +43,40 @@ Everything is drawn in code: the masonry, the people, the hens and the paper tex
 
 The kitchen, bakehouse, brewhouse, larder, pantry, buttery, cellar, well and store-house are fully furnished. They are stocked with what a 1290 household actually ate and drank. There are no potatoes, no hops and no turkeys.
 
+### The towers: the king's lodging and the garrison
+
+The two northern corner towers are cut open to show a chamber on every floor.
+
+- **The king's tower** (north-west): a prison at the bottom with a prisoner in fetters and his gaoler; the household knights' chamber; the king's privy chamber, painted green with gold stars, where the king sits in his chair of state under a cloth of his arms while a messenger kneels, a clerk reads, a lady sews and a minstrel plays; and at the top the king's bedchamber, with a great bed hung in red and gold and a page asleep at its foot.
+- **The garrison tower** (north-east): the armoury, with racks of spears, bows, crossbows, mail and helmets, a grindstone throwing sparks and a fletcher at his bench; a dormitory of straw pallets where the men off watch sleep; their mess, where they play at dice; and the constable's chamber with the garrison's pay chest.
+
+### Stable and home farm
+
+A stable against the north outer curtain holds the horses, with grooms mucking out and filling the hay racks. Beyond the ditch is a small home farm: a byre and paddock with cows and a dairymaid milking, a pigsty with a sow and her litter, geese on a pond, goats on the rocks, a dovecote with doves wheeling round it, and the butts where archers practise.
+
 ### People and animals at work
 
-There are over fifty figures and animals, each running its own daily routine:
+There are well over a hundred figures and animals, each running its own routine:
 
 - **Kitchen and stores:** the cook, scullions, the spit boy, the baker, the brewer, the butler and pantler, the water carrier, and a carter unloading grain while a clerk notches the tally.
-- **The watch:** watchmen and a crossbowman walk the wall-walks.
-- **The wards:** a smith at the forge, masons and sawyers, a gardener, a laundress, a henwife and the porter.
-- **Animals:** hens, hounds, a cat stalking rats in the larder, and sheep with a shepherd's boy on the hill.
+- **The king's household:** the king, a messenger, a chancery clerk, a lady, a minstrel, the chamberlain, a page, knights and a squire.
+- **The garrison:** watchmen and a crossbowman on the walls, guards at the inner gate, a sergeant drilling spearmen in the ward, archers at the butts, the armourer, the fletcher, men asleep and at dice, and the constable at his desk.
+- **The wards:** a smith at the forge, masons and sawyers, a gardener, a laundress, a henwife, the porter, grooms, and children chasing each other round the ward.
+- **Animals:** horses, cows, pigs and piglets, goats, geese, hens, hounds, a cat stalking rats in the larder, sheep with a shepherd's boy on the hill, and doves.
 - **Overhead:** jackdaws wheel round the towers and the banners stream in the wind.
 
-### Five working mechanisms
+People walk with a fuller stride (the pelvis turns, the shoulders swing against it, knees fold through the step), ease from one action into the next, turn on the spot before setting off, and slow at the end of a walk. They give way to one another: someone in the way is passed on the right, and a walker slows behind a person who blocks the path. People at work glance up at passers-by, and hens and geese scatter from anyone walking through them.
+
+### Say good day to anyone
+
+Click a person and they stop and greet you: a bow, a curtsey, a soldier's fist to the breast, or a wave. People sitting at work just look up. The notes panel then shows what they are doing at that moment, and **Follow** keeps the camera on them as they go about their day.
+
+### Seven working mechanisms
 
 | Mechanism | What you can do |
 |---|---|
+| **Alarm bell and portcullises** | Ring the bell on the gatehouse roof: the garrison turns out, the archers run in from the butts, the watch stands to, and the three portcullises drop. Stand down and everyone goes back to work. |
+| **The butts** | Call a volley, or draw a bow yourself: hold to draw and let go to loose. Under-draw and it falls short; hold it too long and it flies high. |
 | **Well windlass** | Drag the crank to lower the bucket 24 m. Wind it up full and tip it into the trough. |
 | **Roasting spit** | Stop the spit boy and watch one side char, then turn it yourself to brown it evenly. |
 | **Bread oven** | Fire it, rake out the embers, swab it, set the loaves with the peel, seal it, bake and draw. |
@@ -79,7 +99,7 @@ Damp creeps up the wall feet, with rain streaks and lichen above it. Moss grows 
 
 The castle is invented, but its parts are not. Every note in the side panel cites its sources: Arnold Taylor's *King's Works in Wales*, C. M. Woolgar's studies of the medieval household and its food, the 1318 Household Ordinance of Edward II, Walter of Bibbesworth on brewing, Peter Brears on cooking and dining, the Morgan Picture Bible, and others.
 
-Where the evidence is thin or the scene has had to invent, the note says so with a **conjecture** mark. [`SOURCES.md`](SOURCES.md) lists every reference and the claims it supports, along with every statement marked as conjecture (36 sources and 39 conjectures at present).
+Where the evidence is thin or the scene has had to invent, the note says so with a **conjecture** mark. [`SOURCES.md`](SOURCES.md) lists every reference and the claims it supports, along with every statement marked as conjecture (36 sources and 73 conjectures at present).
 
 ---
 
@@ -101,6 +121,7 @@ npm run preview  # serve the production build
 | **Zoom** | Scroll; it zooms towards the cursor. |
 | **Visit a room** | Click it in the view, the room list or the plan. The rest of the castle fades back. **Esc** or **Back** returns. |
 | **Learn** | Hover anything for its name and a one-line gloss. Click a room, mechanism or person for notes and sources. |
+| **Meet people** | Click a person to greet them; use **Follow** in the panel to keep the camera on them. **Esc** stops. |
 | **Light** | Use the Dusk ↔ Day slider under the plan. |
 
 ### Checking a change

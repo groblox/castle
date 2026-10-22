@@ -29,7 +29,7 @@ export function interiors(b) {
 }
 
 /** Painted limewash on a wall face: axis of the face ('x' runs along x). */
-function paint(b, axis, c, sign, a0, a1, y0, y1) {
+export function paint(b, axis, c, sign, a0, a1, y0, y1) {
   const t = 0.015 * sign;
   b.with({ kind: K.PAINTED, color: LIMEWASH }, () => {
     if (axis === 'x') b.box(a0, y0, c, a1, y1, c + t);
@@ -38,7 +38,7 @@ function paint(b, axis, c, sign, a0, a1, y0, y1) {
 }
 
 /** Strewn rushes: loose clumps of thin stems on a floor at height y, avoiding `skip(x, z)`. */
-function rushes(b, x0, x1, z0, z1, y, n, seed, skip = () => false) {
+export function rushes(b, x0, x1, z0, z1, y, n, seed, skip = () => false) {
   const r = rng(seed);
   for (let i = 0; i < n; i++) {
     const x = x0 + (x1 - x0) * r();
@@ -58,7 +58,7 @@ function rushes(b, x0, x1, z0, z1, y, n, seed, skip = () => false) {
 }
 
 /** Iron pricket candlestick with a tallow candle. */
-function pricket(b, x, y, z, h = 0.25) {
+export function pricket(b, x, y, z, h = 0.25) {
   b.with({ kind: K.METAL, color: P.iron }, () => {
     lathe(b, v3(x, y, z), 'y', [[0.07, 0], [0.02, 0.03], [0.015, h], [0.05, h + 0.01]], 8);
   });
@@ -67,7 +67,7 @@ function pricket(b, x, y, z, h = 0.25) {
 }
 
 /** Bed curtains: a cloth tester hung over the bed, curtains bunched at the corners. */
-function testerBed(b, x0, x1, z0, z1, y, color, ceilY) {
+export function testerBed(b, x0, x1, z0, z1, y, color, ceilY) {
   b.with({ kind: K.CLOTH, color }, () => {
     b.box(x0, y + 2.2, z0, x1, y + 2.28, z1);
     // valance round the tester
@@ -105,7 +105,7 @@ export function cresset(b, x, y, z, dir) {
 }
 
 /** A heater shield hung flat on a wall that faces +z. */
-function shield(b, x, y, z, field, charge) {
+export function shield(b, x, y, z, field, charge) {
   const w = 0.32;
   const prof = [[-w, 0.35], [w, 0.35], [w, 0.0], [0, -0.42], [-w, 0.0]];
   const face = (zz) => prof.map(([px, py]) => v3(x + px, y + py, zz));
@@ -117,12 +117,12 @@ function shield(b, x, y, z, field, charge) {
 }
 
 /** Kettle hat (iron helmet with a wide brim). */
-function kettleHat(b, x, y, z) {
+export function kettleHat(b, x, y, z) {
   b.with({ kind: K.METAL, color: 0x6a6a6e }, () => lathe(b, v3(x, y, z), 'y', [[0.24, 0], [0.24, 0.015], [0.13, 0.04], [0.12, 0.13], [0.06, 0.2], [0.001, 0.21]], 12));
 }
 
 /** Crossbow hung on a peg on a wall facing +x. */
-function crossbow(b, x, y, z) {
+export function crossbow(b, x, y, z) {
   b.with({ kind: K.TIMBER, color: P.oak }, () => b.box(x, y - 0.55, z - 0.04, x + 0.07, y + 0.25, z + 0.04));
   b.with({ kind: K.TIMBER, color: 0x6a5238 }, () => {
     beam(b, v3(x + 0.05, y + 0.12, z), v3(x + 0.08, y + 0.02, z - 0.36), 0.04, 0.04);
@@ -136,7 +136,7 @@ function crossbow(b, x, y, z) {
 }
 
 /** Spear leaning against a wall. */
-function spear(b, foot, top) {
+export function spear(b, foot, top) {
   b.with({ kind: K.TIMBER, color: P.oak }, () => beam(b, foot, top, 0.035, 0.035));
   const d = top.clone().sub(foot).normalize();
   b.with({ kind: K.METAL, color: 0x8a8a8e }, () => beam(b, top, top.clone().addScaledVector(d, 0.28), 0.06, 0.015));

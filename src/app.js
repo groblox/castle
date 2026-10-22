@@ -12,6 +12,12 @@ import { Minimap } from './ui/minimap.js';
 
 THREE.ColorManagement.enabled = false;
 
+// how people acknowledge you when clicked
+const SOLDIERS = new Set(['watchman', 'crossbowman', 'gateGuard', 'sergeant', 'recruit', 'archer', 'soldierOff', 'constable', 'knight']);
+const WOMEN = new Set(['brewer', 'laundress', 'henwife', 'lady', 'milkmaid', 'swineherd', 'gooseGirl', 'goatherd']);
+const YOUNG = new Set(['child', 'page', 'squire', 'spitBoy', 'shepherd']);
+const SEATED = new Set(['sit', 'sitWork', 'sitCrank', 'polish', 'dice', 'milk', 'saw', 'kneel', 'shoot', 'drill', 'crank']);
+
 const OVERVIEW = { target: new THREE.Vector3(4, 1, -9), dist: 128, az: -10 * DEG, el: 21 * DEG };
 
 export class App {
@@ -60,7 +66,7 @@ export class App {
     this.backBtn.addEventListener('click', () => this.overview());
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (this.focus) this.overview();
+        if (this.focus || this.following) this.overview();
         else this.panel.hide();
       }
     });
@@ -119,13 +125,86 @@ export class App {
       return;
     }
     if (L.person) {
-      this.panel.showPerson(L.person);
+      const a = this.actorAt(id, x, y);
+      if (a) this.greet(a, L.person);
+      this.panel.showPerson(L.person, a);
       return;
     }
     if (L.room && ROOM_BY_ID[L.room]) {
       if (!this.focus || this.focus.id !== L.room) this.focusRoom(L.room);
       else this.panel.showRoom(this.focus);
     }
+  }
+
+  /** The person or animal with this label nearest the screen point (several share a label). */
+  actorAt(labelId, x, y) {
+    if (!this._byLabel) {
+      this._byLabel = new Map();
+      for (const a of Object.values(this.world.cast.actors)) {
+        let id = a.e.mat?.uniforms.uLabelOverride.value;
+        if (id === undefined) a.e.root.traverse((o) => (id = id ?? o.material?.uniforms?.uLabelOverride?.value));
+        if (!this._byLabel.has(id)) this._byLabel.set(id, []);
+        this._byLabel.get(id).push(a);
+      }
+    }
+    const list = this._byLabel.get(labelId) || [];
+    const rect = this.canvas.getBoundingClientRect();
+    let best = null;
+    let bd = Infinity;
+    const v = new THREE.Vector3();
+    for (const a of list) {
+      v.copy(a.e.root.position);
+      v.y += 1.0;
+      v.project(this.camera);
+      if (v.z > 1) continue;
+      const sx = rect.left + ((v.x + 1) / 2) * rect.width;
+      const sy = rect.top + ((1 - v.y) / 2) * rect.height;
+      const d = Math.hypot(sx - x, sy - y);
+      if (d < bd) {
+        bd = d;
+        best = a;
+      }
+    }
+    return best;
+  }
+
+  /** A person clicked on stops and acknowledges you; those sitting or asleep just look up (or don't). */
+  greet(a, key) {
+    if (!a.e.j || a.override) return;
+    const st = a.steps[a.i];
+    const pose = st.go ? 'walk' : st.pose;
+    const cam = this.camera.position;
+    const t = this.time;
+    if (pose === 'sleep') {
+      this.toast('Asleep, and best left so.', 2500);
+      return;
+    }
+    if (SEATED.has(pose) || (a.yields === false && !st.go)) {
+      a.attend = { until: t + 3.5, x: cam.x, y: cam.y, z: cam.z };
+      return;
+    }
+    const face = Math.atan2(cam.x - a.pos.x, cam.z - a.pos.y);
+    const how = SOLDIERS.has(key) ? 'salute' : WOMEN.has(key) ? 'curtsey' : YOUNG.has(key) || key === 'king' ? 'wave' : 'bow';
+    a.attend = { until: t + 3.2, x: cam.x, y: cam.y, z: cam.z };
+    a.pause(how, 3.0, face);
+  }
+
+  /** Keep the camera on a person as they go about their business (null to stop). */
+  follow(a) {
+    this.following = a;
+    if (!a) {
+      this.panel.sync && this.panel.sync();
+      return;
+    }
+    this.focus = null;
+    this.focusAmtGoal = 0;
+    this.fadeGoal.fill(0);
+    this.backBtn.hidden = false;
+    this.roomList.setActive(null);
+    this.controls.setLimits(null);
+    const p = a.e.root.position;
+    const s = this.controls.state;
+    this.controls.flyTo({ target: new THREE.Vector3(p.x, p.y + 1.1, p.z), dist: 11, az: s.az, el: Math.max(14 * DEG, Math.min(40 * DEG, s.el)) }, 1.2);
   }
 
   roomView(room) {
@@ -153,6 +232,7 @@ export class App {
   focusRoom(id, opts = {}) {
     const room = ROOM_BY_ID[id];
     if (!room) return;
+    this.following = null;
     this.focus = room;
     const v = this.roomView(room);
     const box = new THREE.Box3(v.min.clone().addScalar(-4), v.max.clone().addScalar(4));
@@ -197,6 +277,7 @@ export class App {
 
   overview(opts = {}) {
     this.focus = null;
+    this.following = null;
     this.controls.setLimits(null);
     if (opts.instant) this.controls.jumpTo({ ...OVERVIEW, target: OVERVIEW.target.clone() });
     else this.controls.flyTo({ ...OVERVIEW, target: OVERVIEW.target.clone() }, 1.5);
@@ -249,7 +330,7 @@ export class App {
     }
     let act = '';
     if (L.mech && this.mechs[L.mech]) act = this.mechs[L.mech].hint || 'Click to operate';
-    else if (L.person) act = 'Click for notes on this servant';
+    else if (L.person) act = 'Click to greet, for notes, or to follow';
     else if (L.room && (!this.focus || this.focus.id !== L.room)) act = `Click to visit: ${ROOM_BY_ID[L.room]?.name ?? ''}`;
     tt.innerHTML = `<b>${L.term}</b><i>${L.gloss}</i>${act ? `<span class="act">${act}</span>` : ''}`;
     tt.hidden = false;
@@ -290,6 +371,11 @@ export class App {
     this.time += dt;
     const t0 = performance.now();
 
+    // keep a followed person in the middle of the view
+    if (this.following && !this.controls.flying) {
+      const p = this.following.e.root.position;
+      this.controls.goal.target.lerp(new THREE.Vector3(p.x, p.y + 1.1, p.z), 1 - Math.exp(-dt * 4));
+    }
     this.controls.update(dt);
     // fades
     const k = 1 - Math.exp(-dt * 4);
